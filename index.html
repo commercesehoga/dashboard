@@ -2,6 +2,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -149,7 +150,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
 .lb-pct{font-size:15px;font-weight:800;font-family:var(--mono);text-align:right;}
 .lb-bar{height:4px;background:var(--card2);border-radius:10px;overflow:hidden;margin-top:3px;}
 .lb-bar-f{height:100%;border-radius:10px;}
-.lb-header-row{display:grid;grid-template-columns:44px 1fr 90px 80px;gap:10px;padding:9px 18px;background:var(--card2);border-radius:12px 12px 0 0;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);}
+.lb-header-row{display:grid;grid-template-columns:44px 1fr 90px 80px 60px;gap:10px;padding:9px 18px;background:var(--card2);border-radius:12px 12px 0 0;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);}
 
 /* ── RANK HERO ── */
 .rank-hero{background:linear-gradient(135deg,#4f6ef7 0%,#7c3aed 100%);border-radius:var(--r2);padding:26px;color:#fff;position:relative;overflow:hidden;margin-bottom:18px;}
@@ -2409,37 +2410,301 @@ function refreshLb(){LB_DATA=null;renderRank();}
 
 function renderLbView(data){
   if(!data||!Array.isArray(data)||!data.length){document.getElementById('rank-inner').innerHTML=`<div class="card card-p" style="text-align:center;padding:36px;color:var(--text3);">No class data yet.<br><br><button class="btn btn-prim" onclick="testAndSyncToSheet()">📤 Sync My Results</button></div>`;return;}
+  
   const rows=data.map(r=>({name:r[1]||'Unknown',subject:r[2]||'',chapter:r[3]||'',score:parseFloat(r[4])||0,maxScore:parseFloat(r[5])||0,percentage:parseFloat(r[6])||0,timestamp:r[0]||'',date:r[12]||r[0]||''})).filter(r=>r.name&&r.name!=='Name'&&r.name!=='TEST');
   if(!rows.length){document.getElementById('rank-inner').innerHTML=`<div class="card card-p" style="text-align:center;padding:36px;">No valid data found.</div>`;return;}
-  const byStu={};rows.forEach(r=>{if(!byStu[r.name])byStu[r.name]={name:r.name,count:0,totalPct:0,best:0};byStu[r.name].count++;byStu[r.name].totalPct+=r.percentage;byStu[r.name].best=Math.max(byStu[r.name].best,r.percentage);});
-  const stuArr=Object.values(byStu).sort((a,b)=>(b.totalPct/b.count)-(a.totalPct/a.count));
-  const avgPct=rows.length?(rows.reduce((s,r)=>s+r.percentage,0)/rows.length).toFixed(1):0;
-  const colors=['linear-gradient(135deg,#f59e0b,#d97706)','linear-gradient(135deg,#94a3b8,#64748b)','linear-gradient(135deg,#d97706,#b45309)','linear-gradient(135deg,#4f6ef7,#7c3aed)','linear-gradient(135deg,#10b981,#059669)'];
-  const top=stuArr.slice(0,3);
-  let H=`<div style="display:flex;justify-content:flex-end;margin-bottom:10px;"><button class="btn btn-prim" onclick="testAndSyncToSheet()">📤 Sync My Results</button></div>`;
-  H+=`<div class="stat-grid" style="margin-bottom:16px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));"><div class="stat-card"><div class="stat-icon bg-acc">📝</div><div class="stat-val c-acc">${rows.length}</div><div class="stat-lbl">Total Tests</div></div><div class="stat-card"><div class="stat-icon bg-teal">👥</div><div class="stat-val" style="color:var(--teal)">${stuArr.length}</div><div class="stat-lbl">Students</div></div><div class="stat-card"><div class="stat-icon bg-yellow">📊</div><div class="stat-val c-yellow">${avgPct}%</div><div class="stat-lbl">Class Avg</div></div><div class="stat-card"><div class="stat-icon bg-green">🏆</div><div class="stat-val c-green">${top[0]?(top[0].totalPct/top[0].count).toFixed(1)+'%':'—'}</div><div class="stat-lbl">Top Score</div></div></div>`;
-  if(top.length>=2){
-    H+=`<div class="card card-p" style="margin-bottom:16px;"><div class="sec-hdr"><div class="sec-title">🏆 Top 3 Performers</div></div><div class="podium">`;
-    const order=[top[1],top[0],top[2]].filter(Boolean);
-    order.forEach(p=>{
-      const ri=top.indexOf(p),medals=['🥇','🥈','🥉'],isFirst=ri===0;
-      H+=`<div class="podium-item"><div class="podium-av ${isFirst?'p1':''}" style="background:${colors[ri]};margin:0 auto 5px;position:relative;">${isFirst?'<span class="podium-crown">👑</span>':''}<span>${p.name[0].toUpperCase()}</span></div><div class="podium-name">${escH(p.name)}</div><div class="podium-score" style="color:${['#f59e0b','#94a3b8','#cd7f32'][ri]}">${(p.totalPct/p.count).toFixed(1)}%</div><div class="podium-block p${ri+1}">${medals[ri]}</div></div>`;
-    });
-    H+=`</div></div>`;
+
+  // Build student aggregates (all-time)
+  const byStu={};
+  rows.forEach(r=>{
+    if(!byStu[r.name])byStu[r.name]={name:r.name,count:0,totalPct:0,best:0,subjects:{},dates:[]};
+    byStu[r.name].count++;
+    byStu[r.name].totalPct+=r.percentage;
+    byStu[r.name].best=Math.max(byStu[r.name].best,r.percentage);
+    if(!byStu[r.name].subjects[r.subject])byStu[r.name].subjects[r.subject]={total:0,count:0};
+    byStu[r.name].subjects[r.subject].total+=r.percentage;
+    byStu[r.name].subjects[r.subject].count++;
+    if(r.date)byStu[r.name].dates.push(r.date);
+  });
+
+  // Weekly data (Mon 12am – Sun 11:59pm)
+  function getWeekBounds(){
+    const now=new Date();
+    const day=now.getDay(); // 0=Sun
+    const mon=new Date(now);
+    mon.setDate(now.getDate()-(day===0?6:day-1));
+    mon.setHours(0,0,0,0);
+    const sun=new Date(mon);sun.setDate(mon.getDate()+6);sun.setHours(23,59,59,999);
+    return{mon,sun};
   }
-  H+=`<div class="card" style="margin-bottom:16px;overflow:hidden;"><div class="lb-header-row"><span style="text-align:center">#</span><span>Student</span><span>Tests</span><span>Best %</span></div>`;
-  stuArr.slice(0,20).forEach((s,i)=>{
-    const avg=s.totalPct/s.count,clr=rClr(avg),medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
-    H+=`<div class="lb-row"><div class="lb-rank" style="color:${['#f59e0b','#94a3b8','#cd7f32'][i]||'var(--text3)'}">${medal||i+1}</div><div class="lb-info"><div class="lb-avatar" style="background:${colors[i%5]};font-size:12px;">${s.name[0].toUpperCase()}</div><div><div class="lb-name">${escH(s.name)}</div><div style="font-size:10px;color:var(--text3);">${s.count} test${s.count!==1?'s':''} · avg ${avg.toFixed(1)}%</div></div></div><div style="font-size:12px;font-weight:700;color:var(--text3);text-align:right">${s.count}</div><div><div class="lb-pct" style="color:${clr}">${s.best.toFixed(1)}%</div><div class="lb-bar"><div class="lb-bar-f" style="width:${s.best}%;background:${clr}"></div></div></div></div>`;
+  function getPrevWeekBounds(){
+    const{mon}=getWeekBounds();
+    const prevSun=new Date(mon);prevSun.setMilliseconds(-1);
+    const prevMon=new Date(prevSun);
+    const d=prevSun.getDay();
+    prevMon.setDate(prevSun.getDate()-(d===0?6:d-1));
+    prevMon.setHours(0,0,0,0);
+    return{mon:prevMon,sun:prevSun};
+  }
+
+  const{mon:wMon,sun:wSun}=getWeekBounds();
+  const{mon:pwMon,sun:pwSun}=getPrevWeekBounds();
+
+  // Weekly aggregates
+  const byStuWeekly={};
+  const byStuPrevWeekly={};
+  rows.forEach(r=>{
+    const dt=new Date(r.date||r.timestamp);
+    if(dt>=wMon&&dt<=wSun){
+      if(!byStuWeekly[r.name])byStuWeekly[r.name]={name:r.name,count:0,totalPct:0,best:0};
+      byStuWeekly[r.name].count++;
+      byStuWeekly[r.name].totalPct+=r.percentage;
+      byStuWeekly[r.name].best=Math.max(byStuWeekly[r.name].best,r.percentage);
+    }
+    if(dt>=pwMon&&dt<=pwSun){
+      if(!byStuPrevWeekly[r.name])byStuPrevWeekly[r.name]={name:r.name,count:0,totalPct:0,best:0};
+      byStuPrevWeekly[r.name].count++;
+      byStuPrevWeekly[r.name].totalPct+=r.percentage;
+    }
   });
-  H+=`</div>`;
-  H+=`<div class="card" style="overflow:hidden;"><div style="padding:14px 18px 8px;"><div class="sec-title">🕐 Recent Submissions</div></div><div class="lb-header-row" style="grid-template-columns:44px 1fr 80px 80px"><span>#</span><span>Name</span><span>Subject</span><span>Score</span></div>`;
-  [...rows].sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp)).slice(0,15).forEach((r,i)=>{
-    const clr=rClr(r.percentage);
-    H+=`<div class="lb-row" style="grid-template-columns:44px 1fr 80px 80px"><div class="lb-rank" style="font-size:11px;color:var(--text3)">${i+1}</div><div class="lb-info"><div class="lb-avatar" style="background:${colors[i%5]};font-size:12px;">${r.name[0].toUpperCase()}</div><div><div class="lb-name">${escH(r.name)}</div><div style="font-size:10px;color:var(--text3)">${fdS(r.date)}</div></div></div><div style="font-size:10px;font-weight:700;background:var(--card2);border-radius:18px;padding:2px 8px;text-align:center;align-self:center">${r.subject.toUpperCase().substring(0,4)}</div><div class="lb-pct" style="color:${clr}">${r.percentage.toFixed(1)}%</div></div>`;
+
+  // Inactivity penalty: if student gave 0 tests this week → avg drops by 10% for ranking
+  const INACTIVITY_PENALTY=10;
+
+  function getEffectiveAvg(stuData,weeklyData){
+    const base=stuData.totalPct/stuData.count;
+    if(!weeklyData||weeklyData.count===0)return Math.max(0,base-INACTIVITY_PENALTY);
+    return base;
+  }
+
+  // All-time sorted
+  const stuArr=Object.values(byStu).sort((a,b)=>getEffectiveAvg(b,byStuWeekly[b.name])-getEffectiveAvg(a,byStuWeekly[a.name]));
+  // Weekly sorted
+  const stuArrWeekly=Object.values(byStuWeekly).sort((a,b)=>(b.totalPct/b.count)-(a.totalPct/a.count));
+
+  // Rank change: compare alltime rank vs prev week rank
+  const prevWeekRankMap={};
+  const prevWeekRows=rows.filter(r=>{const dt=new Date(r.date||r.timestamp);return dt>=pwMon&&dt<=pwSun;});
+  const byStuPrev={};
+  prevWeekRows.forEach(r=>{
+    if(!byStuPrev[r.name])byStuPrev[r.name]={name:r.name,count:0,totalPct:0};
+    byStuPrev[r.name].count++;byStuPrev[r.name].totalPct+=r.percentage;
   });
-  H+=`</div>`;
-  document.getElementById('rank-inner').innerHTML=H;
+  Object.values(byStuPrev).sort((a,b)=>(b.totalPct/b.count)-(a.totalPct/a.count)).forEach((s,i)=>prevWeekRankMap[s.name]=i+1);
+
+  // Subject list
+  const allSubjects=[...new Set(rows.map(r=>r.subject).filter(Boolean))];
+
+  // Subject avg per student
+  function getSubjAvg(stu,subj){
+    const s=byStu[stu]?.subjects[subj];
+    return s&&s.count>0?s.total/s.count:null;
+  }
+
+  // Class avg per subject
+  const classSubjAvg={};
+  allSubjects.forEach(subj=>{
+    const rel=rows.filter(r=>r.subject===subj);
+    classSubjAvg[subj]=rel.length?rel.reduce((s,r)=>s+r.percentage,0)/rel.length:0;
+  });
+
+  // Most improved: biggest avg jump this week vs prev week
+  let mostImproved=null,bestJump=-Infinity;
+  Object.keys(byStuWeekly).forEach(name=>{
+    const pw=byStuPrevWeekly[name];
+    if(!pw)return;
+    const jump=byStuWeekly[name].totalPct/byStuWeekly[name].count-(pw.totalPct/pw.count);
+    if(jump>bestJump){bestJump=jump;mostImproved=name;}
+  });
+
+  // My name
+  const myName=(getProfile().name||localStorage.getItem('cbtUserName')||'').trim().toLowerCase();
+
+  // Active tab state
+  let lbTab=window._lbTab||'alltime';
+  let lbSubjFilter=window._lbSubjFilter||'all';
+
+  function renderInner(){
+    lbTab=window._lbTab||'alltime';
+    lbSubjFilter=window._lbSubjFilter||'all';
+
+    const colors=['linear-gradient(135deg,#f59e0b,#d97706)','linear-gradient(135deg,#94a3b8,#64748b)','linear-gradient(135deg,#d97706,#b45309)','linear-gradient(135deg,#4f6ef7,#7c3aed)','linear-gradient(135deg,#10b981,#059669)'];
+    const avgPct=rows.length?(rows.reduce((s,r)=>s+r.percentage,0)/rows.length).toFixed(1):0;
+
+    // Get display list based on tab + subject filter
+    let displayList=[];
+    if(lbTab==='weekly'){
+      displayList=stuArrWeekly.map((s,i)=>({...s,avg:s.totalPct/s.count,rank:i+1,isWeekly:true}));
+    } else {
+      // Subject filter
+      if(lbSubjFilter==='all'){
+        displayList=stuArr.map((s,i)=>({...s,avg:getEffectiveAvg(s,byStuWeekly[s.name]),rank:i+1}));
+      } else {
+        const filtered=Object.values(byStu)
+          .map(s=>({...s,avg:getSubjAvg(s.name,lbSubjFilter)}))
+          .filter(s=>s.avg!==null)
+          .sort((a,b)=>b.avg-a.avg)
+          .map((s,i)=>({...s,rank:i+1}));
+        displayList=filtered;
+      }
+    }
+
+    // My rank
+    const myRank=displayList.findIndex(s=>s.name.trim().toLowerCase()===myName)+1;
+    const myData=displayList.find(s=>s.name.trim().toLowerCase()===myName);
+    const myStu=byStu[myData?.name];
+
+    // Weak/top subject for me
+    let myWeakSubj=null,myTopSubj=null;
+    if(myStu){
+      let minAvg=Infinity,maxAvg=-Infinity;
+      Object.entries(myStu.subjects).forEach(([subj,d])=>{
+        const a=d.total/d.count;
+        if(a<minAvg){minAvg=a;myWeakSubj=subj;}
+        if(a>maxAvg){maxAvg=a;myTopSubj=subj;}
+      });
+    }
+
+    let H=`<div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+      <button class="btn btn-prim" onclick="testAndSyncToSheet()">📤 Sync My Results</button>
+    </div>`;
+
+    // My personal card
+    if(myName&&myData&&myRank>0){
+      const myAvg=myData.avg||0;
+      const myClr=rClr(myAvg);
+      const prevR=prevWeekRankMap[myData.name];
+      const rankChange=prevR?prevR-myRank:null;
+      H+=`<div style="background:linear-gradient(135deg,rgba(79,110,247,.12),rgba(124,58,237,.08));border:2.5px solid rgba(79,110,247,.4);border-radius:20px;padding:18px 20px;margin-bottom:16px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(79,110,247,.08);pointer-events:none;"></div>
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--acc);margin-bottom:8px;">👤 Your Position</div>
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+          <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#4f6ef7,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;flex-shrink:0;">${myData.name[0].toUpperCase()}</div>
+          <div style="flex:1;min-width:120px;">
+            <div style="font-size:16px;font-weight:900;">${escH(myData.name)}</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px;">${myData.count||0} tests · ${myAvg.toFixed(1)}% avg</div>
+            ${myWeakSubj?`<div style="font-size:11px;margin-top:4px;display:flex;gap:8px;flex-wrap:wrap;"><span style="background:rgba(244,63,94,.12);color:var(--red);border-radius:20px;padding:2px 9px;font-weight:700;">⚠️ Weak: ${myWeakSubj.toUpperCase()}</span><span style="background:rgba(16,185,129,.12);color:var(--green);border-radius:20px;padding:2px 9px;font-weight:700;">⭐ Top: ${myTopSubj?.toUpperCase()||'—'}</span></div>`:''}
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:36px;font-weight:900;font-family:var(--mono);color:var(--acc);">#${myRank}</div>
+            <div style="font-size:10px;color:var(--text3);">of ${displayList.length}</div>
+            ${rankChange!==null?`<div style="font-size:12px;font-weight:800;color:${rankChange>0?'var(--green)':rankChange<0?'var(--red)':'var(--text3)'};">${rankChange>0?'↑'+rankChange:rankChange<0?'↓'+Math.abs(rankChange):'→ Same'}</div>`:''}
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:28px;font-weight:900;font-family:var(--mono);color:${myClr};">${myAvg.toFixed(1)}%</div>
+            <div style="font-size:10px;color:var(--text3);">Avg Score</div>
+          </div>
+        </div>
+        ${!byStuWeekly[myData.name]?`<div style="margin-top:12px;background:rgba(244,63,94,.08);border:1.5px solid rgba(244,63,94,.25);border-radius:12px;padding:9px 13px;font-size:12px;font-weight:700;color:var(--red);">⚠️ No tests this week! Your rank is penalized −${INACTIVITY_PENALTY}% until you attempt a test.</div>`:''}
+      </div>`;
+    }
+
+    // Stats row
+    H+=`<div class="stat-grid" style="margin-bottom:16px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));">
+      <div class="stat-card"><div class="stat-icon bg-acc">📝</div><div class="stat-val c-acc">${rows.length}</div><div class="stat-lbl">Total Tests</div></div>
+      <div class="stat-card"><div class="stat-icon bg-teal">👥</div><div class="stat-val" style="color:var(--teal)">${stuArr.length}</div><div class="stat-lbl">Students</div></div>
+      <div class="stat-card"><div class="stat-icon bg-yellow">📊</div><div class="stat-val c-yellow">${avgPct}%</div><div class="stat-lbl">Class Avg</div></div>
+      <div class="stat-card"><div class="stat-icon bg-green">🏆</div><div class="stat-val c-green">${stuArr.length>0?(stuArr[0].totalPct/stuArr[0].count).toFixed(1)+'%':'—'}</div><div class="stat-lbl">Top Score</div></div>
+      ${mostImproved&&bestJump>0?`<div class="stat-card" style="border:1.5px solid rgba(16,185,129,.2);background:rgba(16,185,129,.04);"><div class="stat-icon bg-green">📈</div><div class="stat-val c-green">↑${bestJump.toFixed(0)}%</div><div class="stat-lbl" title="${mostImproved}">Most Improved</div><div style="font-size:10px;color:var(--text3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escH(mostImproved)}</div></div>`:''}
+    </div>`;
+
+    // Subject avg bar chart
+    if(allSubjects.length>0){
+      H+=`<div class="card card-p" style="margin-bottom:16px;">
+        <div class="sec-hdr"><div class="sec-title">📊 Class Avg by Subject</div></div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          ${allSubjects.map(subj=>{
+            const avg=classSubjAvg[subj]||0;
+            const clr=rClr(avg);
+            const subMaster=SUBJECTS_MASTER.find(s=>s.id===subj);
+            return`<div style="display:flex;align-items:center;gap:10px;">
+              <div style="font-size:15px;width:24px;text-align:center;">${subMaster?.icon||'📚'}</div>
+              <div style="width:80px;font-size:11px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${subMaster?.name||subj.toUpperCase()}</div>
+              <div style="flex:1;height:8px;background:var(--card2);border-radius:8px;overflow:hidden;">
+                <div style="height:100%;width:${avg.toFixed(1)}%;background:${clr};border-radius:8px;transition:width 1s ease;"></div>
+              </div>
+              <div style="font-size:12px;font-weight:800;font-family:var(--mono);color:${clr};min-width:42px;text-align:right;">${avg.toFixed(1)}%</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+    }
+
+    // Tabs + Subject filter
+    H+=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center;">
+      <div style="display:flex;gap:6px;">
+        <div class="subj-tab ${lbTab==='alltime'?'active':''}" onclick="window._lbTab='alltime';renderInnerLb()">🏆 All-Time</div>
+        <div class="subj-tab ${lbTab==='weekly'?'active':''}" onclick="window._lbTab='weekly';renderInnerLb()">📅 This Week</div>
+      </div>
+      ${lbTab==='alltime'?`<select class="filter-sel" id="lb-subj-filter" onchange="window._lbSubjFilter=this.value;renderInnerLb()" style="font-size:12px;">
+        <option value="all" ${lbSubjFilter==='all'?'selected':''}>All Subjects</option>
+        ${allSubjects.map(s=>{const sm=SUBJECTS_MASTER.find(x=>x.id===s);return`<option value="${s}" ${lbSubjFilter===s?'selected':''}>${sm?sm.icon+' '+sm.name:s.toUpperCase()}</option>`;}).join('')}
+      </select>`:''}
+    </div>`;
+
+    if(lbTab==='weekly'&&!stuArrWeekly.length){
+      H+=`<div class="card card-p" style="text-align:center;padding:28px;color:var(--text3);">No tests submitted this week yet. Be the first! 💪</div>`;
+    } else {
+      // Podium top 3
+      const top3=displayList.slice(0,3);
+      if(top3.length>=2){
+        H+=`<div class="card card-p" style="margin-bottom:16px;"><div class="sec-hdr"><div class="sec-title">🏆 Top 3 Performers</div></div><div class="podium">`;
+        const order=[top3[1],top3[0],top3[2]].filter(Boolean);
+        order.forEach(p=>{
+          const ri=top3.indexOf(p),medals=['🥇','🥈','🥉'],isFirst=ri===0;
+          const isMe=p.name.trim().toLowerCase()===myName;
+          H+=`<div class="podium-item"><div class="podium-av ${isFirst?'p1':''}" style="background:${colors[ri]};margin:0 auto 5px;position:relative;${isMe?'box-shadow:0 0 0 3px #4f6ef7,0 4px 14px rgba(79,110,247,.4);':''}">${isFirst?'<span class="podium-crown">👑</span>':''}<span>${p.name[0].toUpperCase()}</span></div><div class="podium-name">${escH(p.name)}${isMe?' ⬅️':''}</div><div class="podium-score" style="color:${['#f59e0b','#94a3b8','#cd7f32'][ri]}">${(p.avg||p.totalPct/p.count).toFixed(1)}%</div><div class="podium-block p${ri+1}">${medals[ri]}</div></div>`;
+        });
+        H+=`</div></div>`;
+      }
+
+      // Full leaderboard
+      H+=`<div class="card" style="margin-bottom:16px;overflow:hidden;">
+        <div class="lb-header-row" style="grid-template-columns:44px 1fr 90px 80px 60px">
+          <span style="text-align:center">#</span><span>Student</span><span>Tests</span><span>Avg %</span><span>Trend</span>
+        </div>`;
+
+      displayList.slice(0,25).forEach((s,i)=>{
+        const avg=s.avg||s.totalPct/s.count;
+        const clr=rClr(avg);
+        const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+        const isMe=s.name.trim().toLowerCase()===myName;
+        const prevR=prevWeekRankMap[s.name];
+        const currentR=i+1;
+        const rankChange=prevR?prevR-currentR:null;
+        const inactiveThisWeek=!byStuWeekly[s.name];
+        H+=`<div class="lb-row" style="grid-template-columns:44px 1fr 90px 80px 60px;${isMe?'background:linear-gradient(135deg,rgba(79,110,247,.1),rgba(124,58,237,.07));border-left:3px solid var(--acc);animation:badgePulse 2.4s ease-in-out infinite;':''}">
+          <div class="lb-rank" style="color:${['#f59e0b','#94a3b8','#cd7f32'][i]||'var(--text3)'}">${medal||currentR}</div>
+          <div class="lb-info">
+            <div class="lb-avatar" style="background:${isMe?'linear-gradient(135deg,#4f6ef7,#7c3aed)':colors[i%5]};font-size:12px;${isMe?'box-shadow:0 0 0 2px #fff,0 0 0 4px #4f6ef7;':''}">${s.name[0].toUpperCase()}</div>
+            <div>
+              <div class="lb-name">${escH(s.name)}${isMe?' <span style="font-size:9px;background:var(--acc);color:#fff;border-radius:10px;padding:1px 6px;margin-left:4px;font-weight:800;">YOU</span>':''}</div>
+              <div style="font-size:10px;color:var(--text3);">${s.count} test${s.count!==1?'s':''}${inactiveThisWeek&&lbTab==='alltime'?` · <span style="color:var(--red);font-weight:700;">Inactive this week</span>`:''}</div>
+            </div>
+          </div>
+          <div style="font-size:12px;font-weight:700;color:var(--text3);text-align:right">${s.count}</div>
+          <div><div class="lb-pct" style="color:${clr}">${avg.toFixed(1)}%</div><div class="lb-bar"><div class="lb-bar-f" style="width:${avg}%;background:${clr}"></div></div></div>
+          <div style="font-size:12px;font-weight:800;text-align:center;color:${rankChange>0?'var(--green)':rankChange<0?'var(--red)':'var(--text3)'};">${rankChange===null?'—':rankChange>0?'↑'+rankChange:rankChange<0?'↓'+Math.abs(rankChange):'→'}</div>
+        </div>`;
+      });
+      H+=`</div>`;
+    }
+
+    // Recent submissions
+    H+=`<div class="card" style="overflow:hidden;"><div style="padding:14px 18px 8px;"><div class="sec-title">🕐 Recent Submissions</div></div><div class="lb-header-row" style="grid-template-columns:44px 1fr 80px 80px"><span>#</span><span>Name</span><span>Subject</span><span>Score</span></div>`;
+    [...rows].sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp)).slice(0,15).forEach((r,i)=>{
+      const clr=rClr(r.percentage);
+      const isMe=r.name.trim().toLowerCase()===myName;
+      H+=`<div class="lb-row" style="grid-template-columns:44px 1fr 80px 80px;${isMe?'background:rgba(79,110,247,.06);':''}"><div class="lb-rank" style="font-size:11px;color:var(--text3)">${i+1}</div><div class="lb-info"><div class="lb-avatar" style="background:${colors[i%5]};font-size:12px;">${r.name[0].toUpperCase()}</div><div><div class="lb-name">${escH(r.name)}${isMe?' <span style="font-size:9px;background:var(--acc);color:#fff;border-radius:10px;padding:1px 6px;font-weight:800;">YOU</span>':''}</div><div style="font-size:10px;color:var(--text3)">${fdS(r.date)}</div></div></div><div style="font-size:10px;font-weight:700;background:var(--card2);border-radius:18px;padding:2px 8px;text-align:center;align-self:center">${r.subject.toUpperCase().substring(0,4)}</div><div class="lb-pct" style="color:${clr}">${r.percentage.toFixed(1)}%</div></div>`;
+    });
+    H+=`</div>`;
+
+    document.getElementById('rank-inner').innerHTML=H;
+  }
+
+  // Expose renderInner globally for tab switching
+  window.renderInnerLb=renderInner;
+  renderInner();
 }
 
 /* ══════════════════════════════════════════
