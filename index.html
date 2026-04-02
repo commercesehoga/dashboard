@@ -5,6 +5,8 @@
 
 
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -783,7 +785,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
 /* ══════════════════════════════════════════
    CONFIG
 ══════════════════════════════════════════ */
-const GS_URL="https://script.google.com/macros/s/AKfycbxrI9TAPt1jNgDH4wiBmaPUTt69KQD8AlkB1f_PZMSi3zo8aJjw-_N-1cF8ST3u1vMZ/exec";
+const GS_URL="https://script.google.com/macros/s/AKfycbwggT409Uvf9nT3l5pok0bXN2583U6zGiw3zalJJBPlS0Dvhlm4gTQLSaQoXPModE4n/exec";
 const SUBJECT_URLS={bst:"https://commercesehoga.github.io/commerce/bst/",eco:"https://commercesehoga.github.io/commerce/eco/",acc:"https://commercesehoga.github.io/commerce/acc/",eng:"https://commercesehoga.github.io/english/",gat:"https://commercesehoga.github.io/gat/",phy:"https://commercesehoga.github.io/science/phy/",che:"https://commercesehoga.github.io/science/che/",bio:"https://commercesehoga.github.io/science/bio/",mat:"https://commercesehoga.github.io/science/mat/",his:"https://commercesehoga.github.io/humanities/his/",geo:"https://commercesehoga.github.io/humanities/geo/",pol:"https://commercesehoga.github.io/humanities/pol/",psy:"https://commercesehoga.github.io/humanities/psy/",pe:"https://commercesehoga.github.io/physical/"};
 
 const SUBJECTS_MASTER=[
@@ -1819,6 +1821,7 @@ H+=`<div style="margin-bottom:14px;">
 <div class="rh-stat"><div class="rh-val">${overallP.toFixed(1)}%</div><div class="rh-lbl">Accuracy</div></div>
         <div class="rh-stat"><div class="rh-val">${rpCurrent}<span style="font-size:11px;opacity:.6">/${rpThreshold}</span></div><div class="rh-lbl">⚡ RP</div></div>
         <div class="rh-stat"><div class="rh-val">${getHP().total}</div><div class="rh-lbl">💜 HP</div></div>
+        <div class="rh-stat"><div class="rh-val" style="font-size:14px;" id="hero-sid">—</div><div class="rh-lbl">🪪 Student ID</div></div>
 </div>
     </div>
   </div>`;
@@ -1922,6 +1925,18 @@ H+=`<div style="margin-bottom:14px;">
   H+=`<div class="sec-hdr" style="margin-top:20px;"><div class="sec-title">🎯 Target Score Planner</div></div>${buildTargetSetter(sv)}`;
   setTimeout(()=>calcTarget(),150);
   document.getElementById('home-content').innerHTML=H;
+  // Fetch StudentID from leaderboard
+fetch(GS_URL+'?action=getAll',{method:'GET',redirect:'follow'})
+  .then(r=>r.text()).then(text=>{
+    const clean=text.replace(/^\)\]\}'\s*/,'').trim();
+    if(clean[0]==='['){
+      const data=JSON.parse(clean);
+      const myName=(getProfile().name||'').trim().toLowerCase();
+      const myRow=data.find(r=>String(r[2]||'').trim().toLowerCase()===myName);
+      const sid=document.getElementById('hero-sid');
+      if(sid&&myRow)sid.textContent='#'+myRow[1];
+    }
+  }).catch(()=>{});
   setTimeout(()=>{
     const xf=document.getElementById('xp-fill-bar');if(xf)setTimeout(()=>xf.style.width=xpInfo.progress+'%',100);
     document.querySelectorAll('.goal-fill').forEach(el=>{const w=el.style.width;el.style.width='0';setTimeout(()=>el.style.width=w,60);});
@@ -2657,7 +2672,7 @@ function refreshLb(){LB_DATA=null;renderRank();}
 function renderLbView(data){
   if(!data||!Array.isArray(data)||!data.length){document.getElementById('rank-inner').innerHTML=`<div class="card card-p" style="text-align:center;padding:36px;color:var(--text3);">No class data yet.<br><br><button class="btn btn-prim" onclick="testAndSyncToSheet()">📤 Sync My Results</button></div>`;return;}
   
-  const rows=data.map(r=>({name:r[1]||'Unknown',subject:r[2]||'',chapter:r[3]||'',score:parseFloat(r[4])||0,maxScore:parseFloat(r[5])||0,percentage:parseFloat(r[6])||0,timestamp:r[0]||'',date:r[12]||r[0]||''})).filter(r=>r.name&&r.name!=='Name'&&r.name!=='TEST');
+  const rows=data.map(r=>({studentId:r[1]||'',name:r[2]||'Unknown',subject:r[3]||'',chapter:r[4]||'',score:parseFloat(r[5])||0,maxScore:parseFloat(r[6])||0,percentage:parseFloat(r[7])||0,timestamp:r[0]||'',date:r[13]||r[0]||''})).filter(r=>r.name&&r.name!=='Name'&&r.name!=='TEST');
   if(!rows.length){document.getElementById('rank-inner').innerHTML=`<div class="card card-p" style="text-align:center;padding:36px;">No valid data found.</div>`;return;}
 
   // Build student aggregates (all-time)
@@ -4129,7 +4144,11 @@ function obValidate1(){
 
 function obToggleSubj(id){
   const idx=_obSelSubjs.indexOf(id);
-  if(idx>-1)_obSelSubjs.splice(idx,1);else _obSelSubjs.push(id);
+  if(idx>-1){_obSelSubjs.splice(idx,1);}
+else{
+  if(_obSelSubjs.length>=5){showToast('❌ Maximum 5 subjects allowed!','error');return;}
+  _obSelSubjs.push(id);
+}
   document.querySelectorAll('.ob-subj-card').forEach(c=>c.classList.remove('sel'));
   _obSelSubjs.forEach(sid=>{const el=document.getElementById('ob-sc-'+sid);if(el)el.classList.add('sel');});
   const total=_obSelSubjs.length*250;
@@ -4273,6 +4292,7 @@ function openAddSubjModal(){
 
 function addSubj(id){
   const sv=getSS();
+  if(sv.length>=5){showToast('❌ Maximum 5 subjects allowed in CUET!','error');return;}
   if(!sv.includes(id)){
     sv.push(id);saveSS(sv);
     const s=SUBJECTS_MASTER.find(x=>x.id===id);
