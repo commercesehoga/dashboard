@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -215,7 +217,6 @@ select.fi option{background:var(--card2);} textarea.fi{resize:vertical;min-heigh
       <div class="ni" onclick="go('analytics')"><span class="ni-ic">📊</span>Class Analytics</div>
       <div class="ni" onclick="go('reports')"><span class="ni-ic">📥</span>Reports & CSV</div>
       <div class="sb-lbl">System</div>
-      <div class="ni" onclick="go('broadcast')"><span class="ni-ic">📡</span>Broadcast Code</div>
       <div class="ni" onclick="go('logs')"><span class="ni-ic">🔍</span>Access Logs</div>
     </div>
     <div class="sb-bottom">
@@ -342,12 +343,6 @@ select.fi option{background:var(--card2);} textarea.fi{resize:vertical;min-heigh
       <div id="reports-content"><div style="text-align:center;padding:40px;color:var(--text3);font-size:12px;">Click "Load Data" or navigate here to fetch reports.</div></div>
     </div>
 
-    <!-- BROADCAST -->
-    <div class="page" id="page-broadcast">
-      <div class="topbar"><div><div class="pt">📡 Broadcast Code</div><div class="ps">Generate code → students paste in Settings → notices & rewards sync</div></div></div>
-      <div id="broadcast-content"></div>
-    </div>
-
     <!-- LOGS -->
     <div class="page" id="page-logs">
       <div class="topbar">
@@ -440,10 +435,12 @@ function updTime(){const el=document.getElementById('ovtime');if(el)el.textConte
 function refreshAll(){GSD=null;renderOverview();loadAnalytics(true);toast('↺ Refreshed');}
 
 function autoPushBroadcast(){
-  const ns=gN().filter(n=>n.active);
-  const es=gE().filter(e=>e.active&&new Date(e.date)>new Date());
-  const rs=gR().filter(r=>!r.claimed);
-  const payload={notices:ns,exams:es,rewards:rs,ts:new Date().toISOString(),v:2};
+  // Direct localStorage write — same domain shares storage with dashboard
+  localStorage.setItem('ts_admin_notices', JSON.stringify(gN()));
+  localStorage.setItem('ts_admin_exams', JSON.stringify(gE()));
+  localStorage.setItem('ts_admin_rewards', JSON.stringify(gR()));
+  // Also write the auto broadcast key for compatibility
+  const payload={notices:gN().filter(n=>n.active),exams:gE().filter(e=>e.active&&new Date(e.date)>new Date()),rewards:gR().filter(r=>!r.claimed),ts:new Date().toISOString(),v:2};
   localStorage.setItem('ts_admin_broadcast_auto', JSON.stringify(payload));
 }
 
@@ -454,7 +451,7 @@ function go(page){
   document.getElementById('page-'+page).classList.add('active');
   document.querySelectorAll('.ni').forEach(n=>{if(n.getAttribute('onclick')===`go('${page}')`)n.classList.add('active');});
   Object.values(ACH).forEach(c=>{try{c.destroy();}catch(e){}});ACH={};
-  const m={notices:renderNotices,exams:renderExams,rewards:renderRewards,broadcast:renderBroadcast,logs:renderLogs};
+  const m={notices:renderNotices,exams:renderExams,rewards:renderRewards,logs:renderLogs};
   if(m[page])m[page]();
   else if(page==='analytics')loadAnalytics(false);
   else if(page==='reports')loadReports(false);
@@ -828,46 +825,7 @@ async function dlAllStudents(){
   toast(`✅ ${names.length} student CSVs downloaded!`);log('DL',`All ${names.length} student CSVs`);
 }
 
-/* ══════ BROADCAST ══════ */
-function renderBroadcast(){
-  const ns=gN().filter(n=>n.active),es=gE().filter(e=>e.active&&new Date(e.date)>new Date()),rs=gR().filter(r=>!r.claimed);
-  const payload={notices:ns,exams:es,rewards:rs,ts:new Date().toISOString(),v:2};
-  const code=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-  let H=`<div class="card cp" style="margin-bottom:13px;background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(79,110,247,.07));border:1.5px solid rgba(124,58,237,.3);">
-    <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#7c3aed;margin-bottom:9px;">📡 Package Contents</div>
-    <div style="display:flex;gap:18px;flex-wrap:wrap;">
-      <div style="text-align:center;"><div style="font-size:20px;font-weight:900;color:var(--acc);font-family:var(--mono)">${ns.length}</div><div style="font-size:9px;color:var(--text3);">Active Notices</div></div>
-      <div style="text-align:center;"><div style="font-size:20px;font-weight:900;color:var(--pink);font-family:var(--mono)">${es.length}</div><div style="font-size:9px;color:var(--text3);">Upcoming Exams</div></div>
-      <div style="text-align:center;"><div style="font-size:20px;font-weight:900;color:var(--yellow);font-family:var(--mono)">${rs.length}</div><div style="font-size:9px;color:var(--text3);">Pending Rewards</div></div>
-    </div>
-  </div>
-  <div class="card cp" style="margin-bottom:13px;">
-    <div class="sh"><div class="st">🔑 Broadcast Code</div><button class="btn bp" onclick="copyBroadcast()" style="font-size:10px;padding:5px 12px;">📋 Copy</button></div>
-    <div style="font-size:11px;color:var(--text3);margin-bottom:9px;">Share this code via Telegram/WhatsApp. Students paste it in Dashboard → Settings → "Apply Broadcast Code".</div>
-    <div class="bbc" id="bc-box">${code}</div>
-    <div style="display:flex;gap:7px;flex-wrap:wrap;">
-      <button class="btn bp" onclick="copyBroadcast()">📋 Copy to Clipboard</button>
-      <button class="btn bg" onclick="dlBroadcast()">⬇️ Download .txt</button>
-    </div>
-  </div>
-  <div class="card cp">
-    <div class="sh"><div class="st">📱 Share Template</div><button class="btn bg" onclick="copyTemplate()" style="font-size:10px;padding:5px 12px;">📋 Copy Msg</button></div>
-    <div style="background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-size:11px;color:var(--text2);line-height:1.8;font-family:var(--mono);" id="share-tpl">📢 *Thunderstudy Admin Update*
 
-Apply this broadcast code in your Dashboard:
-Settings → "Apply Broadcast Code" → Paste
-
-CODE:
-${code}
-
-🔔 New notices, exam schedules & rewards inside!</div>
-  </div>`;
-  document.getElementById('broadcast-content').innerHTML=H;
-  document.getElementById('broadcast-content')._code=code;
-}
-function copyBroadcast(){const code=document.getElementById('broadcast-content')?._code||document.getElementById('bc-box')?.textContent;if(!code)return;navigator.clipboard.writeText(code).then(()=>toast('✅ Code copied!')).catch(()=>{const ta=document.createElement('textarea');ta.value=code;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('✅ Code copied!');});log('BROADCAST','Code copied');}
-function copyTemplate(){const el=document.getElementById('share-tpl');if(!el)return;navigator.clipboard.writeText(el.textContent).then(()=>toast('✅ Template copied!')).catch(()=>toast('❌ Copy failed','e'));}
-function dlBroadcast(){const code=document.getElementById('broadcast-content')?._code;if(!code)return;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([code],{type:'text/plain'}));a.download=`ts_broadcast_${ts()}.txt`;a.click();toast('✅ File downloaded!');}
 
 /* ══════ LOGS ══════ */
 function renderLogs(){
