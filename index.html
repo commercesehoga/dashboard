@@ -3,6 +3,8 @@
 
 
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1332,6 +1334,247 @@ function getBestStreak(a){
 /* GLOBALS */
 let CI={},LB_DATA=null,currentSubjectTab=null,currentMockSubj=null,currentAnalyticsTab='weak';
 
+/* ══════ ADMIN PANEL BRIDGE ══════ */
+function getAdminNotices(){
+  try{return JSON.parse(localStorage.getItem('ts_admin_notices')||'[]');}catch(e){return[];}
+}
+function getAdminExams(){
+  try{return JSON.parse(localStorage.getItem('ts_admin_exams')||'[]');}catch(e){return[];}
+}
+function getMyRewards(studentName){
+  try{
+    const all=JSON.parse(localStorage.getItem('ts_admin_rewards')||'[]');
+    return all.filter(r=>!r.claimed&&r.studentName.toLowerCase().trim()===studentName.toLowerCase().trim());
+  }catch(e){return[];}
+}
+function claimAdminReward(rewardId){
+  try{
+    const all=JSON.parse(localStorage.getItem('ts_admin_rewards')||'[]');
+    const r=all.find(x=>x.id===rewardId);
+    if(r){
+      r.claimed=true;r.claimedAt=new Date().toISOString();
+      // Apply the reward
+      if(r.type==='xp'){
+        const cur=JSON.parse(localStorage.getItem('ts_bonus_xp')||'0');
+        localStorage.setItem('ts_bonus_xp',JSON.stringify(cur+r.amount));
+        showToast(`⚡ +${r.amount} XP claimed! "${r.reason}"`,'success',3500);
+      } else if(r.type==='hp'){
+        addHP(r.amount,`Admin reward: ${r.reason}`);
+      }
+    }
+    localStorage.setItem('ts_admin_rewards',JSON.stringify(all));
+    renderAdminNotices();
+  }catch(e){}
+}
+function applyBroadcastCode(code){
+  try{
+    const decoded=JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
+    if(decoded.notices)localStorage.setItem('ts_admin_notices',JSON.stringify(decoded.notices));
+    if(decoded.exams)localStorage.setItem('ts_admin_exams',JSON.stringify(decoded.exams));
+    if(decoded.rewards){
+      const existing=JSON.parse(localStorage.getItem('ts_admin_rewards')||'[]');
+      const merged=[...decoded.rewards];
+      existing.forEach(e=>{if(e.claimed&&!merged.find(m=>m.id===e.id))merged.push(e);});
+      localStorage.setItem('ts_admin_rewards',JSON.stringify(merged));
+    }
+    showToast('✅ Broadcast code applied!','success');
+    renderAdminNotices();
+    renderExamCountdown();
+    return true;
+  }catch(e){showToast('❌ Invalid broadcast code','error');return false;}
+}
+
+function buildAdminNoticesHTML(){
+  const notices=getAdminNotices().filter(n=>{
+    if(!n.active)return false;
+    if(n.expiry&&new Date(n.expiry)<new Date())return false;
+    return true;
+  });
+  const prof=getProfile();
+  const myName=(prof.name||'').trim().toLowerCase();
+  const rewards=myName?getMyRewards(myName):[];
+
+  if(!notices.length&&!rewards.length)return '';
+
+  const typeStyles={
+    info:{bg:'rgba(79,110,247,.08)',border:'rgba(79,110,247,.3)',color:'#4f6ef7',light:'rgba(79,110,247,.05)',icon:'ℹ️',label:'Info'},
+    warning:{bg:'rgba(245,158,11,.08)',border:'rgba(245,158,11,.3)',color:'#f59e0b',light:'rgba(245,158,11,.05)',icon:'⚠️',label:'Warning'},
+    urgent:{bg:'rgba(244,63,94,.08)',border:'rgba(244,63,94,.3)',color:'#f43f5e',light:'rgba(244,63,94,.05)',icon:'🚨',label:'Urgent'},
+    exam:{bg:'rgba(236,72,153,.08)',border:'rgba(236,72,153,.3)',color:'#ec4899',light:'rgba(236,72,153,.05)',icon:'📝',label:'Exam Alert'},
+    motivation:{bg:'rgba(16,185,129,.08)',border:'rgba(16,185,129,.3)',color:'#10b981',light:'rgba(16,185,129,.05)',icon:'💪',label:'Motivation'}
+  };
+
+  // Group notices by type for 4-box layout
+  const groups={info:[],warning:[],exam:[],motivation:[]};
+  notices.forEach(n=>{
+    if(n.type==='urgent')groups.info.push(n);
+    else if(groups[n.type])groups[n.type].push(n);
+    else groups.info.push(n);
+  });
+
+  let H=`<div style="margin-bottom:20px;">
+    <div class="sec-hdr"><div class="sec-title">📢 Admin Notices</div></div>`;
+
+  // Rewards banner if any
+  if(rewards.length){
+    H+=`<div style="background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(79,110,247,.07));border:2px solid rgba(124,58,237,.3);border-radius:16px;padding:14px 18px;margin-bottom:12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+      <div style="font-size:28px;">🎁</div>
+      <div style="flex:1;min-width:140px;">
+        <div style="font-size:13px;font-weight:800;color:#7c3aed;">You have ${rewards.length} unclaimed reward${rewards.length>1?'s':''}!</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px;">${rewards.map(r=>`+${r.amount} ${r.type.toUpperCase()} — ${r.reason}`).join(' · ')}</div>
+      </div>
+      ${rewards.map(r=>`<button onclick="claimAdminReward('${r.id}')" style="background:linear-gradient(135deg,#7c3aed,#4f6ef7);color:#fff;border:none;border-radius:22px;padding:9px 18px;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--fn);">⚡ Claim +${r.amount} ${r.type.toUpperCase()}</button>`).join('')}
+    </div>`;
+  }
+
+  // 4 notice boxes
+  H+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;">`;
+
+  const boxTypes=[
+    {key:'info',  urgentToo:true, label:'📢 Info & Urgent', style:typeStyles.info,    urgentStyle:typeStyles.urgent},
+    {key:'warning',               label:'⚠️ Warning',       style:typeStyles.warning},
+    {key:'exam',                  label:'📝 Exam Alert',    style:typeStyles.exam},
+    {key:'motivation',            label:'💪 Motivation',    style:typeStyles.motivation},
+  ];
+
+  // Collect urgent separately for box 1
+  const urgentNotices=notices.filter(n=>n.type==='urgent');
+  const infoNotices=notices.filter(n=>n.type==='info');
+  const warningNotices=notices.filter(n=>n.type==='warning');
+  const examNotices=notices.filter(n=>n.type==='exam');
+  const motivationNotices=notices.filter(n=>n.type==='motivation');
+
+  // Box 1: Info & Urgent
+  const box1=[...urgentNotices,...infoNotices];
+  H+=buildNoticeBox('📢 Info & Urgent', box1,
+    urgentNotices.length?typeStyles.urgent:typeStyles.info);
+
+  // Box 2: Warning
+  H+=buildNoticeBox('⚠️ Warning', warningNotices, typeStyles.warning);
+
+  // Box 3: Exam Alert
+  H+=buildNoticeBox('📝 Exam Alert', examNotices, typeStyles.exam);
+
+  // Box 4: Motivation
+  H+=buildNoticeBox('💪 Motivation', motivationNotices, typeStyles.motivation);
+
+  H+=`</div></div>`;
+
+  // Trigger popup if needed (deferred)
+  setTimeout(()=>{
+    const popupNotice=notices.find(n=>n.popup&&!sessionStorage.getItem('ts_popup_shown_'+n.id));
+    if(popupNotice){
+      sessionStorage.setItem('ts_popup_shown_'+popupNotice.id,'1');
+      showAdminPopup(popupNotice);
+    }
+  },600);
+
+// Exam countdown
+  const now=new Date();
+  const exams=getAdminExams().filter(e=>e.active&&new Date(e.date)>now).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  if(exams.length){
+    const next=exams[0];
+    const diff=new Date(next.date)-now;
+    const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000),m=Math.floor((diff%3600000)/60000);
+    const urgent=diff<86400000;
+    const cdLabel=d>0?`${d}d ${h}h`:h>0?`${h}h ${m}m`:`${m}m`;
+    H=`<div style="background:${urgent?'rgba(244,63,94,.08)':'rgba(79,110,247,.06)'};border:1.5px solid ${urgent?'rgba(244,63,94,.3)':'rgba(79,110,247,.2)'};border-radius:16px;padding:12px 18px;margin-bottom:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+      <div style="font-size:26px;">📅</div>
+      <div style="flex:1;min-width:140px;">
+        <div style="font-size:12px;font-weight:800;color:${urgent?'var(--red)':'var(--acc)'};">Next Exam — ${escH(next.title)}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px;">${new Date(next.date).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})} · ${next.duration} min</div>
+      </div>
+      <div style="text-align:center;background:${urgent?'rgba(244,63,94,.12)':'rgba(79,110,247,.12)'};border-radius:12px;padding:8px 16px;">
+        <div style="font-size:22px;font-weight:900;font-family:var(--mono);color:${urgent?'var(--red)':'var(--acc)'};">${cdLabel}</div>
+        <div style="font-size:9px;color:var(--text3);text-transform:uppercase;font-weight:700;">${d>0?'Days Left':'Hours Left'}</div>
+      </div>
+      ${exams.length>1?`<div style="font-size:10px;color:var(--text3);">+${exams.length-1} more scheduled</div>`:''}
+    </div>`+H;
+  }
+
+  return H;
+}
+
+function buildNoticeBox(title, noticeList, style){
+  const hasNotices=noticeList.length>0;
+  return`<div style="background:${hasNotices?style.bg:'var(--card2)'};border:1.5px solid ${hasNotices?style.border:'var(--border)'};border-radius:16px;padding:14px 16px;min-height:110px;transition:all .2s;">
+    <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px;">
+      <div style="font-size:18px;">${style.icon}</div>
+      <div style="font-size:11px;font-weight:800;color:${hasNotices?style.color:'var(--text3)'};">${title}</div>
+      ${hasNotices?`<div style="margin-left:auto;background:${style.color};color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:20px;">${noticeList.length}</div>`:''}
+    </div>
+    ${hasNotices
+      ? noticeList.map(n=>`
+        <div style="margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid ${style.border};last-child:border-none;">
+          <div style="font-size:12px;font-weight:800;color:${style.color};margin-bottom:2px;">${escH(n.title)}</div>
+          <div style="font-size:10px;color:var(--text2);line-height:1.5;">${escH(n.message)}</div>
+          ${n.expiry?`<div style="font-size:9px;color:var(--text3);margin-top:3px;">Expires: ${new Date(n.expiry).toLocaleDateString('en-IN')}</div>`:''}
+        </div>`).join('')
+      : `<div style="font-size:11px;color:var(--text3);text-align:center;padding:14px 0;">No ${title.split(' ').slice(1).join(' ')} notices</div>`
+    }
+  </div>`;
+}
+
+function renderAdminNotices(){
+  // Now just re-renders home to pick up new notices
+  // Called after claim reward etc.
+  const home=document.getElementById('home-content');
+  if(home&&document.getElementById('page-home').classList.contains('active')){
+    renderHome();
+  }
+}
+
+function showAdminPopup(notice){
+  const existing=document.getElementById('admin-popup-modal');
+  if(existing)existing.remove();
+  const typeColors={info:'#4f6ef7',warning:'#f59e0b',urgent:'#f43f5e',exam:'#ec4899',motivation:'#10b981'};
+  const color=typeColors[notice.type]||'#4f6ef7';
+  const modal=document.createElement('div');
+  modal.id='admin-popup-modal';
+  modal.style.cssText=`position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9997;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:16px;`;
+  modal.innerHTML=`<div style="background:var(--card);border-radius:24px;padding:28px;max-width:440px;width:100%;border:2px solid ${color}40;animation:mIn .35s cubic-bezier(.34,1.56,.64,1);text-align:center;">
+    <div style="font-size:44px;margin-bottom:10px;">${{info:'📢',warning:'⚠️',urgent:'🚨',exam:'📝',motivation:'💪'}[notice.type]||'📢'}</div>
+    <div style="font-size:18px;font-weight:900;margin-bottom:8px;color:${color};">${escH(notice.title)}</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:20px;">${escH(notice.message)}</div>
+    <button onclick="document.getElementById('admin-popup-modal').remove()" style="background:${color};color:#fff;border:none;border-radius:22px;padding:11px 28px;font-size:13px;font-weight:800;cursor:pointer;font-family:var(--fn);width:100%;">Got it! ✓</button>
+  </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click',e=>{if(e.target===modal)modal.remove();});
+}
+
+function renderExamCountdown(){
+  const bar=document.getElementById('exam-countdown-bar');
+  if(!bar)return;
+  const now=new Date();
+  const exams=getAdminExams().filter(e=>{
+    if(!e.active)return false;
+    return new Date(e.date)>now;
+  }).sort((a,b)=>new Date(a.date)-new Date(b.date));
+
+  if(!exams.length){bar.innerHTML='';return;}
+
+  const next=exams[0];
+  const diff=new Date(next.date)-now;
+  const d=Math.floor(diff/86400000);
+  const h=Math.floor((diff%86400000)/3600000);
+  const m=Math.floor((diff%3600000)/60000);
+  const urgent=diff<3600000*24;
+  const cdLabel=d>0?`${d}d ${h}h`:h>0?`${h}h ${m}m`:`${m}m`;
+
+  bar.innerHTML=`<div style="background:${urgent?'rgba(244,63,94,.08)':'rgba(79,110,247,.06)'};border:1.5px solid ${urgent?'rgba(244,63,94,.3)':'rgba(79,110,247,.2)'};border-radius:16px;padding:12px 18px;margin-bottom:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+    <div style="font-size:26px;">📅</div>
+    <div style="flex:1;min-width:140px;">
+      <div style="font-size:12px;font-weight:800;color:${urgent?'var(--red)':'var(--acc)'};">Next Exam — ${escH(next.title)}</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:2px;">${new Date(next.date).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})} · ${next.duration} min</div>
+    </div>
+    <div style="text-align:center;background:${urgent?'rgba(244,63,94,.12)':'rgba(79,110,247,.12)'};border-radius:12px;padding:8px 16px;">
+      <div style="font-size:22px;font-weight:900;font-family:var(--mono);color:${urgent?'var(--red)':'var(--acc)'};">${cdLabel}</div>
+      <div style="font-size:9px;color:var(--text3);text-transform:uppercase;font-weight:700;">${d>0?'Days Left':'Hours Left'}</div>
+    </div>
+    ${exams.length>1?`<div style="font-size:10px;color:var(--text3);">+${exams.length-1} more exam${exams.length-1>1?'s':''} scheduled</div>`:''}
+  </div>`;
+}
+
 /* ── TOAST ── */
 function showToast(msg,type='success',duration=2400){
   let t=document.getElementById('ts-toast');
@@ -1534,6 +1777,8 @@ function renderHome(){
       </div>
       <button class="btn btn-prim" style="width:100%;justify-content:center;padding:13px;font-size:14px;" onclick="openAddSubjModal()">➕ Select Subjects to Get Started</button>
     </div></div>`;
+    renderAdminNotices();
+    renderExamCountdown();
     return;
   }
   const prof=getProfile(),allAtt=getAllAtt();
@@ -1611,6 +1856,7 @@ H+=`<div style="margin-bottom:14px;">
   H+=`<div class="xp-card"><div class="xp-top"><div class="xp-level-pill">${xpInfo.icon} Level ${xpInfo.level} · ${xpInfo.name}</div><div style="font-size:11px;color:var(--text3);">${xpInfo.nextName?`<span style="font-weight:700;color:var(--acc)">${xpInfo.nextMin-xpInfo.xp} XP</span> to ${XP_LEVELS[xpInfo.level]?.icon} ${xpInfo.nextName}`:'<span style="color:var(--orange);font-weight:800;">⚡ MAX LEVEL!</span>'}</div></div>
   <div class="xp-track"><div class="xp-fill" id="xp-fill-bar" style="width:0%"></div></div>
   <div class="xp-nums"><span>${xpInfo.xp} XP</span><span>${xpInfo.progress.toFixed(0)}% to next level</span></div></div>`;
+  H+=buildAdminNoticesHTML();
   H+=`<div class="sec-hdr"><div class="sec-title">⚡ Quick Actions</div></div>
   <div class="quick-links" style="margin-bottom:20px;">
     <div class="ql-item" onclick="goPage('scoreboard')"><div class="ql-icon">📊</div><div class="ql-name">Scoreboard</div><div class="ql-desc">Stats & charts</div></div>
@@ -2805,6 +3051,14 @@ function renderSettings(){
       <button class="btn btn-ghost" onclick="testConnSettings()">🧪 Test Connection</button>
     </div>
     <div id="conn-status" style="margin-top:9px;font-size:12px;"></div>
+  </div>
+
+  <!-- BROADCAST CODE -->
+  <div class="card card-p" style="margin-bottom:14px;">
+    <div class="sec-hdr"><div class="sec-title">📡 Apply Broadcast Code</div></div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:10px;">Paste the code shared by your admin to sync notices, exam schedules & rewards instantly.</div>
+    <textarea id="bc-input" style="width:100%;background:var(--card2);border:1.5px solid var(--border);border-radius:11px;padding:9px 12px;font-size:11px;color:var(--text);font-family:var(--mono);outline:none;resize:vertical;min-height:72px;margin-bottom:9px;" placeholder="Paste broadcast code here…"></textarea>
+    <button class="btn btn-prim" onclick="applyBroadcastCode(document.getElementById('bc-input').value);document.getElementById('bc-input').value='';">📡 Apply Code</button>
   </div>
 
   <!-- IMPORT EXPORT -->
