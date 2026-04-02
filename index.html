@@ -1,3 +1,13 @@
+
+
+
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -4097,7 +4107,22 @@ function markSynced(keys){
       const r=lR(sId,ch.id);if(!r)return;
       const key=`${sId}_${ch.id}_${r.date}`;
       if(synced[key])return; // skip already synced
-      results.push({key,name:uname,subject:sId,chapter:ch.id,score:r.score,maxScore:r.maxScore,percentage:r.percentage,correct:r.correct||0,wrong:r.incorrect||0,skipped:r.unanswered||0,timeTaken:r.timeTaken||0,accuracy:r.accuracy||0,date:r.date||new Date().toISOString()});
+      results.push({
+  key,
+  studentId: getStudentID()||'',  // ADD THIS
+  name:uname,
+  subject:sId,
+  chapter:ch.id,
+  score:r.score,
+  maxScore:r.maxScore,
+  percentage:r.percentage,
+  correct:r.correct||0,
+  wrong:r.incorrect||0,
+  skipped:r.unanswered||0,
+  timeTaken:r.timeTaken||0,
+  accuracy:r.accuracy||0,
+  date:r.date||new Date().toISOString()
+});
     });
   });
   if(!results.length)return{success:true,ok:0,fail:0,total:0,upToDate:true};
