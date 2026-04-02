@@ -1,12 +1,3 @@
-
-
-
-
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -618,15 +609,34 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
       <div class="ob-prog-dot" id="ob-dot-2"></div>
       <div class="ob-prog-dot" id="ob-dot-3"></div>
     </div>
-    <div class="ob-step active" id="ob-step-1">
-      <div class="ob-icon">⚡</div>
-      <div class="ob-title">Welcome to Thunderstudy!</div>
-      <div class="ob-sub">Let's set up your CUET preparation dashboard in 3 quick steps.</div>
-      <div class="form-row"><div class="form-lbl">Your Name</div><input class="form-inp" id="ob-name" placeholder="Enter your full name" oninput="obValidate1()"></div>
-      <div class="form-row"><div class="form-lbl">Target College</div><input class="form-inp" id="ob-college" placeholder="e.g. Delhi University, Christ, Jamia..."></div>
-      <div class="form-row"><div class="form-lbl">Class / Batch</div><input class="form-inp" id="ob-class" placeholder="e.g. Class 12, 2025–26"></div>
-      <button class="ob-btn ob-btn-prim" id="ob-next-1" onclick="obNext(2)" disabled>Continue →</button>
+    <!-- REPLACE existing ob-step-1 div with this: -->
+<div class="ob-step active" id="ob-step-1">
+  <div class="ob-icon">⚡</div>
+  <div class="ob-title">Welcome to Thunderstudy!</div>
+  <div class="ob-sub">Let's set up your CUET preparation dashboard in 3 quick steps.</div>
+  <div class="form-row"><div class="form-lbl">Your Name</div><input class="form-inp" id="ob-name" placeholder="Enter your full name" oninput="obValidate1()"></div>
+  <div class="form-row"><div class="form-lbl">Target College</div><input class="form-inp" id="ob-college" placeholder="e.g. Delhi University, Christ, Jamia..."></div>
+  <div class="form-row"><div class="form-lbl">Stream / Board</div>
+    <select class="form-inp" id="ob-class">
+      <option value="">Select your stream</option>
+      <option value="Commerce - Class 12">Commerce - Class 12</option>
+      <option value="Science - Class 12">Science - Class 12</option>
+      <option value="Humanities - Class 12">Humanities - Class 12</option>
+      <option value="Commerce - Dropper">Commerce - Dropper</option>
+      <option value="Science - Dropper">Science - Dropper</option>
+      <option value="Humanities - Dropper">Humanities - Dropper</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <div class="form-lbl">Student ID</div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <input class="form-inp" id="ob-sid" placeholder="Generate your ID →" readonly style="font-family:var(--mono);font-size:16px;font-weight:800;color:var(--acc);flex:1;cursor:default;">
+      <button onclick="generateStudentID()" style="background:linear-gradient(135deg,#4f6ef7,#7c3aed);color:#fff;border:none;border-radius:11px;padding:10px 16px;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--fn);white-space:nowrap;">🎲 Generate ID</button>
     </div>
+    <div style="font-size:10px;color:var(--text3);margin-top:4px;">Your unique 5-digit Student ID (00000–99999). Click Generate to get one.</div>
+  </div>
+  <button class="ob-btn ob-btn-prim" id="ob-next-1" onclick="obNext(2)" disabled>Continue →</button>
+</div>
     <div class="ob-step" id="ob-step-2">
       <div class="ob-icon">📚</div>
       <div class="ob-title">Pick Your Subjects</div>
@@ -1926,6 +1936,10 @@ H+=`<div style="margin-bottom:14px;">
   setTimeout(()=>calcTarget(),150);
   document.getElementById('home-content').innerHTML=H;
   // Fetch StudentID from leaderboard
+const localSID = getStudentID();
+const sidEl = document.getElementById('hero-sid');
+if(sidEl && localSID) sidEl.textContent = localSID;
+
 fetch(GS_URL+'?action=getAll',{method:'GET',redirect:'follow'})
   .then(r=>r.text()).then(text=>{
     const clean=text.replace(/^\)\]\}'\s*/,'').trim();
@@ -1934,7 +1948,7 @@ fetch(GS_URL+'?action=getAll',{method:'GET',redirect:'follow'})
       const myName=(getProfile().name||'').trim().toLowerCase();
       const myRow=data.find(r=>String(r[2]||'').trim().toLowerCase()===myName);
       const sid=document.getElementById('hero-sid');
-      if(sid&&myRow)sid.textContent='#'+myRow[1];
+      if(sid&&myRow&&myRow[1]) sid.textContent=myRow[1];
     }
   }).catch(()=>{});
   setTimeout(()=>{
@@ -2672,7 +2686,22 @@ function refreshLb(){LB_DATA=null;renderRank();}
 function renderLbView(data){
   if(!data||!Array.isArray(data)||!data.length){document.getElementById('rank-inner').innerHTML=`<div class="card card-p" style="text-align:center;padding:36px;color:var(--text3);">No class data yet.<br><br><button class="btn btn-prim" onclick="testAndSyncToSheet()">📤 Sync My Results</button></div>`;return;}
   
-  const rows=data.map(r=>({studentId:r[1]||'',name:r[2]||'Unknown',subject:r[3]||'',chapter:r[4]||'',score:parseFloat(r[5])||0,maxScore:parseFloat(r[6])||0,percentage:parseFloat(r[7])||0,timestamp:r[0]||'',date:r[13]||r[0]||''})).filter(r=>r.name&&r.name!=='Name'&&r.name!=='TEST');
+const rows=data.map(r=>({
+  studentId:r[1]||'',
+  name:r[2]||'Unknown',
+  subject:r[3]||'',
+  chapter:r[4]||'',
+  score:parseFloat(r[5])||0,
+  maxScore:parseFloat(r[6])||0,
+  percentage:parseFloat(r[7])||0,
+  correct:parseFloat(r[8])||0,
+  wrong:parseFloat(r[9])||0,
+  skipped:parseFloat(r[10])||0,
+  timeTaken:parseFloat(r[11])||0,
+  accuracy:parseFloat(r[12])||0,
+  timestamp:r[0]||'',
+  date:r[13]||r[0]||''
+})).filter(r=>r.name&&r.name!=='Name'&&r.name!=='TEST');
   if(!rows.length){document.getElementById('rank-inner').innerHTML=`<div class="card card-p" style="text-align:center;padding:36px;">No valid data found.</div>`;return;}
 
   // Build student aggregates (all-time)
@@ -4120,6 +4149,32 @@ function shouldShowOnboarding(){
   return false;
 }
 
+// Student ID system
+function generateStudentID(){
+  // Get already used IDs from sheet if possible, otherwise just pick random
+  const existing = localStorage.getItem('ts_student_id');
+  if(existing){
+    if(!confirm('You already have Student ID: '+existing+'. Generate a new one?')) return;
+  }
+  // Generate sequential-style random 5-digit ID
+  const used = JSON.parse(localStorage.getItem('ts_used_ids')||'[]');
+  let newId;
+  let attempts = 0;
+  do {
+    newId = String(Math.floor(Math.random()*100000)).padStart(5,'0');
+    attempts++;
+  } while(used.includes(newId) && attempts < 1000);
+  
+  localStorage.setItem('ts_student_id','TS'+newId);
+  document.getElementById('ob-sid').value = 'TS'+newId;
+  document.getElementById('ob-sid').style.color = 'var(--green)';
+  obValidate1();
+}
+
+function getStudentID(){
+  return localStorage.getItem('ts_student_id') || null;
+}
+
 function startOnboarding(){
   _obSelSubjs=[];_obTargetMarks=850;
   const grid=document.getElementById('ob-subj-grid');
@@ -4138,8 +4193,9 @@ function startOnboarding(){
 }
 
 function obValidate1(){
-  const ok=document.getElementById('ob-name').value.trim().length>=2;
-  document.getElementById('ob-next-1').disabled=!ok;
+  const nameOk = document.getElementById('ob-name').value.trim().length >= 2;
+  const sidOk = document.getElementById('ob-sid') && document.getElementById('ob-sid').value.trim().length >= 2;
+  document.getElementById('ob-next-1').disabled = !(nameOk && sidOk);
 }
 
 function obToggleSubj(id){
@@ -4220,17 +4276,18 @@ function obFinish(){
   const name=document.getElementById('ob-name').value.trim();
   const college=document.getElementById('ob-college').value.trim();
   const cls=document.getElementById('ob-class').value.trim();
+  const sid=document.getElementById('ob-sid')?.value.trim()||'';
   const total=_obSelSubjs.length*250;
   const p={name,college,class:cls,goals:{},cuetTarget:{totalMarks:total,targetMarks:_obTargetMarks,subjectCount:_obSelSubjs.length}};
   localStorage.setItem('ts_profile',JSON.stringify(p));
-  if(name)localStorage.setItem('cbtUserName',name);
+  if(name) localStorage.setItem('cbtUserName',name);
+  if(sid) localStorage.setItem('ts_student_id',sid);
   saveSS(_obSelSubjs);
   localStorage.setItem('ts_ob_done','1');
   document.getElementById('ob-overlay').classList.remove('open');
   renderHome();
-  // Offer sync after onboarding
   setTimeout(()=>{
-    if(!localStorage.getItem('ts_sync_asked')&&getAllAtt().length>0)openModal('sync-welcome-modal');
+    if(!localStorage.getItem('ts_sync_asked')&&getAllAtt().length>0) openModal('sync-welcome-modal');
   },1000);
 }
 
@@ -4330,7 +4387,31 @@ document.querySelector('.main').addEventListener('scroll',function(){
     startOnboarding();
     return;
   }
+  // Auto-apply broadcast if admin is on same device/domain
+const autoBc = localStorage.getItem('ts_admin_broadcast_auto');
+if(autoBc){
+  try{
+    const decoded = JSON.parse(autoBc);
+    if(decoded.notices) localStorage.setItem('ts_admin_notices', JSON.stringify(decoded.notices));
+    if(decoded.exams) localStorage.setItem('ts_admin_exams', JSON.stringify(decoded.exams));
+    if(decoded.rewards){
+      const existing = JSON.parse(localStorage.getItem('ts_admin_rewards')||'[]');
+      const merged = [...decoded.rewards];
+      existing.forEach(e=>{if(e.claimed&&!merged.find(m=>m.id===e.id))merged.push(e);});
+      localStorage.setItem('ts_admin_rewards', JSON.stringify(merged));
+    }
+  }catch(e){}
+}
   renderHome();
+  
+  // Show Student ID popup for existing users who don't have one
+setTimeout(()=>{
+  const sid = getStudentID();
+  const prof = getProfile();
+  if(!sid && prof.name && localStorage.getItem('ts_ob_done')){
+    showStudentIDPopup();
+  }
+}, 1200);
 
   // Auto-sync in background on every load
   const allAtt=getAllAtt();
@@ -4484,6 +4565,44 @@ function openGiftProgressModal(){
   modal.innerHTML=bodyH;
   document.body.appendChild(modal);
   modal.addEventListener('click',e=>{if(e.target===modal)modal.remove();});
+}
+function showStudentIDPopup(){
+  const existing = document.getElementById('sid-popup-modal');
+  if(existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'sid-popup-modal';
+  modal.style.cssText = `position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9997;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:16px;`;
+  modal.innerHTML = `
+  <div style="background:var(--card);border-radius:24px;padding:28px;max-width:400px;width:100%;border:1px solid var(--border);animation:mIn .35s cubic-bezier(.34,1.56,.64,1);text-align:center;">
+    <div style="font-size:44px;margin-bottom:10px;">🪪</div>
+    <div style="font-size:18px;font-weight:900;margin-bottom:6px;">Get Your Student ID</div>
+    <div style="font-size:13px;color:var(--text3);line-height:1.7;margin-bottom:18px;">You don't have a Student ID yet! Generate your unique 5-digit Thunderstudy ID. It appears on the leaderboard and your profile.</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;">
+      <input id="sid-popup-inp" readonly placeholder="Click Generate →" style="flex:1;background:var(--card2);border:1.5px solid var(--border);border-radius:11px;padding:10px 13px;font-size:18px;font-weight:900;font-family:var(--mono);color:var(--acc);outline:none;text-align:center;">
+    </div>
+    <button onclick="generateIDFromPopup()" style="background:linear-gradient(135deg,#4f6ef7,#7c3aed);color:#fff;border:none;border-radius:14px;padding:11px 24px;font-size:13px;font-weight:800;cursor:pointer;font-family:var(--fn);width:100%;margin-bottom:9px;">🎲 Generate My Student ID</button>
+    <button id="sid-save-btn" onclick="saveIDFromPopup()" disabled style="background:var(--green);color:#fff;border:none;border-radius:14px;padding:11px 24px;font-size:13px;font-weight:800;cursor:pointer;font-family:var(--fn);width:100%;margin-bottom:9px;opacity:.4;">✅ Save This ID</button>
+    <button onclick="document.getElementById('sid-popup-modal').remove()" style="background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;font-family:var(--fn);">Skip for now</button>
+  </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e=>{ if(e.target===modal) modal.remove(); });
+}
+
+function generateIDFromPopup(){
+  const newId = 'TS' + String(Math.floor(Math.random()*100000)).padStart(5,'0');
+  const inp = document.getElementById('sid-popup-inp');
+  if(inp){ inp.value = newId; inp.style.color = 'var(--green)'; }
+  const btn = document.getElementById('sid-save-btn');
+  if(btn){ btn.disabled = false; btn.style.opacity = '1'; }
+}
+
+function saveIDFromPopup(){
+  const inp = document.getElementById('sid-popup-inp');
+  if(!inp || !inp.value) return;
+  localStorage.setItem('ts_student_id', inp.value);
+  showToast('🪪 Student ID saved: '+inp.value, 'success', 3000);
+  document.getElementById('sid-popup-modal').remove();
+  renderHome(); // refresh to show ID in hero
 }
 </script>
 </body>
