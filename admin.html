@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>⚡ Thunderstudy Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0b0d16;--sidebar:#0f1120;--card:#141726;--card2:#1a1e31;
+  --border:#232640;--text:#e6eaff;--text2:#8892bb;--text3:#4a5070;
+  --acc:#4f6ef7;--acc2:#7c3aed;--green:#10b981;--red:#f43f5e;
+  --yellow:#f59e0b;--orange:#f97316;--pink:#ec4899;--teal:#06b6d4;
+  --fn:'Plus Jakarta Sans',sans-serif;--mono:'DM Mono',monospace;
+  --r:14px;--r2:20px;--sh:0 4px 28px rgba(0,0,0,.5);--sh2:0 10px 48px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:var(--fn);}
+
+/* ── LOGIN ── */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse 60% 50% at 20% 40%,rgba(79,110,247,.18) 0%,transparent 60%),
+  radial-gradient(ellipse 50% 40% at 80% 70%,rgba(124,58,237,.14) 0%,transparent 55%),var(--bg);}
+.lc{background:var(--card);border:1px solid var(--border);border-radius:26px;padding:44px 38px;max-width:400px;width:100%;box-shadow:0 28px 90px rgba(0,0,0,.6);animation:lIn .45s cubic-bezier(.34,1.56,.64,1);}
+@keyframes lIn{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:none}}
+.llogo{width:68px;height:68px;background:linear-gradient(135deg,#ef4444,#f97316);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 20px;box-shadow:0 8px 32px rgba(239,68,68,.4);}
+.ltitle{font-size:22px;font-weight:900;text-align:center;margin-bottom:4px;letter-spacing:-.4px;}
+.lsub{font-size:12px;color:var(--text3);text-align:center;margin-bottom:22px;}
+.lbadge{display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(244,63,94,.1);border:1.5px solid rgba(244,63,94,.25);border-radius:20px;padding:5px 14px;font-size:10px;font-weight:800;color:var(--red);margin-bottom:18px;text-transform:uppercase;letter-spacing:.8px;}
+.linp{width:100%;background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:11px 14px;font-size:13px;color:var(--text);font-family:var(--fn);outline:none;margin-bottom:11px;transition:border-color .2s;}
+.linp:focus{border-color:var(--acc);}
+.linp::placeholder{color:var(--text3);}
+.irow{position:relative;}
+.eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;background:none;border:none;color:var(--text3);font-size:15px;}
+.lbtn{width:100%;padding:13px;border-radius:14px;font-size:14px;font-weight:800;border:none;cursor:pointer;font-family:var(--fn);background:linear-gradient(135deg,#ef4444,#f97316);color:#fff;box-shadow:0 6px 22px rgba(239,68,68,.35);transition:all .2s;margin-top:4px;}
+.lbtn:hover{transform:translateY(-1px);filter:brightness(1.08);}
+.lbtn:disabled{opacity:.55;transform:none;cursor:not-allowed;}
+.lerr{font-size:12px;color:var(--red);text-align:center;margin-top:9px;min-height:18px;font-weight:600;}
+.rem-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.rem-row input{accent-color:var(--acc);width:14px;height:14px;}
+.rem-row label{font-size:11px;color:var(--text2);cursor:pointer;}
+
+/* ── ADMIN LAYOUT ── */
+#admin-panel{display:none;height:100vh;flex-direction:row;}
+.sidebar{width:220px;height:100vh;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;}
+.sb-logo{padding:20px 16px 12px;display:flex;align-items:center;gap:10px;}
+.sb-logo-icon{width:34px;height:34px;background:linear-gradient(135deg,#ef4444,#f97316);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.sb-logo-text{font-size:13px;font-weight:900;}.sb-logo-text span{color:#ef4444;}
+.sb-nav{flex:1;overflow-y:auto;padding:0 9px 9px;}.sb-nav::-webkit-scrollbar{width:0;}
+.sb-lbl{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);padding:0 9px;margin:10px 0 4px;}
+.ni{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:11px;cursor:pointer;transition:all .2s;margin-bottom:2px;color:var(--text2);font-size:12px;font-weight:600;position:relative;}
+.ni:hover{background:var(--card2);color:var(--text);}
+.ni.active{background:linear-gradient(135deg,rgba(239,68,68,.15),rgba(249,115,22,.08));color:#ef4444;}
+.ni.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:18px;background:linear-gradient(180deg,#ef4444,#f97316);border-radius:0 3px 3px 0;}
+.ni-ic{font-size:15px;width:19px;text-align:center;flex-shrink:0;}
+.sb-bottom{padding:11px 14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:9px;}
+.sb-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#ef4444,#f97316);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0;}
+.sb-pn{font-size:12px;font-weight:800;}.sb-pr{font-size:9px;color:var(--text3);}
+.sb-out{margin-left:auto;font-size:14px;cursor:pointer;color:var(--text3);border:none;background:none;transition:color .2s;padding:0;}
+.sb-out:hover{color:var(--red);}
+
+/* ── MAIN ── */
+.main-area{flex:1;height:100vh;overflow-y:auto;overflow-x:hidden;background:var(--bg);}
+.main-area::-webkit-scrollbar{width:5px;}.main-area::-webkit-scrollbar-track{background:transparent;}.main-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:6px;}
+.page{display:none;padding:26px;animation:pIn .25s ease;}
+.page.active{display:block;}
+@keyframes pIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;gap:14px;flex-wrap:wrap;}
+.pt{font-size:21px;font-weight:900;letter-spacing:-.4px;}.ps{font-size:11px;color:var(--text3);margin-top:3px;}
+.tbr{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+
+/* ── CARDS ── */
+.card{background:var(--card);border-radius:var(--r2);border:1px solid var(--border);}
+.cp{padding:16px 18px;}
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:11px;margin-bottom:18px;}
+.sc{background:var(--card);border-radius:var(--r2);border:1px solid var(--border);padding:15px;transition:all .2s;}
+.sc:hover{transform:translateY(-2px);box-shadow:var(--sh);}
+.si{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:9px;}
+.sv{font-size:21px;font-weight:900;font-family:var(--mono);}.sl{font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+
+/* ── FORMS ── */
+.fr{margin-bottom:11px;}.fl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.fi{width:100%;background:var(--card2);border:1.5px solid var(--border);border-radius:11px;padding:9px 12px;font-size:12px;color:var(--text);font-family:var(--fn);outline:none;transition:border-color .2s;}
+.fi:focus{border-color:var(--acc);}.fi::placeholder{color:var(--text3);}
+select.fi option{background:var(--card2);} textarea.fi{resize:vertical;min-height:75px;}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 15px;border-radius:24px;font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:var(--fn);transition:all .18s;text-decoration:none;}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.1);}
+.bp{background:linear-gradient(135deg,#ef4444,#f97316);color:#fff;box-shadow:0 4px 14px rgba(239,68,68,.3);}
+.bg{background:var(--card2);border:1.5px solid var(--border);color:var(--text2);}
+.bg:hover{color:var(--text);border-color:var(--acc);}
+.br{background:rgba(244,63,94,.12);border:1.5px solid rgba(244,63,94,.28);color:var(--red);}
+.br:hover{background:rgba(244,63,94,.22);}
+.bgn{background:rgba(16,185,129,.12);border:1.5px solid rgba(16,185,129,.28);color:var(--green);}
+.by{background:rgba(245,158,11,.12);border:1.5px solid rgba(245,158,11,.28);color:var(--yellow);}
+.bt{background:rgba(6,182,212,.12);border:1.5px solid rgba(6,182,212,.28);color:var(--teal);}
+
+/* ── NOTICE CARDS ── */
+.nc{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:13px 15px;margin-bottom:9px;transition:all .2s;}
+.nc:hover{box-shadow:var(--sh);}.nc.info{border-left:3px solid var(--acc);}.nc.warning{border-left:3px solid var(--yellow);}
+.nc.urgent{border-left:3px solid var(--red);}.nc.exam{border-left:3px solid var(--pink);}.nc.motivation{border-left:3px solid var(--green);}
+.ntb{font-size:8px;font-weight:800;padding:2px 8px;border-radius:16px;text-transform:uppercase;letter-spacing:.5px;}
+
+/* ── EXAM CARDS ── */
+.ec{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:13px 15px;margin-bottom:9px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;transition:all .2s;}
+.ec:hover{border-color:rgba(79,110,247,.3);}
+.ecd{background:linear-gradient(135deg,rgba(79,110,247,.15),rgba(124,58,237,.1));border:1.5px solid rgba(79,110,247,.2);border-radius:11px;padding:7px 11px;text-align:center;min-width:66px;flex-shrink:0;}
+.cdn{font-size:18px;font-weight:900;font-family:var(--mono);color:var(--acc);}.cdl{font-size:7px;color:var(--text3);font-weight:700;text-transform:uppercase;margin-top:1px;}
+
+/* ── REWARD CARDS ── */
+.rc{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:11px 13px;margin-bottom:8px;display:flex;align-items:center;gap:11px;}
+.rc.claimed{opacity:.45;}
+
+/* ── GRID ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+@media(max-width:1000px){.g2,.g3{grid-template-columns:1fr;}}
+
+/* ── SEC HEADER ── */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.st{font-size:13px;font-weight:800;}.sl2{font-size:11px;color:var(--acc);font-weight:700;cursor:pointer;}
+
+/* ── TABLE ── */
+.dt{width:100%;border-collapse:collapse;font-size:11px;}
+.dt th{background:var(--card2);color:var(--text3);font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:8px 11px;text-align:left;border-bottom:1px solid var(--border);}
+.dt td{padding:8px 11px;border-bottom:1px solid var(--border);color:var(--text);}
+.dt tr:hover td{background:rgba(79,110,247,.04);}.dt tr:last-child td{border-bottom:none;}
+
+/* ── PROG ── */
+.pt2{flex:1;height:5px;background:var(--card2);border-radius:8px;overflow:hidden;}
+.pf{height:100%;border-radius:8px;transition:width 1s ease;}
+
+/* ── BROADCAST ── */
+.bbc{background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-family:var(--mono);font-size:10px;color:var(--text3);word-break:break-all;max-height:90px;overflow-y:auto;margin-bottom:10px;line-height:1.5;}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:22px;right:22px;padding:10px 20px;border-radius:24px;font-size:12px;font-weight:700;font-family:var(--fn);z-index:99999;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;box-shadow:0 6px 24px rgba(0,0,0,.4);}
+#toast.show{opacity:1;transform:translateY(0);}
+
+/* ── SESSION BAR ── */
+.sesbar{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.22);border-radius:12px;padding:9px 13px;margin-bottom:16px;display:flex;align-items:center;gap:9px;}
+.sesdot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:blink 1.4s ease infinite;flex-shrink:0;}
+@keyframes blink{0%,100%{opacity:.4}50%{opacity:1}}
+
+/* ── SPINNER ── */
+.spin{display:inline-block;width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--acc);border-radius:50%;animation:sp .65s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ── COLORS ── */
+.ca{color:var(--acc);}.cg{color:var(--green);}.cr{color:var(--red);}.cy{color:var(--yellow);}.ct{color:var(--text3);}
+.ba{background:rgba(79,110,247,.12);}.bgg{background:rgba(16,185,129,.12);}.brr{background:rgba(244,63,94,.12);}.by2{background:rgba(245,158,11,.12);}.bp2{background:rgba(236,72,153,.12);}.bte{background:rgba(6,182,212,.12);}
+
+/* ── QUICK ACTION CARD ── */
+.qa{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r2);padding:15px;cursor:pointer;transition:all .2s;text-align:left;}
+.qa:hover{transform:translateY(-2px);box-shadow:var(--sh);}
+.qa-ic{font-size:26px;margin-bottom:8px;}
+.qa-name{font-size:12px;font-weight:800;margin-bottom:3px;}
+.qa-sub{font-size:10px;color:var(--text3);}
+
+/* ── ACTIVITY DOT ── */
+.adot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px;}
+.adot.a{background:var(--green);}.adot.i{background:var(--text3);}
+
+/* ── CHART BOX ── */
+.cb{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:16px;}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:36px 20px;}
+.ei{font-size:38px;margin-bottom:9px;}.et{font-size:14px;font-weight:800;margin-bottom:4px;}.es{font-size:11px;color:var(--text3);}
+</style>
+</head>
+<body>
+
+<!-- ══════════ LOGIN ══════════ -->
+<div id="login-screen">
+  <div class="lc">
+    <div class="llogo">🔐</div>
+    <div class="ltitle">Admin Control Panel</div>
+    <div class="lsub">Thunderstudy · Restricted Access Only</div>
+    <div class="lbadge">🔴 Unauthorized access is strictly prohibited</div>
+    <div class="fr"><div class="fl">Admin ID</div>
+      <input class="linp" id="l-id" type="text" placeholder="Enter admin ID" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="fr"><div class="fl">Password</div>
+      <div class="irow">
+        <input class="linp" id="l-pw" type="password" placeholder="Enter password" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:40px;margin-bottom:0;">
+        <button class="eye" id="eyebtn" onclick="toggleEye()">👁️</button>
+      </div>
+    </div>
+    <div class="rem-row" style="margin-top:9px;"><input type="checkbox" id="remme"><label for="remme">Remember me for 24 hours</label></div>
+    <button class="lbtn" id="lbtn" onclick="doLogin()">🔐 Access Admin Panel</button>
+    <div class="lerr" id="lerr"></div>
+    <div style="font-size:9px;color:var(--text3);text-align:center;margin-top:14px;">All logins are logged · v2.0 · Thunderstudy Admin</div>
+  </div>
+</div>
+
+<!-- ══════════ ADMIN PANEL ══════════ -->
+<div id="admin-panel" style="display:none;height:100vh;flex-direction:row;">
+  <nav class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-icon">⚡</div>
+      <div><div class="sb-logo-text">Thunder<span>Admin</span></div><div style="font-size:8px;color:var(--text3);margin-top:1px;">Control Panel v2.0</div></div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-lbl">Overview</div>
+      <div class="ni active" onclick="go('overview')"><span class="ni-ic">🏠</span>Dashboard</div>
+      <div class="sb-lbl">Manage</div>
+      <div class="ni" onclick="go('notices')"><span class="ni-ic">📢</span>Notice Board</div>
+      <div class="ni" onclick="go('exams')"><span class="ni-ic">📅</span>Exam Schedule</div>
+      <div class="ni" onclick="go('rewards')"><span class="ni-ic">⚡</span>Reward Students</div>
+      <div class="sb-lbl">Data</div>
+      <div class="ni" onclick="go('analytics')"><span class="ni-ic">📊</span>Class Analytics</div>
+      <div class="ni" onclick="go('reports')"><span class="ni-ic">📥</span>Reports & CSV</div>
+      <div class="sb-lbl">System</div>
+      <div class="ni" onclick="go('broadcast')"><span class="ni-ic">📡</span>Broadcast Code</div>
+      <div class="ni" onclick="go('logs')"><span class="ni-ic">🔍</span>Access Logs</div>
+    </div>
+    <div class="sb-bottom">
+      <div class="sb-av">A</div>
+      <div><div class="sb-pn">Admin</div><div class="sb-pr">Super Admin</div></div>
+      <button class="sb-out" onclick="doLogout()" title="Logout">↩️</button>
+    </div>
+  </nav>
+
+  <div class="main-area">
+    <!-- OVERVIEW -->
+    <div class="page active" id="page-overview">
+      <div class="topbar">
+        <div><div class="pt">🏠 Admin Dashboard</div><div class="ps" id="ovtime">Loading…</div></div>
+        <div class="tbr"><button class="btn bg" onclick="refreshAll()">↺ Refresh</button><button class="btn bp" onclick="go('notices')">📢 Post Notice</button></div>
+      </div>
+      <div id="ov-content"><div style="text-align:center;padding:40px;"><span class="spin"></span></div></div>
+    </div>
+
+    <!-- NOTICES -->
+    <div class="page" id="page-notices">
+      <div class="topbar"><div><div class="pt">📢 Notice Board</div><div class="ps">Post announcements to student dashboards</div></div></div>
+      <div class="g2" style="align-items:start;">
+        <div class="card cp">
+          <div class="sh"><div class="st">➕ New Notice</div></div>
+          <div class="fr"><div class="fl">Type</div>
+            <select class="fi" id="n-type">
+              <option value="info">ℹ️ Info</option>
+              <option value="warning">⚠️ Warning</option>
+              <option value="urgent">🚨 Urgent</option>
+              <option value="exam">📝 Exam Alert</option>
+              <option value="motivation">💪 Motivation</option>
+            </select>
+          </div>
+          <div class="fr"><div class="fl">Title</div><input class="fi" id="n-title" placeholder="Notice headline…"></div>
+          <div class="fr"><div class="fl">Message</div><textarea class="fi" id="n-msg" placeholder="Full announcement text…" rows="4"></textarea></div>
+          <div class="fr"><div class="fl">Expiry Date (optional)</div><input class="fi" id="n-exp" type="date"></div>
+          <div class="fr"><div class="fl">Show as Popup on Dashboard?</div>
+            <select class="fi" id="n-popup"><option value="0">No — Notice bar only</option><option value="1">Yes — Popup on load</option></select>
+          </div>
+          <button class="btn bp" onclick="postNotice()" style="width:100%;justify-content:center;padding:11px;font-size:12px;">📢 Post Notice</button>
+        </div>
+        <div>
+          <div class="sh"><div class="st">📋 Posted Notices</div><span class="sl2" onclick="clearAllNotices()">Clear All</span></div>
+          <div id="notices-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXAMS -->
+    <div class="page" id="page-exams">
+      <div class="topbar"><div><div class="pt">📅 Exam Schedule</div><div class="ps">Upcoming test dates — countdowns appear on student dashboards</div></div></div>
+      <div class="g2" style="align-items:start;">
+        <div class="card cp">
+          <div class="sh"><div class="st">➕ Schedule Exam</div></div>
+          <div class="fr"><div class="fl">Subject</div>
+            <select class="fi" id="e-subj">
+              <option value="all">📚 All Subjects (General)</option>
+              <option value="bst">📊 Business Studies</option>
+              <option value="eco">📈 Economics</option>
+              <option value="acc">📒 Accountancy</option>
+              <option value="eng">📝 English</option>
+              <option value="gat">🧠 General Aptitude</option>
+              <option value="phy">⚛️ Physics</option>
+              <option value="che">🧪 Chemistry</option>
+              <option value="bio">🔬 Biology</option>
+              <option value="mat">📐 Mathematics</option>
+              <option value="his">📜 History</option>
+              <option value="geo">🌏 Geography</option>
+              <option value="pol">🏛️ Political Science</option>
+              <option value="psy">🧠 Psychology</option>
+              <option value="pe">🏃 Physical Education</option>
+            </select>
+          </div>
+          <div class="fr"><div class="fl">Exam Title</div><input class="fi" id="e-title" placeholder="e.g. Full Mock 3, PYQ 2024…"></div>
+          <div class="fr"><div class="fl">Date & Time</div><input class="fi" id="e-date" type="datetime-local"></div>
+          <div class="fr"><div class="fl">Duration (minutes)</div><input class="fi" id="e-dur" type="number" value="60" min="1"></div>
+          <div class="fr"><div class="fl">Instructions (optional)</div><textarea class="fi" id="e-note" placeholder="Special instructions…" rows="2"></textarea></div>
+          <button class="btn bp" onclick="addExam()" style="width:100%;justify-content:center;padding:11px;font-size:12px;">📅 Schedule Exam</button>
+        </div>
+        <div>
+          <div class="sh"><div class="st">📋 Scheduled Exams</div><span class="sl2" onclick="clearAllExams()">Clear All</span></div>
+          <div id="exams-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REWARDS -->
+    <div class="page" id="page-rewards">
+      <div class="topbar"><div><div class="pt">⚡ Reward Students</div><div class="ps">Award bonus XP or HP — students claim on dashboard</div></div></div>
+      <div class="g2" style="align-items:start;">
+        <div class="card cp">
+          <div class="sh"><div class="st">🎁 Give Reward</div></div>
+          <div class="fr"><div class="fl">Student Name (exact as leaderboard)</div><input class="fi" id="r-name" placeholder="Full name…"></div>
+          <div class="fr"><div class="fl">Reward Type</div>
+            <select class="fi" id="r-type"><option value="xp">⚡ XP — Experience Points</option><option value="hp">💜 HP — Honor Points</option></select>
+          </div>
+          <div class="fr"><div class="fl">Amount</div><input class="fi" id="r-amt" type="number" value="50" min="1" max="9999"></div>
+          <div class="fr"><div class="fl">Reason</div><input class="fi" id="r-reason" placeholder="e.g. Best weekly score…"></div>
+          <button class="btn bp" onclick="addReward()" style="width:100%;justify-content:center;padding:11px;font-size:12px;">⚡ Award Reward</button>
+        </div>
+        <div>
+          <div class="sh"><div class="st">📋 All Rewards</div><span class="sl2" onclick="clearClaimedRewards()">Clear Claimed</span></div>
+          <div id="rewards-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div class="page" id="page-analytics">
+      <div class="topbar">
+        <div><div class="pt">📊 Class Analytics</div><div class="ps">Live data from Google Sheet</div></div>
+        <div class="tbr"><button class="btn bg" onclick="loadAnalytics(true)">↺ Refresh</button></div>
+      </div>
+      <div id="analytics-content"><div style="text-align:center;padding:40px;"><span class="spin"></span><div style="margin-top:10px;font-size:12px;color:var(--text3);">Fetching class data…</div></div></div>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="page" id="page-reports">
+      <div class="topbar">
+        <div><div class="pt">📥 Reports & CSV</div><div class="ps">Download class data in various formats</div></div>
+        <div class="tbr"><button class="btn bg" onclick="loadReports(true)">↺ Load Data</button></div>
+      </div>
+      <div id="reports-content"><div style="text-align:center;padding:40px;color:var(--text3);font-size:12px;">Click "Load Data" or navigate here to fetch reports.</div></div>
+    </div>
+
+    <!-- BROADCAST -->
+    <div class="page" id="page-broadcast">
+      <div class="topbar"><div><div class="pt">📡 Broadcast Code</div><div class="ps">Generate code → students paste in Settings → notices & rewards sync</div></div></div>
+      <div id="broadcast-content"></div>
+    </div>
+
+    <!-- LOGS -->
+    <div class="page" id="page-logs">
+      <div class="topbar">
+        <div><div class="pt">🔍 Access Logs</div><div class="ps">All admin activity stored locally</div></div>
+        <div class="tbr"><button class="btn br" onclick="clearLogs()">🗑️ Clear Logs</button></div>
+      </div>
+      <div id="logs-content"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ══════ CONFIG ══════ */
+const GS='https://script.google.com/macros/s/AKfycbxrI9TAPt1jNgDH4wiBmaPUTt69KQD8AlkB1f_PZMSi3zo8aJjw-_N-1cF8ST3u1vMZ/exec';
+const SMAP={all:'📚 All',bst:'📊 Business Studies',eco:'📈 Economics',acc:'📒 Accountancy',eng:'📝 English',gat:'🧠 General Aptitude',phy:'⚛️ Physics',che:'🧪 Chemistry',bio:'🔬 Biology',mat:'📐 Mathematics',his:'📜 History',geo:'🌏 Geography',pol:'🏛️ Political Science',psy:'🧠 Psychology',pe:'🏃 Physical Education'};
+
+/* ══════ ENCRYPTED CREDENTIALS ══════
+   Split base64 — visually meaningless without context
+   Do not share this file publicly
+═══════════════════════════════════════ */
+const _i1='bH',_i2='Vm',_i3='Znk=';              // admin id
+const _p1='THVm',_p2='Znlp',_p3='c3N1',_p4='bmdvZA=='; // password
+
+function _chk(id,pw){try{return atob(_i1+_i2+_i3)===id.trim()&&atob(_p1+_p2+_p3+_p4)===pw.trim();}catch(e){return false;}}
+
+let GSD=null,ACH={};
+
+/* ══════ AUTH ══════ */
+function toggleEye(){const i=document.getElementById('l-pw'),b=document.getElementById('eyebtn');i.type=i.type==='password'?'text':'password';b.textContent=i.type==='password'?'👁️':'🙈';}
+
+function doLogin(){
+  const id=document.getElementById('l-id').value,pw=document.getElementById('l-pw').value,rem=document.getElementById('remme').checked;
+  if(!id||!pw){document.getElementById('lerr').textContent='⚠️ Enter both ID and password.';return;}
+  const btn=document.getElementById('lbtn');btn.disabled=true;btn.textContent='⏳ Verifying…';
+  setTimeout(()=>{
+    if(_chk(id,pw)){
+      log('LOGIN',`Admin logged in${rem?' (remembered)':' (session)'}`);
+      if(rem)localStorage.setItem('_ts_adm',JSON.stringify({ts:Date.now(),exp:Date.now()+86400000}));
+      else sessionStorage.setItem('_ts_adm','1');
+      document.getElementById('login-screen').style.display='none';
+      document.getElementById('admin-panel').style.display='flex';
+      initAdmin();
+    }else{
+      document.getElementById('lerr').textContent='❌ Invalid credentials. Access denied.';
+      log('FAIL',`Failed attempt — ID:"${id}"`);
+      btn.disabled=false;btn.textContent='🔐 Access Admin Panel';
+    }
+  },850);
+}
+
+function checkSession(){
+  if(sessionStorage.getItem('_ts_adm')==='1')return true;
+  try{const s=JSON.parse(localStorage.getItem('_ts_adm')||'null');if(s&&s.exp>Date.now())return true;}catch(e){}
+  return false;
+}
+
+function doLogout(){
+  if(!confirm('Logout from Admin Panel?'))return;
+  log('LOGOUT','Admin logged out');
+  sessionStorage.removeItem('_ts_adm');localStorage.removeItem('_ts_adm');
+  location.reload();
+}
+
+/* ══════ LOG ══════ */
+function log(action,detail){
+  let logs=[];try{logs=JSON.parse(localStorage.getItem('_ts_alogs')||'[]');}catch(e){}
+  logs.unshift({action,detail,time:new Date().toISOString()});
+  if(logs.length>120)logs=logs.slice(0,120);
+  localStorage.setItem('_ts_alogs',JSON.stringify(logs));
+}
+function clearLogs(){if(!confirm('Clear all logs?'))return;localStorage.removeItem('_ts_alogs');renderLogs();toast('🗑️ Logs cleared');}
+
+/* ══════ STORAGE ══════ */
+function gN(){try{return JSON.parse(localStorage.getItem('ts_admin_notices')||'[]');}catch(e){return[];}}
+function sN(d){localStorage.setItem('ts_admin_notices',JSON.stringify(d));}
+function gE(){try{return JSON.parse(localStorage.getItem('ts_admin_exams')||'[]');}catch(e){return[];}}
+function sE(d){localStorage.setItem('ts_admin_exams',JSON.stringify(d));}
+function gR(){try{return JSON.parse(localStorage.getItem('ts_admin_rewards')||'[]');}catch(e){return[];}}
+function sR(d){localStorage.setItem('ts_admin_rewards',JSON.stringify(d));}
+
+/* ══════ INIT ══════ */
+function initAdmin(){
+  updTime();setInterval(updTime,60000);
+  renderOverview();loadAnalytics(false);
+  log('INIT','Admin panel initialized');
+}
+function updTime(){const el=document.getElementById('ovtime');if(el)el.textContent=new Date().toLocaleString('en-IN',{weekday:'long',day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});}
+function refreshAll(){GSD=null;renderOverview();loadAnalytics(true);toast('↺ Refreshed');}
+
+function autoPushBroadcast(){
+  const ns=gN().filter(n=>n.active);
+  const es=gE().filter(e=>e.active&&new Date(e.date)>new Date());
+  const rs=gR().filter(r=>!r.claimed);
+  const payload={notices:ns,exams:es,rewards:rs,ts:new Date().toISOString(),v:2};
+  localStorage.setItem('ts_admin_broadcast_auto', JSON.stringify(payload));
+}
+
+/* ══════ NAV ══════ */
+function go(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.ni').forEach(n=>{if(n.getAttribute('onclick')===`go('${page}')`)n.classList.add('active');});
+  Object.values(ACH).forEach(c=>{try{c.destroy();}catch(e){}});ACH={};
+  const m={notices:renderNotices,exams:renderExams,rewards:renderRewards,broadcast:renderBroadcast,logs:renderLogs};
+  if(m[page])m[page]();
+  else if(page==='analytics')loadAnalytics(false);
+  else if(page==='reports')loadReports(false);
+  else if(page==='overview')renderOverview();
+  log('NAV',`→ ${page}`);
+}
+
+/* ══════ OVERVIEW ══════ */
+function renderOverview(){
+  const ns=gN(),es=gE(),rs=gR();
+  let H='';
+  H+=`<div class="sesbar"><div class="sesdot"></div><div style="font-size:12px;font-weight:700;color:var(--red);">🔐 Active Admin Session — All actions logged</div><div style="margin-left:auto;font-size:10px;color:var(--text3);">${new Date().toLocaleTimeString('en-IN')}</div></div>`;
+  H+=`<div class="sg"><div class="sc"><div class="si ba">📢</div><div class="sv ca">${ns.filter(n=>n.active).length}</div><div class="sl">Active Notices</div></div>
+    <div class="sc"><div class="si bp2">📅</div><div class="sv" style="color:var(--pink)">${es.filter(e=>e.active&&new Date(e.date)>new Date()).length}</div><div class="sl">Upcoming Exams</div></div>
+    <div class="sc"><div class="si by2">⚡</div><div class="sv cy">${rs.filter(r=>!r.claimed).length}</div><div class="sl">Pending Rewards</div></div>
+    <div class="sc"><div class="si bgg">✅</div><div class="sv cg">${rs.filter(r=>r.claimed).length}</div><div class="sl">Claimed Rewards</div></div>
+    <div class="sc"><div class="si bte">📊</div><div class="sv" style="color:var(--teal)">${GSD?GSD.filter(r=>r[1]&&r[1]!=='Name'&&r[1]!=='TEST').length:'—'}</div><div class="sl">Sheet Records</div></div></div>`;
+  H+=`<div class="sh" style="margin-top:4px;"><div class="st">⚡ Quick Actions</div></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:9px;margin-bottom:20px;">
+    ${[['notices','📢','Post Notice','Announce to all students'],['exams','📅','Schedule Exam','Set test countdowns'],['rewards','⚡','Reward Student','Give XP or HP'],['analytics','📊','Analytics','Class performance'],['reports','📥','Download Reports','Export CSV data'],['broadcast','📡','Broadcast','Share to all devices']].map(([p,ic,n,s])=>`<div class="qa" onclick="go('${p}')"><div class="qa-ic">${ic}</div><div class="qa-name">${n}</div><div class="qa-sub">${s}</div></div>`).join('')}
+  </div>`;
+  if(ns.length){H+=`<div class="sh"><div class="st">📢 Recent Notices</div><span class="sl2" onclick="go('notices')">View All →</span></div>`;ns.slice(0,2).forEach(n=>{H+=buildNC(n,false);});}
+  const up=es.filter(e=>e.active&&new Date(e.date)>new Date()).sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(0,2);
+  if(up.length){H+=`<div class="sh" style="margin-top:16px;"><div class="st">📅 Next Exams</div><span class="sl2" onclick="go('exams')">View All →</span></div>`;up.forEach(e=>{H+=buildEC(e,false);});}
+  document.getElementById('ov-content').innerHTML=H;
+}
+
+/* ══════ NOTICES ══════ */
+const NT={info:{label:'Info',color:'var(--acc)',bg:'rgba(79,110,247,.12)',border:'rgba(79,110,247,.28)',icon:'ℹ️'},
+  warning:{label:'Warning',color:'var(--yellow)',bg:'rgba(245,158,11,.12)',border:'rgba(245,158,11,.28)',icon:'⚠️'},
+  urgent:{label:'Urgent',color:'var(--red)',bg:'rgba(244,63,94,.12)',border:'rgba(244,63,94,.28)',icon:'🚨'},
+  exam:{label:'Exam',color:'var(--pink)',bg:'rgba(236,72,153,.12)',border:'rgba(236,72,153,.28)',icon:'📝'},
+  motivation:{label:'Motivation',color:'var(--green)',bg:'rgba(16,185,129,.12)',border:'rgba(16,185,129,.28)',icon:'💪'}};
+
+function postNotice(){
+  const type=document.getElementById('n-type').value,title=document.getElementById('n-title').value.trim(),msg=document.getElementById('n-msg').value.trim();
+  const exp=document.getElementById('n-exp').value,popup=document.getElementById('n-popup').value;
+  if(!title||!msg){toast('❌ Title & message required','e');return;}
+  const ns=gN();
+  ns.unshift({id:'n_'+Date.now(),type,title,message:msg,expiry:exp||null,popup:popup==='1',active:true,created:new Date().toISOString()});
+  sN(ns);
+  document.getElementById('n-title').value='';document.getElementById('n-msg').value='';document.getElementById('n-exp').value='';
+  log('NOTICE',`Posted: "${title}" (${type})`);toast('✅ Notice posted!');autoPushBroadcast();renderNotices();
+}
+function deleteNotice(id){sN(gN().filter(n=>n.id!==id));autoPushBroadcast();autoPushBroadcast();renderNotices();toast('🗑️ Notice deleted');log('NOTICE',`Deleted ${id}`);}
+function toggleNotice(id){const ns=gN(),n=ns.find(x=>x.id===id);if(n)n.active=!n.active;sN(ns);autoPushBroadcast();renderNotices();toast(n?.active?'✅ Enabled':'⏸️ Hidden');}
+function clearAllNotices(){if(!confirm('Clear all notices?'))return;sN([]);renderNotices();toast('🗑️ Cleared');log('NOTICE','Cleared all');}
+
+function buildNC(n,actions=true){
+  const t=NT[n.type]||NT.info,exp=n.expiry&&new Date(n.expiry)<new Date();
+  return`<div class="nc ${n.type}" style="${!n.active?'opacity:.45;':''}">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+        <span>${t.icon}</span>
+        <span class="ntb" style="background:${t.bg};color:${t.color};border:1px solid ${t.border};">${t.label}</span>
+        ${n.popup?`<span class="ntb" style="background:rgba(245,158,11,.12);color:var(--yellow);border:1px solid rgba(245,158,11,.28);">📌 Popup</span>`:''}
+        ${exp?`<span class="ntb" style="background:var(--card2);color:var(--text3);">Expired</span>`:''}
+        ${!n.active?`<span class="ntb" style="background:var(--card2);color:var(--text3);">Hidden</span>`:''}
+      </div>
+      ${actions?`<div style="display:flex;gap:5px;flex-shrink:0;">
+        <button onclick="toggleNotice('${n.id}')" class="btn bg" style="font-size:9px;padding:3px 8px;">${n.active?'⏸ Hide':'▶ Show'}</button>
+        <button onclick="deleteNotice('${n.id}')" class="btn br" style="font-size:9px;padding:3px 8px;">🗑️</button>
+      </div>`:''}
+    </div>
+    <div style="font-size:13px;font-weight:800;margin-top:7px;">${esc(n.title)}</div>
+    <div style="font-size:11px;color:var(--text2);margin-top:3px;line-height:1.6;">${esc(n.message)}</div>
+    <div style="font-size:9px;color:var(--text3);margin-top:6px;">📅 ${new Date(n.created).toLocaleString('en-IN')}${n.expiry?` · Expires: ${new Date(n.expiry).toLocaleDateString('en-IN')}`:''}</div>
+  </div>`;
+}
+function renderNotices(){const el=document.getElementById('notices-list');if(!el)return;const ns=gN();el.innerHTML=ns.length?ns.map(n=>buildNC(n,true)).join(''):`<div class="empty"><div class="ei">📭</div><div class="et">No notices yet</div><div class="es">Post above to start.</div></div>`;}
+
+/* ══════ EXAMS ══════ */
+function addExam(){
+  const title=document.getElementById('e-title').value.trim(),date=document.getElementById('e-date').value;
+  if(!title||!date){toast('❌ Title & date required','e');return;}
+  const es=gE();
+  es.unshift({id:'e_'+Date.now(),subject:document.getElementById('e-subj').value,title,date,duration:parseInt(document.getElementById('e-dur').value)||60,note:document.getElementById('e-note').value.trim(),active:true,created:new Date().toISOString()});
+  sE(es);['e-title','e-note','e-date'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  log('EXAM',`Scheduled: "${title}" on ${date}`);toast('✅ Exam scheduled!');autoPushBroadcast();renderExams();}
+function deleteExam(id){sE(gE().filter(e=>e.id!==id));autoPushBroadcast();renderExams();toast('🗑️ Removed');log('EXAM',`Deleted ${id}`);}
+function clearAllExams(){if(!confirm('Clear all exams?'))return;sE([]);renderExams();toast('🗑️ Cleared');}
+
+function getCD(dateStr){
+  const diff=new Date(dateStr)-new Date();
+  if(diff<=0)return{label:'DONE',urgent:false};
+  const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000),m=Math.floor((diff%3600000)/60000);
+  if(d>0)return{label:`${d}d ${h}h`,urgent:false};
+  if(h>0)return{label:`${h}h ${m}m`,urgent:true};
+  return{label:`${m}m`,urgent:true};
+}
+function buildEC(e,actions=true){
+  const cd=getCD(e.date),past=cd.label==='DONE',sn=cd.urgent;
+  const subj=SMAP[e.subject]||e.subject.toUpperCase();
+  return`<div class="ec" style="${past?'opacity:.45;':''}${sn?'border-color:rgba(244,63,94,.4);':''}">
+    <div class="ecd" style="${sn?'border-color:rgba(244,63,94,.4);background:rgba(244,63,94,.12);':''}">
+      <div class="cdn" style="${sn?'color:var(--red)':''}">${cd.label}</div>
+      <div class="cdl">${past?'Ended':'Left'}</div>
+    </div>
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:13px;font-weight:800;">${esc(e.title)}</div>
+      <div style="font-size:10px;color:var(--text2);margin-top:2px;">${subj} · ${e.duration} min</div>
+      <div style="font-size:9px;color:var(--text3);margin-top:2px;">📅 ${new Date(e.date).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+      ${e.note?`<div style="font-size:9px;color:var(--text3);margin-top:1px;">📌 ${esc(e.note)}</div>`:''}
+    </div>
+    ${actions?`<button onclick="deleteExam('${e.id}')" class="btn br" style="font-size:9px;padding:3px 8px;flex-shrink:0;">🗑️ Remove</button>`:''}
+  </div>`;
+}
+function renderExams(){const el=document.getElementById('exams-list');if(!el)return;const es=gE();el.innerHTML=es.length?[...es].sort((a,b)=>new Date(a.date)-new Date(b.date)).map(e=>buildEC(e,true)).join(''):`<div class="empty"><div class="ei">📅</div><div class="et">No exams scheduled</div></div>`;}
+
+/* ══════ REWARDS ══════ */
+function addReward(){
+  const name=document.getElementById('r-name').value.trim(),type=document.getElementById('r-type').value;
+  const amt=parseInt(document.getElementById('r-amt').value),reason=document.getElementById('r-reason').value.trim();
+  if(!name||!amt||!reason){toast('❌ All fields required','e');return;}
+  if(amt<1||amt>9999){toast('❌ Amount 1–9999','e');return;}
+  const rs=gR();
+  rs.unshift({id:'r_'+Date.now(),studentName:name,type,amount:amt,reason,claimed:false,date:new Date().toISOString()});
+  sR(rs);
+  ['r-name','r-reason'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('r-amt').value='50';
+  log('REWARD',`+${amt} ${type.toUpperCase()} to "${name}" — ${reason}`);
+  toast(`✅ ${amt} ${type.toUpperCase()} awarded to ${name}!`);autoPushBroadcast();renderRewards();
+}
+function deleteReward(id){sR(gR().filter(r=>r.id!==id));autoPushBroadcast();renderRewards();toast('🗑️ Deleted');}
+function clearClaimedRewards(){sR(gR().filter(r=>!r.claimed));renderRewards();toast('✅ Claimed cleared');}
+function renderRewards(){
+  const el=document.getElementById('rewards-list');if(!el)return;
+  const rs=gR();
+  el.innerHTML=rs.length?rs.map(r=>`<div class="rc ${r.claimed?'claimed':''}">
+    <div style="font-size:20px;">${r.type==='xp'?'⚡':'💜'}</div>
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:12px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(r.studentName)}</div>
+      <div style="font-size:10px;color:var(--text2);margin-top:1px;">${esc(r.reason)}</div>
+      <div style="font-size:8px;color:var(--text3);margin-top:1px;">${new Date(r.date).toLocaleString('en-IN')}</div>
+    </div>
+    <div style="text-align:center;min-width:55px;">
+      <div style="font-size:16px;font-weight:900;font-family:var(--mono);color:${r.type==='xp'?'var(--acc)':'#7c3aed'};">+${r.amount}</div>
+      <div style="font-size:8px;color:var(--text3);text-transform:uppercase;">${r.type}</div>
+      <div style="font-size:8px;font-weight:700;margin-top:2px;color:${r.claimed?'var(--green)':'var(--yellow)'};">${r.claimed?'✅ Claimed':'⏳ Pending'}</div>
+    </div>
+    <button onclick="deleteReward('${r.id}')" class="btn br" style="font-size:9px;padding:3px 7px;">🗑️</button>
+  </div>`).join(''):`<div class="empty"><div class="ei">⚡</div><div class="et">No rewards yet</div><div class="es">Award XP or HP above.</div></div>`;
+}
+
+/* ══════ ANALYTICS ══════ */
+async function loadAnalytics(force=false){
+  const el=document.getElementById('analytics-content');if(!el)return;
+  if(GSD&&!force){renderAnalytics(GSD);return;}
+  el.innerHTML=`<div style="text-align:center;padding:40px;"><span class="spin"></span><div style="margin-top:10px;font-size:12px;color:var(--text3);">Fetching from Google Sheet…</div></div>`;
+  try{
+    const res=await fetch(GS+'?action=getAll',{method:'GET',redirect:'follow'});
+    const text=await res.text(),clean=text.replace(/^\)\]\}'\s*/,'').trim();
+    if(!clean||clean[0]!=='[')throw new Error('Invalid response');
+    GSD=JSON.parse(clean);renderAnalytics(GSD);
+    log('ANALYTICS',`Loaded ${GSD.length} records`);
+  }catch(e){
+    el.innerHTML=`<div class="card cp" style="border:1.5px solid rgba(244,63,94,.3);"><div style="color:var(--red);font-weight:700;font-size:13px;">⚠️ Could not fetch data</div><div style="font-size:11px;color:var(--text3);margin-top:4px;">${esc(e.message)}</div><button class="btn bg" onclick="loadAnalytics(true)" style="margin-top:10px;">↺ Retry</button></div>`;
+  }
+}
+
+function renderAnalytics(data){
+  if(!data||!Array.isArray(data)){return;}
+  const el=document.getElementById('analytics-content');if(!el)return;
+  // REPLACE inside renderAnalytics():
+const rows=data.map(r=>({
+  name:r[2]||'',
+  subject:r[3]||'',
+  chapter:r[4]||'',
+  score:parseFloat(r[5])||0,
+  maxScore:parseFloat(r[6])||0,
+  percentage:parseFloat(r[7])||0,
+  correct:parseFloat(r[8])||0,
+  wrong:parseFloat(r[9])||0,
+  skipped:parseFloat(r[10])||0,
+  date:r[13]||r[0]||''
+})).filter(r=>r.name&&r.name!=='Name'&&r.name!=='TEST');
+  if(!rows.length){el.innerHTML=`<div class="empty"><div class="ei">📊</div><div class="et">No data found</div></div>`;return;}
+  const students={};
+  rows.forEach(r=>{
+    if(!students[r.name])students[r.name]={name:r.name,tests:0,totalPct:0,subjects:{},dates:[],correct:0,wrong:0};
+    const s=students[r.name];s.tests++;s.totalPct+=r.percentage;s.correct+=r.correct;s.wrong+=r.wrong;
+    if(!s.subjects[r.subject])s.subjects[r.subject]={total:0,count:0};
+    s.subjects[r.subject].total+=r.percentage;s.subjects[r.subject].count++;
+    if(r.date)s.dates.push(r.date);
+  });
+  const studArr=Object.values(students).sort((a,b)=>(b.totalPct/b.tests)-(a.totalPct/a.tests));
+  const now=new Date(),wa=new Date(now-7*86400000);
+  const active=studArr.filter(s=>s.dates.some(d=>new Date(d)>=wa));
+  const classAvg=rows.length?rows.reduce((s,r)=>s+r.percentage,0)/rows.length:0;
+  const subjAvg={};
+  rows.forEach(r=>{if(!subjAvg[r.subject])subjAvg[r.subject]={total:0,count:0};subjAvg[r.subject].total+=r.percentage;subjAvg[r.subject].count++;});
+  let H=`<div class="sg"><div class="sc"><div class="si ba">📝</div><div class="sv ca">${rows.length}</div><div class="sl">Total Tests</div></div>
+    <div class="sc"><div class="si bte">👥</div><div class="sv" style="color:var(--teal)">${studArr.length}</div><div class="sl">Students</div></div>
+    <div class="sc"><div class="si bgg">✅</div><div class="sv cg">${active.length}</div><div class="sl">Active This Week</div></div>
+    <div class="sc"><div class="si brr">😴</div><div class="sv cr">${studArr.length-active.length}</div><div class="sl">Inactive</div></div>
+    <div class="sc"><div class="si by2">⭐</div><div class="sv cy">${classAvg.toFixed(1)}%</div><div class="sl">Class Avg</div></div>
+    <div class="sc"><div class="si bp2">🏆</div><div class="sv" style="color:var(--pink)">${studArr.length>0?(studArr[0].totalPct/studArr[0].tests).toFixed(1)+'%':'—'}</div><div class="sl">Top Score</div></div></div>`;
+  H+=`<div class="g2" style="margin-bottom:16px;">
+    <div class="cb"><div class="sh"><div class="st">📊 Subject Averages</div></div><div style="height:190px;"><canvas id="ac1"></canvas></div></div>
+    <div class="cb"><div class="sh"><div class="st">🏆 Top 10 Students</div></div><div style="height:190px;"><canvas id="ac2"></canvas></div></div>
+  </div>
+  <div class="g2" style="margin-bottom:16px;">
+    <div class="cb"><div class="sh"><div class="st">📈 Score Distribution</div></div><div style="height:170px;"><canvas id="ac3"></canvas></div></div>
+    <div class="cb"><div class="sh"><div class="st">📅 Tests Per Week (4w)</div></div><div style="height:170px;"><canvas id="ac4"></canvas></div></div>
+  </div>`;
+  H+=`<div class="card" style="overflow:hidden;margin-bottom:14px;">
+    <div style="padding:12px 16px 6px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+      <div class="st">👥 All Students (${studArr.length})</div>
+      <input placeholder="🔍 Search…" style="background:var(--card2);border:1.5px solid var(--border);border-radius:22px;padding:5px 13px;font-size:11px;color:var(--text);outline:none;font-family:var(--fn);" id="stu-search" oninput="filterStu()">
+    </div>
+    <div style="overflow-x:auto;max-height:340px;overflow-y:auto;">
+    <table class="dt"><thead><tr><th>#</th><th>Student</th><th>Tests</th><th>Avg %</th><th>Active</th><th>Best Subject</th></tr></thead>
+    <tbody id="stu-tbody">
+      ${studArr.map((s,i)=>{
+        const avg=(s.totalPct/s.tests).toFixed(1),isA=s.dates.some(d=>new Date(d)>=wa);
+        const clr=avg>=75?'var(--green)':avg>=50?'var(--acc)':avg>=35?'var(--yellow)':'var(--red)';
+        const bestSubj=Object.entries(s.subjects).sort((a,b)=>(b[1].total/b[1].count)-(a[1].total/a[1].count))[0];
+        return`<tr><td style="color:var(--text3);font-family:var(--mono)">${i+1}</td><td><strong>${esc(s.name)}</strong></td><td style="font-family:var(--mono)">${s.tests}</td>
+          <td><span style="font-weight:800;color:${clr};font-family:var(--mono)">${avg}%</span></td>
+          <td><span class="adot ${isA?'a':'i'}"></span>${isA?'<span class="cg" style="font-size:10px;font-weight:700;">Active</span>':'<span style="font-size:10px;color:var(--text3);">Inactive</span>'}</td>
+          <td style="font-size:10px;color:var(--text2);">${bestSubj?`${(SMAP[bestSubj[0]]||bestSubj[0]).split(' ').slice(1).join(' ')||bestSubj[0].toUpperCase()} ${(bestSubj[1].total/bestSubj[1].count).toFixed(0)}%`:'—'}</td>
+        </tr>`;
+      }).join('')}
+    </tbody></table></div></div>`;
+  H+=`<div class="card cp"><div class="sh"><div class="st">⚠️ Subject Weak Spots (class avg)</div></div>
+    <div style="display:flex;flex-direction:column;gap:7px;">
+      ${Object.entries(subjAvg).sort((a,b)=>(a[1].total/a[1].count)-(b[1].total/b[1].count)).map(([subj,d])=>{
+        const avg=d.total/d.count,clr=avg>=75?'var(--green)':avg>=50?'var(--acc)':avg>=35?'var(--yellow)':'var(--red)';
+        const sn=SMAP[subj]||subj.toUpperCase();
+        return`<div style="display:flex;align-items:center;gap:9px;">
+          <div style="font-size:13px;width:20px;text-align:center;">${sn.split(' ')[0]}</div>
+          <div style="min-width:130px;font-size:11px;font-weight:600;">${sn.split(' ').slice(1).join(' ')||subj.toUpperCase()}</div>
+          <div class="pt2"><div class="pf" style="width:${avg.toFixed(1)}%;background:${clr};"></div></div>
+          <div style="font-size:11px;font-weight:800;color:${clr};min-width:44px;text-align:right;font-family:var(--mono)">${avg.toFixed(1)}%</div>
+          <div style="font-size:9px;color:var(--text3);min-width:48px;">${d.count} tests</div>
+        </div>`;
+      }).join('')}
+    </div></div>`;
+  el.innerHTML=H;
+  setTimeout(()=>{
+    Object.values(ACH).forEach(c=>{try{c.destroy();}catch(e){}});ACH={};
+    const subjEntries=Object.entries(subjAvg);
+    const a1=document.getElementById('ac1');
+    if(a1)ACH['s']=new Chart(a1.getContext('2d'),{type:'bar',data:{labels:subjEntries.map(([k])=>(SMAP[k]||k).split(' ').slice(1,2).join('')||k.toUpperCase()),datasets:[{data:subjEntries.map(([,v])=>v.total/v.count),backgroundColor:subjEntries.map(([,v])=>{const a=v.total/v.count;return a>=75?'rgba(16,185,129,.7)':a>=50?'rgba(79,110,247,.7)':a>=35?'rgba(245,158,11,.7)':'rgba(244,63,94,.7)';}),borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#4a5070',font:{size:9}}},y:{min:0,max:100,grid:{color:'rgba(255,255,255,.03)'},ticks:{color:'#4a5070',font:{size:9},callback:v=>v+'%'}}}}});
+    const top10=studArr.slice(0,10);
+    const a2=document.getElementById('ac2');
+    if(a2)ACH['t']=new Chart(a2.getContext('2d'),{type:'bar',data:{labels:top10.map(s=>s.name.split(' ')[0]),datasets:[{data:top10.map(s=>+(s.totalPct/s.tests).toFixed(1)),backgroundColor:'rgba(79,110,247,.7)',borderColor:'#4f6ef7',borderWidth:1,borderRadius:5}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{min:0,max:100,grid:{color:'rgba(255,255,255,.03)'},ticks:{color:'#4a5070',font:{size:9},callback:v=>v+'%'}},y:{grid:{display:false},ticks:{color:'#e6eaff',font:{size:9}}}}}});
+    const buckets=[0,0,0,0];rows.forEach(r=>{if(r.percentage<25)buckets[0]++;else if(r.percentage<50)buckets[1]++;else if(r.percentage<75)buckets[2]++;else buckets[3]++;});
+    const a3=document.getElementById('ac3');
+    if(a3)ACH['d']=new Chart(a3.getContext('2d'),{type:'doughnut',data:{labels:['0–25%','25–50%','50–75%','75–100%'],datasets:[{data:buckets,backgroundColor:['rgba(244,63,94,.8)','rgba(245,158,11,.8)','rgba(79,110,247,.8)','rgba(16,185,129,.8)'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{color:'#8892bb',font:{size:9},boxWidth:10}}}}});
+    const wks=[];const nw=new Date();
+    for(let i=3;i>=0;i--){const ws=new Date(nw);ws.setDate(ws.getDate()-ws.getDay()-i*7);const we=new Date(ws);we.setDate(we.getDate()+6);wks.push({l:`W${4-i}`,n:rows.filter(r=>r.date&&new Date(r.date)>=ws&&new Date(r.date)<=we).length});}
+    const a4=document.getElementById('ac4');
+    if(a4)ACH['a']=new Chart(a4.getContext('2d'),{type:'bar',data:{labels:wks.map(w=>w.l),datasets:[{data:wks.map(w=>w.n),backgroundColor:'rgba(79,110,247,.6)',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#4a5070',font:{size:10}}},y:{grid:{color:'rgba(255,255,255,.03)'},ticks:{color:'#4a5070',font:{size:10},stepSize:1}}}}});
+  },80);
+}
+
+function filterStu(){
+  const q=(document.getElementById('stu-search')?.value||'').toLowerCase();
+  document.querySelectorAll('#stu-tbody tr').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q)?'':'none';});
+}
+
+/* ══════ REPORTS ══════ */
+async function loadReports(force=false){
+  const el=document.getElementById('reports-content');if(!el)return;
+  if(!GSD||force){
+    el.innerHTML=`<div style="text-align:center;padding:30px;"><span class="spin"></span><div style="margin-top:10px;font-size:12px;color:var(--text3);">Loading…</div></div>`;
+    try{
+      const res=await fetch(GS+'?action=getAll',{redirect:'follow'});
+      const text=await res.text(),clean=text.replace(/^\)\]\}'\s*/,'').trim();
+      if(clean[0]!=='[')throw new Error('Bad response');
+      GSD=JSON.parse(clean);
+    }catch(e){el.innerHTML=`<div class="card cp" style="border:1.5px solid rgba(244,63,94,.3);"><div style="color:var(--red);font-weight:700;">❌ ${esc(e.message)}</div><button class="btn bg" onclick="loadReports(true)" style="margin-top:10px;">↺ Retry</button></div>`;return;}
+  }
+  // REPLACE inside loadReports():
+const rows=(GSD||[]).map(r=>({
+  name:r[2]||'',
+  subject:r[3]||'',
+  chapter:r[4]||'',
+  score:parseFloat(r[5])||0,
+  maxScore:parseFloat(r[6])||0,
+  percentage:parseFloat(r[7])||0,
+  correct:parseFloat(r[8])||0,
+  wrong:parseFloat(r[9])||0,
+  skipped:parseFloat(r[10])||0,
+  date:r[13]||r[0]||''
+})).filter(r=>r.name&&r.name!=='Name'&&r.name!=='TEST');
+  if(!rows.length){el.innerHTML=`<div class="empty"><div class="ei">📥</div><div class="et">No data</div></div>`;return;}
+  const students={};
+  rows.forEach(r=>{if(!students[r.name])students[r.name]={name:r.name,rows:[],subjects:{}};students[r.name].rows.push(r);if(!students[r.name].subjects[r.subject])students[r.name].subjects[r.subject]=[];students[r.name].subjects[r.subject].push(r);});
+  let H=`<div class="card cp" style="margin-bottom:13px;">
+    <div class="sh"><div class="st">📥 Bulk Downloads</div></div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      <button class="btn bp" onclick="dlFull()">📊 Full Class Report (CSV)</button>
+      <button class="btn bgn" onclick="dlSubjSummary()">📚 Subject Summary CSV</button>
+      <button class="btn by" onclick="dlActive()">✅ Active Students CSV</button>
+    </div>
+  </div>
+  <div class="card cp" style="margin-bottom:13px;">
+    <div class="sh"><div class="st">👤 Per Student (Subject-wise CSV)</div></div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:10px;">${Object.keys(students).length} students found · Click name to download individual report</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+      <button class="btn bp" onclick="dlAllStudents()">📦 Download All (one by one)</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:6px;" id="per-stu-btns">
+      ${Object.keys(students).map(name=>`<button class="btn bg" onclick="dlStudent(${JSON.stringify(name)})" style="font-size:10px;text-align:left;justify-content:flex-start;">📋 ${esc(name)}</button>`).join('')}
+    </div>
+  </div>
+  <div class="card" style="overflow:hidden;">
+    <div style="padding:12px 16px 6px;"><div class="st">📋 Preview — Latest 50</div></div>
+    <div style="overflow-x:auto;max-height:320px;overflow-y:auto;">
+    <table class="dt"><thead><tr><th>#</th><th>Student</th><th>Subject</th><th>Chapter</th><th>%</th><th>Score</th><th>Date</th></tr></thead>
+    <tbody>
+      ${rows.slice(-50).reverse().map((r,i)=>{const clr=r.percentage>=75?'var(--green)':r.percentage>=50?'var(--acc)':r.percentage>=35?'var(--yellow)':'var(--red)';return`<tr><td style="color:var(--text3)">${i+1}</td><td><strong>${esc(r.name)}</strong></td><td><span style="font-size:9px;background:var(--card2);border-radius:8px;padding:2px 7px;">${r.subject.toUpperCase()}</span></td><td style="font-size:10px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(r.chapter)}</td><td style="font-weight:800;color:${clr};font-family:var(--mono)">${r.percentage.toFixed(1)}%</td><td style="font-family:var(--mono)">${r.score}/${r.maxScore}</td><td style="font-size:9px;color:var(--text3)">${r.date?new Date(r.date).toLocaleDateString('en-IN'):'—'}</td></tr>`;}).join('')}
+    </tbody></table></div></div>`;
+  el.innerHTML=H;el._rows=rows;el._students=students;
+  log('REPORTS',`Loaded ${rows.length} records`);
+}
+
+function toCSV(headers,rows){const e=v=>`"${String(v).replace(/"/g,'""')}"`;return[headers.map(e).join(','),...rows.map(r=>r.map(e).join(','))].join('\n');}
+function dlCSV(filename,content){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:'text/csv;charset=utf-8;'}));a.download=filename;a.click();}
+
+function dlFull(){
+  const el=document.getElementById('reports-content'),rows=el?._rows;
+  if(!rows){toast('❌ Load data first','e');return;}
+  const h=['Student','Subject','Chapter','Score','Max','%','Correct','Wrong','Skipped','Date'];
+  const d=rows.map(r=>[r.name,r.subject.toUpperCase(),r.chapter,r.score,r.maxScore,r.percentage.toFixed(2),r.correct,r.wrong,r.skipped,r.date?new Date(r.date).toLocaleDateString('en-IN'):'']);
+  dlCSV(`Thunderstudy_FullClass_${ts()}.csv`,toCSV(h,d));log('DL','Full class CSV');toast('✅ Full class CSV downloaded!');
+}
+
+function dlSubjSummary(){
+  const el=document.getElementById('reports-content'),students=el?._students;
+  if(!students){toast('❌ Load data first','e');return;}
+  const allSubjs=[...new Set(Object.values(students).flatMap(s=>Object.keys(s.subjects)))].sort();
+  const h=['Student','Total Tests','Overall Avg %',...allSubjs.map(s=>s.toUpperCase()+' Avg %'),'Active This Week'];
+  const nw=new Date(),wa=new Date(nw-7*86400000);
+  const d=Object.values(students).sort((a,b)=>{const aa=a.rows.reduce((s,r)=>s+r.percentage,0)/a.rows.length,ba=b.rows.reduce((s,r)=>s+r.percentage,0)/b.rows.length;return ba-aa;}).map(s=>{
+    const oa=(s.rows.reduce((t,r)=>t+r.percentage,0)/s.rows.length).toFixed(2);
+    const sa=allSubjs.map(sub=>s.subjects[sub]?(s.subjects[sub].reduce((t,r)=>t+r.percentage,0)/s.subjects[sub].length).toFixed(2):'N/A');
+    const isA=s.rows.some(r=>r.date&&new Date(r.date)>=wa);
+    return[s.name,s.rows.length,oa,...sa,isA?'Yes':'No'];
+  });
+  dlCSV(`Thunderstudy_SubjectSummary_${ts()}.csv`,toCSV(h,d));log('DL','Subject summary CSV');toast('✅ Subject summary downloaded!');
+}
+
+function dlActive(){
+  const el=document.getElementById('reports-content'),students=el?._students;
+  if(!students){toast('❌ Load data first','e');return;}
+  const nw=new Date(),wa=new Date(nw-7*86400000);
+  const actv=Object.values(students).filter(s=>s.rows.some(r=>r.date&&new Date(r.date)>=wa));
+  const h=['Student','Tests This Week','Avg % This Week','Total Tests','Overall Avg %'];
+  const d=actv.map(s=>{const wr=s.rows.filter(r=>r.date&&new Date(r.date)>=wa);const wA=wr.length?(wr.reduce((t,r)=>t+r.percentage,0)/wr.length).toFixed(2):0;return[s.name,wr.length,wA,s.rows.length,(s.rows.reduce((t,r)=>t+r.percentage,0)/s.rows.length).toFixed(2)];});
+  dlCSV(`Thunderstudy_ActiveStudents_${ts()}.csv`,toCSV(h,d));toast('✅ Active students CSV downloaded!');
+}
+
+function dlStudent(name){
+  const el=document.getElementById('reports-content'),students=el?._students;
+  if(!students||!students[name]){toast('❌ Student not found','e');return;}
+  const s=students[name];
+  const h=['Subject','Chapter','Score','Max','%','Correct','Wrong','Skipped','Date'];
+  const d=s.rows.sort((a,b)=>a.subject.localeCompare(b.subject)).map(r=>[r.subject.toUpperCase(),r.chapter,r.score,r.maxScore,r.percentage.toFixed(2),r.correct,r.wrong,r.skipped,r.date?new Date(r.date).toLocaleDateString('en-IN'):'']);
+  dlCSV(`${name.replace(/\s/g,'_')}_Report_${ts()}.csv`,toCSV(h,d));log('DL',`Student CSV: ${name}`);toast(`✅ ${name}'s CSV downloaded!`);
+}
+
+async function dlAllStudents(){
+  const el=document.getElementById('reports-content'),students=el?._students;
+  if(!students){toast('❌ Load data first','e');return;}
+  const names=Object.keys(students);
+  if(!confirm(`Download ${names.length} individual CSVs? Browser will download them sequentially.`))return;
+  for(const name of names){dlStudent(name);await new Promise(r=>setTimeout(r,280));}
+  toast(`✅ ${names.length} student CSVs downloaded!`);log('DL',`All ${names.length} student CSVs`);
+}
+
+/* ══════ BROADCAST ══════ */
+function renderBroadcast(){
+  const ns=gN().filter(n=>n.active),es=gE().filter(e=>e.active&&new Date(e.date)>new Date()),rs=gR().filter(r=>!r.claimed);
+  const payload={notices:ns,exams:es,rewards:rs,ts:new Date().toISOString(),v:2};
+  const code=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  let H=`<div class="card cp" style="margin-bottom:13px;background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(79,110,247,.07));border:1.5px solid rgba(124,58,237,.3);">
+    <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#7c3aed;margin-bottom:9px;">📡 Package Contents</div>
+    <div style="display:flex;gap:18px;flex-wrap:wrap;">
+      <div style="text-align:center;"><div style="font-size:20px;font-weight:900;color:var(--acc);font-family:var(--mono)">${ns.length}</div><div style="font-size:9px;color:var(--text3);">Active Notices</div></div>
+      <div style="text-align:center;"><div style="font-size:20px;font-weight:900;color:var(--pink);font-family:var(--mono)">${es.length}</div><div style="font-size:9px;color:var(--text3);">Upcoming Exams</div></div>
+      <div style="text-align:center;"><div style="font-size:20px;font-weight:900;color:var(--yellow);font-family:var(--mono)">${rs.length}</div><div style="font-size:9px;color:var(--text3);">Pending Rewards</div></div>
+    </div>
+  </div>
+  <div class="card cp" style="margin-bottom:13px;">
+    <div class="sh"><div class="st">🔑 Broadcast Code</div><button class="btn bp" onclick="copyBroadcast()" style="font-size:10px;padding:5px 12px;">📋 Copy</button></div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:9px;">Share this code via Telegram/WhatsApp. Students paste it in Dashboard → Settings → "Apply Broadcast Code".</div>
+    <div class="bbc" id="bc-box">${code}</div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;">
+      <button class="btn bp" onclick="copyBroadcast()">📋 Copy to Clipboard</button>
+      <button class="btn bg" onclick="dlBroadcast()">⬇️ Download .txt</button>
+    </div>
+  </div>
+  <div class="card cp">
+    <div class="sh"><div class="st">📱 Share Template</div><button class="btn bg" onclick="copyTemplate()" style="font-size:10px;padding:5px 12px;">📋 Copy Msg</button></div>
+    <div style="background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-size:11px;color:var(--text2);line-height:1.8;font-family:var(--mono);" id="share-tpl">📢 *Thunderstudy Admin Update*
+
+Apply this broadcast code in your Dashboard:
+Settings → "Apply Broadcast Code" → Paste
+
+CODE:
+${code}
+
+🔔 New notices, exam schedules & rewards inside!</div>
+  </div>`;
+  document.getElementById('broadcast-content').innerHTML=H;
+  document.getElementById('broadcast-content')._code=code;
+}
+function copyBroadcast(){const code=document.getElementById('broadcast-content')?._code||document.getElementById('bc-box')?.textContent;if(!code)return;navigator.clipboard.writeText(code).then(()=>toast('✅ Code copied!')).catch(()=>{const ta=document.createElement('textarea');ta.value=code;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('✅ Code copied!');});log('BROADCAST','Code copied');}
+function copyTemplate(){const el=document.getElementById('share-tpl');if(!el)return;navigator.clipboard.writeText(el.textContent).then(()=>toast('✅ Template copied!')).catch(()=>toast('❌ Copy failed','e'));}
+function dlBroadcast(){const code=document.getElementById('broadcast-content')?._code;if(!code)return;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([code],{type:'text/plain'}));a.download=`ts_broadcast_${ts()}.txt`;a.click();toast('✅ File downloaded!');}
+
+/* ══════ LOGS ══════ */
+function renderLogs(){
+  let logs=[];try{logs=JSON.parse(localStorage.getItem('_ts_alogs')||'[]');}catch(e){}
+  const el=document.getElementById('logs-content');if(!el)return;
+  if(!logs.length){el.innerHTML=`<div class="empty"><div class="ei">📋</div><div class="et">No logs</div></div>`;return;}
+  const ac={LOGIN:'var(--green)',FAIL:'var(--red)',LOGOUT:'var(--yellow)',NAV:'var(--text3)',NOTICE:'var(--acc)',EXAM:'var(--pink)',REWARD:'#7c3aed',ANALYTICS:'var(--teal)',DL:'var(--green)',BROADCAST:'var(--acc)',INIT:'var(--text3)',SESSION:'var(--yellow)',REPORTS:'var(--teal)'};
+  el.innerHTML=`<div class="card" style="overflow:hidden;"><table class="dt"><thead><tr><th>#</th><th>Action</th><th>Detail</th><th>Time</th></tr></thead><tbody>
+    ${logs.map((l,i)=>`<tr><td style="color:var(--text3);font-family:var(--mono)">${i+1}</td><td><span style="font-size:8px;font-weight:800;padding:2px 8px;border-radius:14px;background:${(ac[l.action]||'var(--acc)')}18;color:${ac[l.action]||'var(--acc)'};">${l.action}</span></td><td style="font-size:11px;">${esc(l.detail)}</td><td style="font-size:9px;color:var(--text3);white-space:nowrap;">${new Date(l.time).toLocaleString('en-IN')}</td></tr>`).join('')}
+  </tbody></table></div>`;
+}
+
+/* ══════ UTILS ══════ */
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function ts(){return new Date().toISOString().split('T')[0];}
+function toast(msg,type='s'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.background=type==='e'?'var(--red)':type==='w'?'var(--yellow)':'var(--green)';
+  t.classList.add('show');clearTimeout(t._t);
+  t._t=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+/* ══════ AUTO-LOGIN CHECK ══════ */
+window.addEventListener('load',()=>{
+  if(checkSession()){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('admin-panel').style.display='flex';
+    initAdmin();log('SESSION','Auto-login from saved session');
+  }
+});
+</script>
+</body>
+</html>
