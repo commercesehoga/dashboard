@@ -1,0 +1,615 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ThunderStudy Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0e0f11;
+      --surface: #16181c;
+      --surface2: #1e2026;
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.14);
+      --text: #f0f0f0;
+      --muted: #7a7f8a;
+      --accent: #f5c542;
+      --accent-dim: rgba(245,197,66,0.12);
+      --accent-text: #c49b1a;
+      --info: #3b82f6;
+      --info-dim: rgba(59,130,246,0.12);
+      --info-text: #93c5fd;
+      --success: #22c55e;
+      --success-dim: rgba(34,197,94,0.12);
+      --success-text: #86efac;
+      --warn: #f97316;
+      --warn-dim: rgba(249,115,22,0.12);
+      --warn-text: #fdba74;
+      --danger: #ef4444;
+      --danger-dim: rgba(239,68,68,0.12);
+      --danger-text: #fca5a5;
+      --radius: 10px;
+      --radius-lg: 16px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      min-height: 100vh;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    /* ── Layout ── */
+    .shell { display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 220px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 2rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+    }
+
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .logo-bolt {
+      width: 36px; height: 36px;
+      background: var(--accent);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .logo-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .logo-sub {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .nav { display: flex; flex-direction: column; gap: 4px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+      border: 1px solid transparent;
+      transition: all 0.15s;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-item:hover { color: var(--text); background: var(--surface2); }
+    .nav-item.active {
+      color: var(--accent);
+      background: var(--accent-dim);
+      border-color: rgba(245,197,66,0.2);
+    }
+    .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+    .sidebar-footer {
+      margin-top: auto;
+      font-size: 12px;
+      color: var(--muted);
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+    .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--success); margin-right: 5px; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    .main { margin-left: 220px; flex: 1; padding: 2.5rem 2rem; max-width: 860px; }
+
+    /* ── Panels ── */
+    .panel { display: none; animation: fadeIn 0.2s ease; }
+    .panel.active { display: block; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+
+    .page-header { margin-bottom: 2rem; }
+    .page-title { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; color: var(--text); }
+    .page-desc { font-size: 14px; color: var(--muted); margin-top: 4px; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .card-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+    }
+
+    /* ── Form ── */
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 5px; font-weight: 500; }
+    .field input, .field textarea, .field select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 9px 13px;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--accent); }
+    .field textarea { min-height: 80px; resize: vertical; }
+    .field select option { background: var(--surface2); }
+
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+    .checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text); }
+    .checkbox-row input[type=checkbox] {
+      width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer;
+    }
+
+    /* ── Buttons ── */
+    .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+
+    .btn {
+      padding: 9px 20px; border-radius: var(--radius);
+      font-size: 14px; font-weight: 500;
+      cursor: pointer; border: 1px solid transparent;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.15s;
+    }
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary { background: var(--accent); color: #1a1200; border-color: var(--accent); }
+    .btn-primary:hover { background: #f0bb30; }
+
+    .btn-ghost { background: transparent; color: var(--muted); border-color: var(--border2); }
+    .btn-ghost:hover { color: var(--text); border-color: var(--border2); background: var(--surface2); }
+
+    .btn-danger { background: var(--danger-dim); color: var(--danger-text); border-color: rgba(239,68,68,0.25); }
+    .btn-danger:hover { background: rgba(239,68,68,0.2); }
+
+    /* ── List ── */
+    .list-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .list-title { font-size: 15px; font-weight: 600; color: var(--text); font-family: 'Syne', sans-serif; }
+
+    .item {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .item:last-child { border-bottom: none; }
+    .item-body { flex: 1; min-width: 0; }
+    .item-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 3px; }
+    .item-title { font-size: 15px; font-weight: 500; color: var(--text); }
+    .item-meta { font-size: 13px; color: var(--muted); }
+    .item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+    .icon-btn {
+      width: 30px; height: 30px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted);
+      transition: all 0.15s;
+    }
+    .icon-btn:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+    .icon-btn.del:hover { color: var(--danger-text); border-color: rgba(239,68,68,0.3); background: var(--danger-dim); }
+    .icon-btn.tog:hover { color: var(--accent); border-color: rgba(245,197,66,0.3); background: var(--accent-dim); }
+
+    /* ── Badges ── */
+    .badge { display: inline-block; font-size: 11px; padding: 2px 9px; border-radius: 20px; font-weight: 600; letter-spacing: 0.02em; }
+    .badge-info    { background: var(--info-dim);    color: var(--info-text); }
+    .badge-warn    { background: var(--warn-dim);    color: var(--warn-text); }
+    .badge-danger  { background: var(--danger-dim);  color: var(--danger-text); }
+    .badge-success { background: var(--success-dim); color: var(--success-text); }
+    .badge-muted   { background: rgba(255,255,255,0.06); color: var(--muted); }
+    .badge-accent  { background: var(--accent-dim);  color: var(--accent); }
+
+    /* ── Count chip ── */
+    .chip { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: var(--surface2); font-size: 12px; font-weight: 600; color: var(--muted); border: 1px solid var(--border); }
+
+    /* ── Empty ── */
+    .empty { text-align: center; padding: 3rem 1rem; color: var(--muted); font-size: 14px; }
+    .empty-icon { font-size: 36px; display: block; margin-bottom: 10px; opacity: 0.4; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      padding: 11px 18px;
+      font-size: 14px;
+      display: none;
+      z-index: 9999;
+      min-width: 200px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      animation: slideUp 0.2s ease;
+    }
+    @keyframes slideUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+    /* ── Divider ── */
+    .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+    /* ── Mobile ── */
+    @media (max-width: 680px) {
+      .sidebar { width: 100%; height: auto; position: relative; flex-direction: row; flex-wrap: wrap; padding: 1rem; gap: 1rem; border-right: none; border-bottom: 1px solid var(--border); }
+      .main { margin-left: 0; padding: 1.5rem 1rem; }
+      .grid2, .grid3 { grid-template-columns: 1fr; }
+      .nav { flex-direction: row; }
+      .sidebar-footer { display: none; }
+      .shell { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-bolt">⚡</div>
+      <div>
+        <div class="logo-text">ThunderStudy</div>
+        <div class="logo-sub">Admin Panel</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <button class="nav-item active" onclick="switchPanel('notices', this)">
+        <span class="nav-icon">📢</span> Notices
+      </button>
+      <button class="nav-item" onclick="switchPanel('exams', this)">
+        <span class="nav-icon">📝</span> Exams
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <span class="dot"></span>Connected to Sheet
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- ── NOTICES ── -->
+    <div id="panel-notices" class="panel active">
+      <div class="page-header">
+        <div class="page-title">Notices</div>
+        <div class="page-desc">Post announcements, alerts, and info banners to your students.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">New Notice</div>
+
+        <div class="grid2">
+          <div class="field">
+            <label>Notice type</label>
+            <select id="n-type">
+              <option value="info">Info</option>
+              <option value="warning">Warning</option>
+              <option value="alert">Alert</option>
+              <option value="event">Event</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Expiry date (optional)</label>
+            <input type="date" id="n-expiry">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Title</label>
+          <input type="text" id="n-title" placeholder="e.g. Library closed on Saturday">
+        </div>
+
+        <div class="field">
+          <label>Message</label>
+          <textarea id="n-message" placeholder="Full notice content…"></textarea>
+        </div>
+
+        <div class="field">
+          <label class="checkbox-row">
+            <input type="checkbox" id="n-popup">
+            Show as popup on student app
+          </label>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="postNotice()">Post notice</button>
+          <button class="btn btn-ghost" onclick="loadNotices()">↻ Refresh</button>
+          <button class="btn btn-danger" onclick="clearAll('NOTICE_CLEAR', 'notices')">Clear all</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="list-header">
+          <div class="list-title">Posted notices</div>
+          <span class="chip" id="n-count">—</span>
+        </div>
+        <div id="notices-list"><div class="empty"><span class="empty-icon">📭</span>Loading…</div></div>
+      </div>
+    </div>
+
+    <!-- ── EXAMS ── -->
+    <div id="panel-exams" class="panel">
+      <div class="page-header">
+        <div class="page-title">Exams</div>
+        <div class="page-desc">Schedule upcoming exams and tests for your students.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Add Exam</div>
+
+        <div class="grid2">
+          <div class="field">
+            <label>Subject</label>
+            <input type="text" id="e-subject" placeholder="e.g. Physics">
+          </div>
+          <div class="field">
+            <label>Title / Paper</label>
+            <input type="text" id="e-title" placeholder="e.g. Unit 3 Final">
+          </div>
+        </div>
+
+        <div class="grid3">
+          <div class="field">
+            <label>Date</label>
+            <input type="date" id="e-date">
+          </div>
+          <div class="field">
+            <label>Duration (minutes)</label>
+            <input type="number" id="e-duration" placeholder="90">
+          </div>
+          <div class="field">
+            <label>Note (optional)</label>
+            <input type="text" id="e-note" placeholder="Bring calculator">
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="postExam()">Add exam</button>
+          <button class="btn btn-ghost" onclick="loadExams()">↻ Refresh</button>
+          <button class="btn btn-danger" onclick="clearAll('EXAM_CLEAR', 'exams')">Clear all</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="list-header">
+          <div class="list-title">Scheduled exams</div>
+          <span class="chip" id="e-count">—</span>
+        </div>
+        <div id="exams-list"><div class="empty"><span class="empty-icon">📭</span>Loading…</div></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  const API = 'https://script.google.com/macros/s/AKfycbz300__XPoTsb2hZ4EEMWRgA503M4v4BPAaLyVym8gRDrXQSXTNnxyTanKYgkrEqwV_Fw/exec';
+
+  function uid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  }
+
+  function toast(msg, isErr) {
+    const t = document.getElementById('toast');
+    t.textContent = (isErr ? '✕  ' : '✓  ') + msg;
+    t.style.display = 'block';
+    t.style.color = isErr ? 'var(--danger-text)' : 'var(--success-text)';
+    t.style.borderColor = isErr ? 'rgba(239,68,68,0.3)' : 'rgba(34,197,94,0.3)';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => { t.style.display = 'none'; }, 3000);
+  }
+
+  function switchPanel(name, el) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+    el.classList.add('active');
+  }
+
+  async function apiPost(body) {
+    const r = await fetch(API, { method: 'POST', body: JSON.stringify(body) });
+    return r.json();
+  }
+
+  async function apiGet(action) {
+    const r = await fetch(API + '?action=' + action);
+    return r.json();
+  }
+
+  function typeBadge(t) {
+    const map = { info: 'badge-info', warning: 'badge-warn', alert: 'badge-danger', event: 'badge-success' };
+    return `<span class="badge ${map[t] || 'badge-muted'}">${t || 'notice'}</span>`;
+  }
+
+  // ── Notices ──
+
+  async function postNotice() {
+    const title = document.getElementById('n-title').value.trim();
+    const msg   = document.getElementById('n-message').value.trim();
+    if (!title || !msg) return toast('Title and message are required', true);
+    try {
+      const res = await apiPost({
+        type: 'NOTICE_POST',
+        id: uid(),
+        noticeType: document.getElementById('n-type').value,
+        title,
+        message: msg,
+        expiry: document.getElementById('n-expiry').value,
+        popup: document.getElementById('n-popup').checked,
+        created: new Date().toISOString()
+      });
+      if (res.ok) {
+        toast('Notice posted!');
+        document.getElementById('n-title').value = '';
+        document.getElementById('n-message').value = '';
+        document.getElementById('n-expiry').value = '';
+        document.getElementById('n-popup').checked = false;
+        loadNotices();
+      } else toast(res.error || 'Unknown error', true);
+    } catch(e) { toast('Network error', true); }
+  }
+
+  async function deleteNotice(id) {
+    await apiPost({ type: 'NOTICE_DELETE', id });
+    toast('Notice deleted');
+    loadNotices();
+  }
+
+  async function toggleNotice(id) {
+    await apiPost({ type: 'NOTICE_TOGGLE', id });
+    loadNotices();
+  }
+
+  async function loadNotices() {
+    const list = document.getElementById('notices-list');
+    list.innerHTML = '<div class="empty"><span class="empty-icon">⏳</span>Loading…</div>';
+    try {
+      const rows = await apiGet('getNotices');
+      const count = document.getElementById('n-count');
+      if (!Array.isArray(rows) || !rows.length) {
+        list.innerHTML = '<div class="empty"><span class="empty-icon">📭</span>No notices yet</div>';
+        count.textContent = '0'; return;
+      }
+      count.textContent = rows.length;
+      list.innerHTML = rows.map(n => `
+        <div class="item">
+          <div class="item-body">
+            <div class="item-head">
+              ${typeBadge(n.type || n.noticeType)}
+              <span class="item-title">${n.title}</span>
+              ${n.popup ? '<span class="badge badge-accent">popup</span>' : ''}
+              ${n.active ? '<span class="badge badge-success">active</span>' : '<span class="badge badge-muted">inactive</span>'}
+            </div>
+            <div class="item-meta">${n.message}</div>
+            ${n.expiry ? `<div class="item-meta" style="margin-top:4px;color:var(--warn-text)">Expires: ${n.expiry}</div>` : ''}
+          </div>
+          <div class="item-actions">
+            <button class="icon-btn tog" title="${n.active ? 'Deactivate' : 'Activate'}" onclick="toggleNotice('${n.id}')">${n.active ? '⏸' : '▶'}</button>
+            <button class="icon-btn del" title="Delete" onclick="deleteNotice('${n.id}')">✕</button>
+          </div>
+        </div>`).join('');
+    } catch(e) {
+      list.innerHTML = '<div class="empty"><span class="empty-icon">⚠️</span>Failed to load. Check your connection.</div>';
+    }
+  }
+
+  // ── Exams ──
+
+  async function postExam() {
+    const subject = document.getElementById('e-subject').value.trim();
+    const title   = document.getElementById('e-title').value.trim();
+    const date    = document.getElementById('e-date').value;
+    if (!subject || !title || !date) return toast('Subject, title and date are required', true);
+    try {
+      const res = await apiPost({
+        type: 'EXAM_POST',
+        id: uid(),
+        subject, title, date,
+        duration: document.getElementById('e-duration').value || '',
+        note: document.getElementById('e-note').value.trim(),
+        created: new Date().toISOString()
+      });
+      if (res.ok) {
+        toast('Exam added!');
+        ['e-subject','e-title','e-date','e-duration','e-note'].forEach(id => document.getElementById(id).value = '');
+        loadExams();
+      } else toast(res.error || 'Unknown error', true);
+    } catch(e) { toast('Network error', true); }
+  }
+
+  async function deleteExam(id) {
+    await apiPost({ type: 'EXAM_DELETE', id });
+    toast('Exam removed');
+    loadExams();
+  }
+
+  async function loadExams() {
+    const list = document.getElementById('exams-list');
+    list.innerHTML = '<div class="empty"><span class="empty-icon">⏳</span>Loading…</div>';
+    try {
+      const rows = await apiGet('getExams');
+      const count = document.getElementById('e-count');
+      if (!Array.isArray(rows) || !rows.length) {
+        list.innerHTML = '<div class="empty"><span class="empty-icon">📭</span>No exams scheduled</div>';
+        count.textContent = '0'; return;
+      }
+      count.textContent = rows.length;
+      list.innerHTML = rows.map(ex => {
+        const d = ex.date ? new Date(ex.date) : null;
+        const dstr = d ? d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) : ex.date;
+        const upcoming = d && d > new Date();
+        return `<div class="item">
+          <div class="item-body">
+            <div class="item-head">
+              <span class="badge badge-accent">${ex.subject}</span>
+              <span class="item-title">${ex.title}</span>
+              ${upcoming ? '<span class="badge badge-info">upcoming</span>' : '<span class="badge badge-muted">past</span>'}
+            </div>
+            <div class="item-meta">
+              📅 ${dstr}
+              ${ex.duration ? ` &nbsp;·&nbsp; ⏱ ${ex.duration} mins` : ''}
+              ${ex.note ? ` &nbsp;·&nbsp; 📌 ${ex.note}` : ''}
+            </div>
+          </div>
+          <div class="item-actions">
+            <button class="icon-btn del" title="Remove" onclick="deleteExam('${ex.id}')">✕</button>
+          </div>
+        </div>`;
+      }).join('');
+    } catch(e) {
+      list.innerHTML = '<div class="empty"><span class="empty-icon">⚠️</span>Failed to load. Check your connection.</div>';
+    }
+  }
+
+  async function clearAll(type, target) {
+    if (!confirm('Clear ALL records from this sheet? This cannot be undone.')) return;
+    try {
+      await apiPost({ type });
+      toast('All records cleared');
+      if (target === 'notices') loadNotices();
+      else loadExams();
+    } catch(e) { toast('Network error', true); }
+  }
+
+  // ── Init ──
+  loadNotices();
+  loadExams();
+</script>
+</body>
+</html>
