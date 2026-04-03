@@ -513,9 +513,498 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
 @keyframes badgeShine{0%,100%{opacity:.45;filter:grayscale(.5)}50%{opacity:.7;filter:grayscale(.2)}}
 .rank-badge-item.current{animation:badgePulse 2.4s ease-in-out infinite;}
 .rank-badge-item.earned:not(.current){animation:badgeShine 3s ease-in-out infinite;}
+/* ── OVERLAY ── */
+#ts-boot {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #f4f7ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  /* Fade out the whole overlay at the end */
+  animation: tsBootExit 0.55s cubic-bezier(0.4,0,0.2,1) 5.1s forwards;
+}
+
+/* Subtle blue dot grid */
+#ts-boot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(37,99,235,0.12) 1px, transparent 1px);
+  background-size: 36px 36px;
+  animation: tsGridFade 0.6s ease-out 0.2s both;
+}
+
+@keyframes tsGridFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes tsBootExit {
+  0%   { opacity: 1; transform: scale(1);    pointer-events: all; }
+  100% { opacity: 0; transform: scale(1.04); pointer-events: none; }
+}
+
+/* ── PARTICLES ── */
+.ts-particle {
+  position: absolute;
+  left: var(--x); top: var(--y);
+  width: var(--s); height: var(--s);
+  border-radius: 50%;
+  background: #fbbf24;
+  opacity: 0;
+  animation: tsParticle var(--d) ease-out var(--dl) infinite;
+}
+
+@keyframes tsParticle {
+  0%   { opacity: 0; transform: translateY(0) scale(1); }
+  20%  { opacity: 0.5; }
+  100% { opacity: 0; transform: translateY(-60px) scale(0); }
+}
+
+/* ── RIPPLE RINGS ── */
+.ts-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  border-radius: 50%;
+  border: 2px solid;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ts-ring-1 {
+  width: 120px; height: 120px;
+  border-color: rgba(251,191,36,0.6);
+  animation: tsRing 0.7s ease-out 0.92s forwards;
+}
+.ts-ring-2 {
+  width: 200px; height: 200px;
+  border-color: rgba(37,99,235,0.3);
+  animation: tsRing 0.8s ease-out 1.0s forwards;
+}
+.ts-ring-3 {
+  width: 300px; height: 300px;
+  border-color: rgba(37,99,235,0.15);
+  animation: tsRing 0.9s ease-out 1.08s forwards;
+}
+
+@keyframes tsRing {
+  0%   { transform: translate(-50%,-50%) scale(0); opacity: 0.8; }
+  100% { transform: translate(-50%,-50%) scale(1);   opacity: 0; }
+}
+
+/* ── STAGE ── */
+.ts-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  z-index: 2;
+}
+
+/* ── BOLT WRAPPER ── */
+.ts-bolt-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Drops from sky */
+  animation: tsBoltDrop 0.38s cubic-bezier(0.22,1,0.36,1) 0.45s both;
+}
+
+@keyframes tsBoltDrop {
+  0%   { transform: translateY(-200px); opacity: 0; }
+  65%  { transform: translateY(10px);   opacity: 1; }
+  82%  { transform: translateY(-7px);   opacity: 1; }
+  100% { transform: translateY(0);      opacity: 1; }
+}
+
+/* ── BOLT SVG ── */
+.ts-bolt-svg {
+  width: 96px;
+  height: 128px;
+  /* Pulsing glow after landing */
+  animation: tsBoltPulse 1.8s ease-in-out 1.2s infinite;
+}
+
+@keyframes tsBoltPulse {
+  0%, 100% { filter: drop-shadow(0 0 16px rgba(245,158,11,0.7)) drop-shadow(0 0 40px rgba(245,158,11,0.3)); }
+  50%       { filter: drop-shadow(0 0 28px rgba(245,158,11,0.95)) drop-shadow(0 0 60px rgba(245,158,11,0.5)); }
+}
+
+/* Bolt path traces in */
+.ts-bolt-path {
+  stroke-dasharray: 500;
+  stroke-dashoffset: 500;
+  animation: tsBoltTrace 0.28s ease-out 0.48s forwards;
+}
+
+@keyframes tsBoltTrace {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Bolt ground shadow */
+.ts-bolt-shadow {
+  opacity: 0;
+  animation: tsShadowIn 0.3s ease-out 0.85s forwards;
+}
+
+@keyframes tsShadowIn {
+  to { opacity: 1; }
+}
+
+/* ── SHOCKWAVE ── */
+.ts-shockwave {
+  position: absolute;
+  bottom: -16px; left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 150px; height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse,
+    rgba(245,158,11,0.55) 0%,
+    rgba(37,99,235,0.2) 50%,
+    transparent 70%);
+  opacity: 0;
+  animation: tsShock 0.5s ease-out 0.87s forwards;
+}
+
+@keyframes tsShock {
+  0%   { transform: translateX(-50%) scaleX(0);   opacity: 1; }
+  50%  { transform: translateX(-50%) scaleX(1.6); opacity: 0.85; }
+  100% { transform: translateX(-50%) scaleX(2.8); opacity: 0; }
+}
+
+/* ── SPARKS ── */
+.ts-sparks {
+  position: absolute;
+  bottom: -8px; left: 50%;
+  transform: translateX(-50%);
+  width: 130px; height: 70px;
+  opacity: 0;
+  animation:
+    tsSparksIn  0.08s ease-out 0.87s forwards,
+    tsSparksOut 0.45s ease-out 0.97s forwards;
+}
+
+@keyframes tsSparksIn  { to { opacity: 1; } }
+@keyframes tsSparksOut { to { opacity: 0; } }
+
+.ts-spark {
+  position: absolute;
+  bottom: 0; left: 50%;
+  width: 2px;
+  height: var(--h);
+  border-radius: 2px;
+  background: linear-gradient(to top, transparent, #fbbf24, #fff);
+  transform-origin: bottom center;
+  transform: translateX(-50%) rotate(var(--a));
+  box-shadow: 0 0 4px #fbbf24;
+}
+
+/* ── GROUND LINE ── */
+.ts-ground-line {
+  position: absolute;
+  bottom: -26px; left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 220px; height: 2px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(37,99,235,0.3) 20%,
+    rgba(37,99,235,0.7) 50%,
+    rgba(37,99,235,0.3) 80%,
+    transparent);
+  border-radius: 99px;
+  animation: tsGroundLine 0.5s ease-out 0.92s forwards;
+}
+
+@keyframes tsGroundLine {
+  to { transform: translateX(-50%) scaleX(1); }
+}
+
+/* ── BRAND ── */
+.ts-brand {
+  margin-top: 18px;
+  text-align: center;
+  opacity: 0;
+  animation: tsBrandUp 0.55s cubic-bezier(0.34,1.56,0.64,1) 1.25s forwards;
+}
+
+@keyframes tsBrandUp {
+  0%   { opacity: 0; transform: translateY(16px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+.ts-brand-name {
+  font-family: 'Syne', 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: clamp(26px, 5vw, 36px);
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #1e3a8a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+}
+
+.ts-bolt-char {
+  font-style: normal;
+  font-size: 1.15em;
+  /* Gold gradient on the ⚡ emoji */
+  background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 60%, #d97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 8px rgba(245,158,11,0.5));
+  animation: tsBoltCharPulse 1.8s ease-in-out 1.8s infinite;
+}
+
+@keyframes tsBoltCharPulse {
+  0%, 100% { filter: drop-shadow(0 2px 8px rgba(245,158,11,0.5)); }
+  50%       { filter: drop-shadow(0 2px 16px rgba(245,158,11,0.9)); }
+}
+
+.ts-brand-sub {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 11px;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: rgba(37,99,235,0.55);
+  margin-top: 5px;
+  font-weight: 600;
+}
+
+/* ── LOADER ── */
+.ts-loader {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  animation: tsFadeIn 0.5s ease-out 1.6s forwards;
+}
+
+@keyframes tsFadeIn {
+  to { opacity: 1; }
+}
+
+.ts-loader-glass {
+  position: relative;
+  width: 60px; height: 60px;
+}
+
+/* Outer frosted disc */
+.ts-loader-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(37,99,235,0.15);
+  box-shadow:
+    0 4px 20px rgba(37,99,235,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+  backdrop-filter: blur(8px);
+}
+
+/* Main spinning arc — blue */
+.ts-loader-arc {
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  border: 2.5px solid transparent;
+  border-top-color: #2563eb;
+  border-right-color: rgba(37,99,235,0.35);
+  animation: tsSpin 0.85s linear infinite;
+  box-shadow: 0 0 0 0 transparent;
+  filter: drop-shadow(0 0 4px rgba(37,99,235,0.6));
+}
+
+/* Inner counter-arc — gold */
+.ts-loader-arc-2 {
+  position: absolute;
+  inset: 13px;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  border-bottom-color: #f59e0b;
+  border-left-color: rgba(245,158,11,0.35);
+  animation: tsSpin 1.5s linear infinite reverse;
+  filter: drop-shadow(0 0 3px rgba(245,158,11,0.6));
+}
+
+@keyframes tsSpin { to { transform: rotate(360deg); } }
+
+/* Centre pulsing dot — alternates blue/gold */
+.ts-loader-dot {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #2563eb;
+  box-shadow: 0 0 10px #2563eb, 0 0 24px rgba(37,99,235,0.4);
+  animation: tsDotPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes tsDotPulse {
+  0%, 100% {
+    transform: translate(-50%,-50%) scale(1);
+    background: #2563eb;
+    box-shadow: 0 0 10px #2563eb, 0 0 24px rgba(37,99,235,0.4);
+  }
+  50% {
+    transform: translate(-50%,-50%) scale(1.6);
+    background: #f59e0b;
+    box-shadow: 0 0 14px #f59e0b, 0 0 30px rgba(245,158,11,0.5);
+  }
+}
+
+/* Loading text */
+.ts-loader-text {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: rgba(37,99,235,0.5);
+  animation: tsTextBlink 1.6s ease-in-out infinite;
+}
+
+@keyframes tsTextBlink {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
+}
+
+/* ── FLASH ── */
+.ts-flash {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,252,235,0.7);
+  opacity: 0;
+  pointer-events: none;
+  animation: tsFlash 0.4s ease-out 0.87s forwards;
+}
+
+@keyframes tsFlash {
+  0%   { opacity: 0.8; }
+  100% { opacity: 0; }
+}
 </style>
 </head>
 <body>
+  
+  <div id="ts-boot">
+
+  <!-- Ripple rings that expand on bolt impact -->
+  <div class="ts-ring ts-ring-1"></div>
+  <div class="ts-ring ts-ring-2"></div>
+  <div class="ts-ring ts-ring-3"></div>
+
+  <!-- Floating ambient particles -->
+  <div class="ts-particle" style="--x:18%;--y:22%;--s:5px;--d:2.8s;--dl:1.9s"></div>
+  <div class="ts-particle" style="--x:80%;--y:18%;--s:3px;--d:3.2s;--dl:2.2s"></div>
+  <div class="ts-particle" style="--x:12%;--y:68%;--s:4px;--d:2.5s;--dl:2.0s"></div>
+  <div class="ts-particle" style="--x:88%;--y:72%;--s:6px;--d:3.6s;--dl:1.8s"></div>
+  <div class="ts-particle" style="--x:50%;--y:10%;--s:3px;--d:2.9s;--dl:2.4s"></div>
+  <div class="ts-particle" style="--x:35%;--y:85%;--s:4px;--d:3.1s;--dl:2.1s"></div>
+
+  <!-- Center stage -->
+  <div class="ts-stage">
+
+    <!-- Gold bolt drops from above -->
+    <div class="ts-bolt-wrap" id="tsBolt">
+      <svg class="ts-bolt-svg" viewBox="0 0 80 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="tsBoltGrad" x1="40" y1="0" x2="40" y2="120" gradientUnits="userSpaceOnUse">
+            <stop offset="0%"   stop-color="#fff9e6"/>
+            <stop offset="35%"  stop-color="#fcd34d"/>
+            <stop offset="70%"  stop-color="#f59e0b"/>
+            <stop offset="100%" stop-color="#d97706"/>
+          </linearGradient>
+          <linearGradient id="tsBoltShine" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"   stop-color="rgba(255,255,255,0.55)"/>
+            <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+          </linearGradient>
+          <filter id="tsGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="4" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="tsGlowSoft" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur stdDeviation="10" result="blur"/>
+            <feColorMatrix in="blur" type="matrix"
+              values="1 0.8 0 0 0  0.8 0.6 0 0 0  0 0 0 0 0  0 0 0 0.6 0" result="amber"/>
+            <feMerge><feMergeNode in="amber"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- Shadow glow beneath bolt -->
+        <ellipse cx="40" cy="115" rx="22" ry="5"
+          fill="rgba(245,158,11,0.25)"
+          class="ts-bolt-shadow"/>
+
+        <!-- Main bolt shape -->
+        <path class="ts-bolt-path"
+          d="M52 4 L18 56 L37 56 L24 116 L64 50 L45 50 L66 4 Z"
+          fill="url(#tsBoltGrad)"
+          stroke="rgba(255,255,255,0.6)"
+          stroke-width="1.2"
+          filter="url(#tsGlowSoft)"/>
+
+        <!-- Glass shine overlay -->
+        <path
+          d="M52 4 L18 56 L37 56 L24 116 L64 50 L45 50 L66 4 Z"
+          fill="url(#tsBoltShine)"
+          opacity="0.35"/>
+      </svg>
+
+      <!-- Impact shockwave -->
+      <div class="ts-shockwave"></div>
+
+      <!-- Ground sparks burst -->
+      <div class="ts-sparks" id="tsSparks">
+        <div class="ts-spark" style="--a:-75deg;--h:30px"></div>
+        <div class="ts-spark" style="--a:-55deg;--h:22px"></div>
+        <div class="ts-spark" style="--a:-35deg;--h:34px"></div>
+        <div class="ts-spark" style="--a:-15deg;--h:20px"></div>
+        <div class="ts-spark" style="--a: 15deg;--h:20px"></div>
+        <div class="ts-spark" style="--a: 35deg;--h:34px"></div>
+        <div class="ts-spark" style="--a: 55deg;--h:22px"></div>
+        <div class="ts-spark" style="--a: 75deg;--h:30px"></div>
+      </div>
+
+      <!-- Ground glow line -->
+      <div class="ts-ground-line"></div>
+    </div>
+
+    <!-- Brand name fades up after impact -->
+    <div class="ts-brand">
+      <div class="ts-brand-name">
+        <span class="ts-bolt-char">⚡</span>Thunderstudy
+      </div>
+      <div class="ts-brand-sub">CUET Preparation Dashboard</div>
+    </div>
+
+    <!-- Glassmorphic loading ring -->
+    <div class="ts-loader">
+      <div class="ts-loader-glass">
+        <div class="ts-loader-track"></div>
+        <div class="ts-loader-arc"></div>
+        <div class="ts-loader-arc-2"></div>
+        <div class="ts-loader-dot"></div>
+      </div>
+      <div class="ts-loader-text">Loading</div>
+    </div>
+
+  </div><!-- /ts-stage -->
+
+  <!-- Full-screen white flash on impact -->
+  <div class="ts-flash" id="tsFlash"></div>
+
+</div><!-- /ts-boot -->
 
 <!-- SIDEBAR -->
 <nav class="sidebar">
@@ -4444,6 +4933,18 @@ function saveIDFromPopup(){
   document.getElementById('sid-popup-modal').remove();
   renderHome(); // refresh to show ID in hero
 }
+(function () {
+  var boot = document.getElementById('ts-boot');
+  if (!boot) return;
+
+  // Remove from DOM after animation fully completes
+  // 3.1s exit start + 0.55s exit duration + 100ms buffer
+  setTimeout(function () {
+    if (boot && boot.parentNode) {
+      boot.parentNode.removeChild(boot);
+    }
+  }, 5000);
+})();
 </script>
 </body>
 </html>
