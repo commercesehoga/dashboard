@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -359,6 +360,7 @@ select.fi option{background:var(--card2);} textarea.fi{resize:vertical;min-heigh
 <script>
 /* ══════ CONFIG ══════ */
 const GS='https://script.google.com/macros/s/AKfycbxrI9TAPt1jNgDH4wiBmaPUTt69KQD8AlkB1f_PZMSi3zo8aJjw-_N-1cF8ST3u1vMZ/exec';
+const GS_ADMIN='https://script.google.com/macros/s/AKfycbz300__XPoTsb2hZ4EEMWRgA503M4v4BPAaLyVym8gRDrXQSXTNnxyTanKYgkrEqwV_Fw/exec';
 const SMAP={all:'📚 All',bst:'📊 Business Studies',eco:'📈 Economics',acc:'📒 Accountancy',eng:'📝 English',gat:'🧠 General Aptitude',phy:'⚛️ Physics',che:'🧪 Chemistry',bio:'🔬 Biology',mat:'📐 Mathematics',his:'📜 History',geo:'🌏 Geography',pol:'🏛️ Political Science',psy:'🧠 Psychology',pe:'🏃 Physical Education'};
 
 /* ══════ ENCRYPTED CREDENTIALS ══════
@@ -425,11 +427,39 @@ function sE(d){localStorage.setItem('ts_admin_exams',JSON.stringify(d));}
 function gR(){try{return JSON.parse(localStorage.getItem('ts_admin_rewards')||'[]');}catch(e){return[];}}
 function sR(d){localStorage.setItem('ts_admin_rewards',JSON.stringify(d));}
 
+/* ══════ SHEET SYNC ══════ */
+async function loadNoticesFromSheet(){
+  try{
+    const res=await fetch(GS_ADMIN+'?action=getNotices',{redirect:'follow'});
+    const text=await res.text(),clean=text.replace(/^\)\]\}'\s*/,'').trim();
+    if(clean&&clean[0]==='['){
+      const ns=JSON.parse(clean);
+      if(Array.isArray(ns)){sN(ns);return ns;}
+    }
+  }catch(e){console.warn('Notice sync failed',e);}
+  return gN();
+}
+async function loadExamsFromSheet(){
+  try{
+    const res=await fetch(GS_ADMIN+'?action=getExams',{redirect:'follow'});
+    const text=await res.text(),clean=text.replace(/^\)\]\}'\s*/,'').trim();
+    if(clean&&clean[0]==='['){const es=JSON.parse(clean);sE(es);return es;}
+  }catch(e){console.warn('Exam sync failed',e);}
+  return gE();
+}
+async function sheetPost(payload){
+  try{await fetch(GS_ADMIN,{method:'POST',body:JSON.stringify(payload)});}
+  catch(e){console.warn('Sheet POST failed',e);}
+}
+
 /* ══════ INIT ══════ */
-function initAdmin(){
+async function initAdmin(){
   updTime();setInterval(updTime,60000);
+  toast('🔄 Syncing from Google Sheet…','w');
+  await Promise.all([loadNoticesFromSheet(),loadExamsFromSheet()]);
   renderOverview();loadAnalytics(false);
   log('INIT','Admin panel initialized');
+  toast('✅ Sheet data loaded');
 }
 function updTime(){const el=document.getElementById('ovtime');if(el)el.textContent=new Date().toLocaleString('en-IN',{weekday:'long',day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});}
 function refreshAll(){GSD=null;renderOverview();loadAnalytics(true);toast('↺ Refreshed');}
@@ -451,7 +481,11 @@ function go(page){
   document.getElementById('page-'+page).classList.add('active');
   document.querySelectorAll('.ni').forEach(n=>{if(n.getAttribute('onclick')===`go('${page}')`)n.classList.add('active');});
   Object.values(ACH).forEach(c=>{try{c.destroy();}catch(e){}});ACH={};
-  const m={notices:renderNotices,exams:renderExams,rewards:renderRewards,logs:renderLogs};
+const m={
+  notices:async()=>{toast('🔄 Syncing…','w');const _ns=await loadNoticesFromSheet();if(Array.isArray(_ns)){renderNotices();toast('✅ Notices synced');}},
+  exams:  async()=>{toast('🔄 Syncing…','w');await loadExamsFromSheet();renderExams();toast('✅ Exams synced');},
+  rewards:renderRewards,logs:renderLogs
+};
   if(m[page])m[page]();
   else if(page==='analytics')loadAnalytics(false);
   else if(page==='reports')loadReports(false);
@@ -486,19 +520,39 @@ const NT={info:{label:'Info',color:'var(--acc)',bg:'rgba(79,110,247,.12)',border
   exam:{label:'Exam',color:'var(--pink)',bg:'rgba(236,72,153,.12)',border:'rgba(236,72,153,.28)',icon:'📝'},
   motivation:{label:'Motivation',color:'var(--green)',bg:'rgba(16,185,129,.12)',border:'rgba(16,185,129,.28)',icon:'💪'}};
 
-function postNotice(){
+async function postNotice(){
   const type=document.getElementById('n-type').value,title=document.getElementById('n-title').value.trim(),msg=document.getElementById('n-msg').value.trim();
   const exp=document.getElementById('n-exp').value,popup=document.getElementById('n-popup').value;
   if(!title||!msg){toast('❌ Title & message required','e');return;}
-  const ns=gN();
-  ns.unshift({id:'n_'+Date.now(),type,title,message:msg,expiry:exp||null,popup:popup==='1',active:true,created:new Date().toISOString()});
-  sN(ns);
+  const notice={id:'n_'+Date.now(),type,title,message:msg,expiry:exp||null,popup:popup==='1',active:true,created:new Date().toISOString()};
+  const ns=gN();ns.unshift(notice);sN(ns);
   document.getElementById('n-title').value='';document.getElementById('n-msg').value='';document.getElementById('n-exp').value='';
-  log('NOTICE',`Posted: "${title}" (${type})`);toast('✅ Notice posted!');autoPushBroadcast();renderNotices();
+  log('NOTICE',`Posted: "${title}" (${type})`);autoPushBroadcast();renderNotices();
+  toast('⏳ Saving to Sheet…','w');
+  await sheetPost({type:'NOTICE_POST',noticeType:notice.type,...notice});
+  toast('✅ Notice saved to Google Sheet!');
 }
-function deleteNotice(id){sN(gN().filter(n=>n.id!==id));autoPushBroadcast();autoPushBroadcast();renderNotices();toast('🗑️ Notice deleted');log('NOTICE',`Deleted ${id}`);}
-function toggleNotice(id){const ns=gN(),n=ns.find(x=>x.id===id);if(n)n.active=!n.active;sN(ns);autoPushBroadcast();renderNotices();toast(n?.active?'✅ Enabled':'⏸️ Hidden');}
-function clearAllNotices(){if(!confirm('Clear all notices?'))return;sN([]);renderNotices();toast('🗑️ Cleared');log('NOTICE','Cleared all');}
+async function deleteNotice(id){
+  sN(gN().filter(n=>n.id!==id));
+  autoPushBroadcast();
+  renderNotices();
+  log('NOTICE',`Deleted ${id}`);
+  toast('⏳ Removing from Sheet…','w');
+  await sheetPost({type:'NOTICE_DELETE',id});
+  toast('🗑️ Notice deleted from Sheet');
+}
+function toggleNotice(id){
+  const ns=gN(),n=ns.find(x=>x.id===id);
+  if(n)n.active=!n.active;sN(ns);autoPushBroadcast();renderNotices();
+  toast(n?.active?'✅ Enabled':'⏸️ Hidden');
+  sheetPost({type:'NOTICE_TOGGLE',id});
+}
+function clearAllNotices(){
+  if(!confirm('Clear all notices?'))return;
+  sN([]);renderNotices();
+  sheetPost({type:'NOTICE_CLEAR'}).then(()=>toast('🗑️ All notices cleared from Sheet'));
+  log('NOTICE','Cleared all');
+}
 
 function buildNC(n,actions=true){
   const t=NT[n.type]||NT.info,exp=n.expiry&&new Date(n.expiry)<new Date();
@@ -524,15 +578,28 @@ function buildNC(n,actions=true){
 function renderNotices(){const el=document.getElementById('notices-list');if(!el)return;const ns=gN();el.innerHTML=ns.length?ns.map(n=>buildNC(n,true)).join(''):`<div class="empty"><div class="ei">📭</div><div class="et">No notices yet</div><div class="es">Post above to start.</div></div>`;}
 
 /* ══════ EXAMS ══════ */
-function addExam(){
+async function addExam(){
   const title=document.getElementById('e-title').value.trim(),date=document.getElementById('e-date').value;
   if(!title||!date){toast('❌ Title & date required','e');return;}
-  const es=gE();
-  es.unshift({id:'e_'+Date.now(),subject:document.getElementById('e-subj').value,title,date,duration:parseInt(document.getElementById('e-dur').value)||60,note:document.getElementById('e-note').value.trim(),active:true,created:new Date().toISOString()});
-  sE(es);['e-title','e-note','e-date'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  log('EXAM',`Scheduled: "${title}" on ${date}`);toast('✅ Exam scheduled!');autoPushBroadcast();renderExams();}
-function deleteExam(id){sE(gE().filter(e=>e.id!==id));autoPushBroadcast();renderExams();toast('🗑️ Removed');log('EXAM',`Deleted ${id}`);}
-function clearAllExams(){if(!confirm('Clear all exams?'))return;sE([]);renderExams();toast('🗑️ Cleared');}
+  const exam={id:'e_'+Date.now(),subject:document.getElementById('e-subj').value,title,date,duration:parseInt(document.getElementById('e-dur').value)||60,note:document.getElementById('e-note').value.trim(),active:true,created:new Date().toISOString()};
+  const es=gE();es.unshift(exam);sE(es);
+  ['e-title','e-note','e-date'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  log('EXAM',`Scheduled: "${title}" on ${date}`);autoPushBroadcast();renderExams();
+  toast('⏳ Saving to Sheet…','w');
+  await sheetPost({type:'EXAM_POST',...exam});
+  toast('📅 Exam saved to Google Sheet!');
+}
+function deleteExam(id){
+  sE(gE().filter(e=>e.id!==id));autoPushBroadcast();renderExams();
+  sheetPost({type:'EXAM_DELETE',id}).then(()=>toast('🗑️ Exam removed from Sheet'));
+  log('EXAM',`Deleted ${id}`);
+}
+function clearAllExams(){
+  if(!confirm('Clear all exams?'))return;
+  sE([]);renderExams();
+  sheetPost({type:'EXAM_CLEAR'}).then(()=>toast('🗑️ All exams cleared from Sheet'));
+  log('EXAM','Cleared all');
+}
 
 function getCD(dateStr){
   const diff=new Date(dateStr)-new Date();
