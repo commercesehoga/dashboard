@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -795,6 +796,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
    CONFIG
 ══════════════════════════════════════════ */
 const GS_URL="https://script.google.com/macros/s/AKfycbyEsrvdSuRh06TIKPK0ozP-jQNjqHO8PaIeBcW5r45aGdr4H3ZVFHpKMm3xaDHrYmqX/exec";
+const NOTICES_URL = "https://script.google.com/macros/s/AKfycbz300__XPoTsb2hZ4EEMWRgA503M4v4BPAaLyVym8gRDrXQSXTNnxyTanKYgkrEqwV_Fw/exec";
 const SUBJECT_URLS={bst:"https://commercesehoga.github.io/commerce/bst/",eco:"https://commercesehoga.github.io/commerce/eco/",acc:"https://commercesehoga.github.io/commerce/acc/",eng:"https://commercesehoga.github.io/english/",gat:"https://commercesehoga.github.io/gat/",phy:"https://commercesehoga.github.io/science/phy/",che:"https://commercesehoga.github.io/science/che/",bio:"https://commercesehoga.github.io/science/bio/",mat:"https://commercesehoga.github.io/science/mat/",his:"https://commercesehoga.github.io/humanities/his/",geo:"https://commercesehoga.github.io/humanities/geo/",pol:"https://commercesehoga.github.io/humanities/pol/",psy:"https://commercesehoga.github.io/humanities/psy/",pe:"https://commercesehoga.github.io/physical/"};
 
 const SUBJECTS_MASTER=[
@@ -1347,10 +1349,20 @@ let CI={},LB_DATA=null,currentSubjectTab=null,currentMockSubj=null,currentAnalyt
 
 /* ══════ ADMIN PANEL BRIDGE ══════ */
 function getAdminNotices(){
-  try{return JSON.parse(localStorage.getItem('ts_admin_notices')||'[]');}catch(e){return[];}
+  try{return JSON.parse(sessionStorage.getItem('ts_live_notices')||'[]');}catch(e){return[];}
 }
 function getAdminExams(){
-  try{return JSON.parse(localStorage.getItem('ts_admin_exams')||'[]');}catch(e){return[];}
+  try{return JSON.parse(sessionStorage.getItem('ts_live_exams')||'[]');}catch(e){return[];}
+}
+async function fetchLiveNoticesAndExams(){
+  try{
+    const [nRes, eRes] = await Promise.all([
+      fetch(NOTICES_URL+'?action=getNotices').then(r=>r.json()),
+      fetch(NOTICES_URL+'?action=getExams').then(r=>r.json())
+    ]);
+    if(Array.isArray(nRes)) sessionStorage.setItem('ts_live_notices', JSON.stringify(nRes));
+    if(Array.isArray(eRes)) sessionStorage.setItem('ts_live_exams', JSON.stringify(eRes));
+  }catch(e){console.log('Notice fetch failed:',e);}
 }
 function getMyRewards(studentName){
   try{
@@ -4212,24 +4224,25 @@ document.querySelector('.main').addEventListener('scroll',function(){
   const btn=document.getElementById('btt-btn');
   if(btn)btn.classList.toggle('visible',this.scrollTop>300);
 },{passive:true});
-  syncHistory();
+syncHistory();
 
-  if(shouldShowOnboarding()){
+  fetchLiveNoticesAndExams().then(()=>{
+    if(shouldShowOnboarding()){
+      renderHome();
+      startOnboarding();
+      return;
+    }
     renderHome();
-    startOnboarding();
-    return;
-  }
-  // Auto-apply broadcast if admin is on same device/domain
-
-  renderHome();
+  });
   
   // Auto-refresh notices every 60 seconds
 setInterval(()=>{
-  const home=document.getElementById('home-content');
-  if(home&&document.getElementById('page-home').classList.contains('active')){
-    const noticeArea=home.querySelector('[id^="admin-notice"]');
-    renderHome();
-  }
+  fetchLiveNoticesAndExams().then(()=>{
+    const home=document.getElementById('home-content');
+    if(home&&document.getElementById('page-home').classList.contains('active')){
+      renderHome();
+    }
+  });
 },60000);
   
   // Show Student ID popup for existing users who don't have one
