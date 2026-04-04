@@ -1,5 +1,7 @@
 
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -929,6 +931,66 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
 .ts-stat-l{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#94a3b8;margin-top:3px;}
 .ts-hero-footer{padding:10px 20px;display:flex;align-items:center;justify-content:center;background:#f8fbff;}
 .ts-footer-aspirant{font-size:12px;font-weight:700;color:#64a0d4;}
+/* ★ START CSS ★ */
+ 
+/* ── BOOKMARK BUTTON on card ── */
+.bm-btn{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:var(--card2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;z-index:10;transition:all .2s cubic-bezier(.34,1.56,.64,1);box-shadow:0 1px 6px rgba(0,0,0,.08);}
+.bm-btn:hover{transform:scale(1.2);box-shadow:0 4px 14px rgba(0,0,0,.15);}
+.bm-btn.bm-green{background:linear-gradient(135deg,#10b981,#059669);border-color:transparent;}
+.bm-btn.bm-yellow{background:linear-gradient(135deg,#f59e0b,#d97706);border-color:transparent;}
+.bm-btn.bm-red{background:linear-gradient(135deg,#f43f5e,#e11d48);border-color:transparent;}
+ 
+/* ── BOOKMARK OVERLAY ── */
+#bm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:5000;align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:16px;overflow-y:auto;}
+#bm-overlay.open{display:flex;}
+ 
+/* ── BOOKMARK MODAL ── */
+#bm-modal{background:var(--card);border-radius:24px;max-width:540px;width:100%;border:1px solid var(--border);box-shadow:0 24px 80px rgba(79,110,247,.18);animation:mIn .35s cubic-bezier(.34,1.56,.64,1) both;max-height:90vh;overflow-y:auto;overflow-x:hidden;margin:auto;}
+.bm-modal-hdr{padding:20px 22px 14px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--card);z-index:2;border-radius:24px 24px 0 0;display:flex;flex-direction:column;}
+.bm-modal-title{font-size:16px;font-weight:900;display:flex;align-items:center;gap:8px;}
+.bm-modal-sub{font-size:11px;color:var(--text3);margin-top:3px;}
+.bm-close{cursor:pointer;color:var(--text3);font-size:24px;line-height:1;margin-left:auto;flex-shrink:0;}
+.bm-body{padding:18px 22px 22px;}
+ 
+/* ── LEVEL SELECTOR ── */
+.bm-level-row{display:flex;gap:9px;margin-bottom:18px;}
+.bm-level-btn{flex:1;padding:11px 8px;border-radius:14px;border:2px solid var(--border);background:var(--card2);cursor:pointer;text-align:center;transition:all .2s cubic-bezier(.34,1.56,.64,1);font-family:var(--fn);}
+.bm-level-btn:hover{transform:translateY(-2px);box-shadow:var(--sh);}
+.bm-level-btn.sel-green{background:rgba(16,185,129,.12);border-color:#10b981;box-shadow:0 4px 14px rgba(16,185,129,.2);}
+.bm-level-btn.sel-yellow{background:rgba(245,158,11,.12);border-color:#f59e0b;box-shadow:0 4px 14px rgba(245,158,11,.2);}
+.bm-level-btn.sel-red{background:rgba(244,63,94,.12);border-color:#f43f5e;box-shadow:0 4px 14px rgba(244,63,94,.2);}
+.bm-level-icon{font-size:22px;margin-bottom:4px;}
+.bm-level-lbl{font-size:12px;font-weight:800;}
+.bm-level-desc{font-size:9px;color:var(--text3);margin-top:2px;}
+ 
+/* ── QUESTION GRID (edit mode) ── */
+.bm-q-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:9px;}
+.bm-q-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin-bottom:10px;}
+@media(max-width:480px){.bm-q-grid{grid-template-columns:repeat(8,1fr);}}
+.bm-q-box{aspect-ratio:1;border-radius:8px;background:rgba(16,185,129,.1);border:1.5px solid rgba(16,185,129,.25);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;font-family:var(--mono);color:#10b981;cursor:pointer;transition:all .15s cubic-bezier(.34,1.56,.64,1);user-select:none;}
+.bm-q-box:hover{transform:scale(1.15);}
+.bm-q-box.wrong{background:rgba(244,63,94,.12);border-color:rgba(244,63,94,.4);color:#f43f5e;}
+ 
+/* ── SAVE BUTTON ── */
+.bm-save-btn{width:100%;padding:13px;border-radius:15px;font-size:14px;font-weight:800;border:none;cursor:pointer;font-family:var(--fn);background:linear-gradient(135deg,#4f6ef7,#7c3aed);color:#fff;box-shadow:0 6px 20px rgba(79,110,247,.3);transition:all .18s;margin-top:6px;}
+.bm-save-btn:hover{transform:translateY(-1px);filter:brightness(1.07);}
+.bm-save-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+ 
+/* ── ANSWER GRID (view mode) ── */
+.bm-stat-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.bm-stat-pill{flex:1;min-width:70px;background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:10px 8px;text-align:center;}
+.bm-stat-pill .sv{font-size:18px;font-weight:900;font-family:var(--mono);line-height:1;}
+.bm-stat-pill .sl{font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:3px;}
+.bm-ans-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-bottom:14px;}
+@media(max-width:480px){.bm-ans-grid{grid-template-columns:repeat(8,1fr);}}
+.bm-ans-box{aspect-ratio:1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;font-family:var(--mono);border:1.5px solid;}
+.bm-ans-box.correct{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.3);color:#10b981;}
+.bm-ans-box.wrong{background:rgba(244,63,94,.12);border-color:rgba(244,63,94,.4);color:#f43f5e;}
+.bm-pdf-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;background:rgba(244,63,94,.07);border:1.5px solid rgba(244,63,94,.25);border-radius:12px;font-size:13px;font-weight:800;color:#f43f5e;cursor:pointer;transition:all .2s;font-family:var(--fn);text-decoration:none;margin-top:12px;}
+.bm-pdf-btn:hover{transform:translateY(-1px);background:rgba(244,63,94,.12);}
+.bm-action-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+ 
+/* ★ END CSS ★ */
 </style>
 </head>
 <body>
@@ -2826,10 +2888,9 @@ function renderMocks(){
   sv.forEach(sId=>{const s=SUBJECTS_MASTER.find(x=>x.id===sId);if(!s)return;H+=`<div class="subj-tab ${sId===currentMockSubj?'active':''}" onclick="switchMockSubj('${sId}')">${s.icon} ${s.name}</div>`;});
   H+=`</div>`;
 
-  // GIFT PROGRESS BAR for current subject
   const giftInfo=getMockGiftInfo(currentMockSubj);
   H+=`<div style="background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(79,110,247,.05));border:1.5px solid rgba(124,58,237,.2);border-radius:16px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-    <div style="font-size:30px;">${giftInfo.allDone?'🎁':'🎁'}</div>
+    <div style="font-size:30px;">🎁</div>
     <div style="flex:1;min-width:160px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
         <div style="font-size:12px;font-weight:800;color:var(--acc);">Section Gift Progress</div>
@@ -2838,7 +2899,6 @@ function renderMocks(){
       <div style="height:7px;background:var(--border);border-radius:7px;overflow:hidden;margin-bottom:4px;">
         <div style="height:100%;width:${giftInfo.totalSections>0?(giftInfo.completedSections/giftInfo.totalSections*100).toFixed(1):0}%;background:linear-gradient(90deg,#7c3aed,#4f6ef7);border-radius:7px;transition:width 1s ease;"></div>
       </div>
-      <div style="font-size:10px;color:var(--text3);">${giftInfo.allDone?'🎉 All sections complete!':giftInfo.completedSections>0?`${giftInfo.totalSections-giftInfo.completedSections} more sections needed`:'Complete sections with 80%+ to earn HP gifts!'}</div>
     </div>
     <button class="btn btn-prim" style="background:linear-gradient(135deg,#7c3aed,#4f6ef7);font-size:12px;" onclick="openGiftProgressModal()">🎁 View Rewards</button>
   </div>`;
@@ -2846,59 +2906,24 @@ function renderMocks(){
   const subj=SUBJECTS_MASTER.find(s=>s.id===currentMockSubj);
   if(subj){
     const allCh=subj.chapters,attempted=allCh.filter(c=>lR(currentMockSubj,c.id));
-    H+=`<div class="stat-grid" style="margin-bottom:18px;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));"><div class="stat-card"><div class="stat-icon bg-acc">📚</div><div class="stat-val c-acc">${allCh.length}</div><div class="stat-lbl">Total Tests</div></div><div class="stat-card"><div class="stat-icon bg-green">✅</div><div class="stat-val c-green">${attempted.length}</div><div class="stat-lbl">Completed</div></div><div class="stat-card"><div class="stat-icon bg-yellow">⏳</div><div class="stat-val c-yellow">${allCh.length-attempted.length}</div><div class="stat-lbl">Remaining</div></div></div>`;
+    H+=`<div class="stat-grid" style="margin-bottom:18px;"><div class="stat-card"><div class="stat-val c-acc">${allCh.length}</div><div class="stat-lbl">Total Tests</div></div></div>`;
+    
     const groupTypes=currentMockSubj==='eng'?['vocabulary','grammar','reading','rc','fullmock','pyq','special']:ALL_TYPES_ORDERED;
+    
     groupTypes.forEach(type=>{
       const typeTests=allCh.filter(c=>c.type===type);if(!typeTests.length)return;
-      const typeDone=typeTests.filter(c=>lR(currentMockSubj,c.id));
       const bgColor=TC[type]||'rgba(79,110,247,.08)',txColor=TX[type]||'var(--acc)';
-      const awarded=JSON.parse(localStorage.getItem('ts_hp_sections')||'{}');
-      const sectionKey=`${currentMockSubj}_${type}`;
-      const sectionDone=typeTests.every(ch=>{const r=lR(currentMockSubj,ch.id);return r&&r.percentage>=80;});
-      const sectionAwarded=!!awarded[sectionKey];
+      
       H+=`<div style="margin-bottom:22px;">
-        <div class="mock-type-hdr" style="background:${bgColor};color:${txColor};">
-          ${TYPE_LABELS[type]||type}
-          <span style="margin-left:auto;font-size:10px;background:rgba(0,0,0,.06);border-radius:18px;padding:2px 9px;">${typeDone.length}/${typeTests.length} done</span>
-          ${sectionDone?`<span style="font-size:10px;background:${sectionAwarded?'rgba(124,58,237,.15)':'rgba(16,185,129,.15)'};color:${sectionAwarded?'#7c3aed':'var(--green)'};border-radius:18px;padding:2px 9px;margin-left:5px;">${sectionAwarded?'💜 +HP Claimed!':'✅ 80%+ Done!'}</span>`:''}
-        </div>`;
-
-      // CLAIM BANNER — always show gift box button, state changes based on claimed/not
-      if(sectionDone){
-        if(!sectionAwarded){
-          H+=`<div style="background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(79,110,247,.08));border:2px solid rgba(124,58,237,.35);border-radius:14px;padding:13px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-            <div style="font-size:28px;animation:bounce .8s ease infinite alternate;">🎁</div>
-            <div style="flex:1;min-width:140px;">
-              <div style="font-size:13px;font-weight:800;color:var(--acc);">Gift Ready to Claim!</div>
-              <div style="font-size:11px;color:var(--text3);margin-top:2px;">All ${TL[type]||type} done with 80%+ 🎉</div>
-            </div>
-            <button onclick="checkSectionCompletion();renderMocks();" class="btn btn-prim" style="background:linear-gradient(135deg,#7c3aed,#4f6ef7);font-size:12px;padding:9px 18px;">🎁 Claim +HP Gift</button>
-          </div>`;
-        } else {
-          H+=`<div style="background:rgba(124,58,237,.06);border:1.5px solid rgba(124,58,237,.2);border-radius:12px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;">
-            <div style="font-size:20px;">💜</div>
-            <div style="flex:1;font-size:12px;font-weight:700;color:#7c3aed;">HP Gift Claimed! Great work on ${TL[type]||type}!</div>
-            <button onclick="openGiftProgressModal()" class="btn btn-ghost" style="font-size:11px;padding:6px 12px;">📊 My Progress</button>
-          </div>`;
-        }
-      } else {
-        // Show progress toward gift for this section
-        const pct=typeTests.length>0?typeDone.length/typeTests.length*100:0;
-        const above80=typeTests.filter(ch=>{const r=lR(currentMockSubj,ch.id);return r&&r.percentage>=80;}).length;
-        H+=`<div style="background:var(--card2);border-radius:11px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;">
-          <div style="font-size:18px;">🎁</div>
-          <div style="flex:1;">
-            <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:3px;">Section Gift — ${above80}/${typeTests.length} at 80%+</div>
-            <div style="height:4px;background:var(--border);border-radius:4px;overflow:hidden;"><div style="height:100%;width:${typeTests.length>0?(above80/typeTests.length*100).toFixed(0):0}%;background:linear-gradient(90deg,#7c3aed,#4f6ef7);border-radius:4px;"></div></div>
-          </div>
-          <button onclick="openGiftProgressModal()" class="btn btn-ghost" style="font-size:11px;padding:6px 12px;">View All</button>
-        </div>`;
-      }
-
-      H+=`<div class="mock-grid">`;
+        <div class="mock-type-hdr" style="background:${bgColor};color:${txColor};">${TYPE_LABELS[type]||type}</div>
+        <div class="mock-grid">`;
+      
       typeTests.forEach((ch,i)=>{
         const r=lR(currentMockSubj,ch.id),clr=r?rClr(r.percentage):'var(--text3)';
-        H+=`<div class="mock-card ${r?'done':''}" onclick="window.open('${(SUBJECT_URLS[currentMockSubj]||'')+ch.id}.html','_blank')" style="cursor:pointer;"><div class="mock-num">${i+1}</div><div style="width:36px;height:36px;border-radius:9px;background:${bgColor};display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:8px;">${TYPE_ICONS[type]||subj.icon}</div><div class="mock-title">${ch.name}</div><div class="mock-subj" style="color:${txColor}">${TL[type]}</div>${r?`<div class="mock-score" style="color:${clr}">${r.percentage.toFixed(1)}%</div><div class="mock-date">${r.score}/${r.maxScore} · ${fd(r.date)}</div>`:'<div style="font-size:11px;color:var(--text3);">Not attempted</div>'}</div>`;
+        H+=`<div class="mock-card ${r?'done':''}" onclick="window.open('${(SUBJECT_URLS[currentMockSubj]||'')+ch.id}.html','_blank')">
+          <div class="mock-title">${ch.name}</div>
+          ${r?`<div class="mock-score" style="color:${clr}">${r.percentage.toFixed(1)}%</div>`:'<div style="font-size:11px;color:var(--text3);">Not attempted</div>'}
+        </div>`;
       });
       H+=`</div></div>`;
     });
@@ -5014,6 +5039,190 @@ function saveIDFromPopup(){
     }
   }, 5000);
 })();
+/* ══════════════════════════════════════════
+   BOOKMARK SYSTEM
+══════════════════════════════════════════ */
+function getBMs(){try{return JSON.parse(localStorage.getItem('ts_bookmarks')||'{}');}catch(e){return{};}}
+function saveBMs(d){localStorage.setItem('ts_bookmarks',JSON.stringify(d));}
+function getBMKey(sId,cId){return sId+'_'+cId;}
+ 
+const BM_LEVELS={
+  green: {label:'Easy',icon:'🟢',desc:'Well prepared',color:'#10b981',cls:'bm-green'},
+  yellow:{label:'Medium',icon:'🟡',desc:'Needs revision',color:'#f59e0b',cls:'bm-yellow'},
+  red:   {label:'Hard',icon:'🔴',desc:'Needs practice',color:'#f43f5e',cls:'bm-red'},
+};
+ 
+function ensureBMModal(){
+  if(document.getElementById('bm-overlay'))return;
+  const ov=document.createElement('div');
+  ov.id='bm-overlay';
+  ov.innerHTML='<div id="bm-modal"></div>';
+  ov.addEventListener('click',e=>{if(e.target===ov)closeBMModal();});
+  document.body.appendChild(ov);
+}
+function openBMModal(){ensureBMModal();document.getElementById('bm-overlay').classList.add('open');}
+function closeBMModal(){const ov=document.getElementById('bm-overlay');if(ov)ov.classList.remove('open');}
+ 
+function openBookmark(sId,cId,chName,e){
+  e.stopPropagation();
+  const result=lR(sId,cId);
+  if(!result){showToast('📝 Attempt this mock first before bookmarking!','error',2800);return;}
+  ensureBMModal();
+  const bms=getBMs();
+  const key=getBMKey(sId,cId);
+  if(bms[key]){renderBMViewModal(sId,cId,chName,bms[key],result);}
+  else{renderBMEditModal(sId,cId,chName,result,null);}
+  openBMModal();
+}
+ 
+function renderBMEditModal(sId,cId,chName,result,existing){
+  const selLv=existing?existing.level:'';
+  const wrongQs=existing?(existing.wrongQs||[]):[];
+  const total=result.maxScore||50;
+ 
+  const lvHTML=Object.entries(BM_LEVELS).map(([k,v])=>
+    `<div class="bm-level-btn ${selLv===k?'sel-'+k:''}" id="bm-lv-${k}" onclick="bmSelectLevel('${k}')">
+      <div class="bm-level-icon">${v.icon}</div>
+      <div class="bm-level-lbl" style="color:${v.color}">${v.label}</div>
+      <div class="bm-level-desc">${v.desc}</div>
+    </div>`).join('');
+ 
+  const qBoxes=Array.from({length:total},(_,i)=>{
+    const n=i+1;const isW=wrongQs.includes(n);
+    return`<div class="bm-q-box${isW?' wrong':''}" id="bmq-${n}" onclick="bmToggleQ(${n})" title="Q${n}">${n}</div>`;
+  }).join('');
+ 
+  document.getElementById('bm-modal').innerHTML=`
+    <div class="bm-modal-hdr">
+      <div class="bm-modal-title">🔖 Bookmark Mock<span class="bm-close" onclick="closeBMModal()" style="margin-left:auto">×</span></div>
+      <div class="bm-modal-sub">${escH(chName)} · ${result.score}/${result.maxScore} · ${result.percentage.toFixed(1)}%</div>
+    </div>
+    <div class="bm-body">
+      <div class="bm-q-label">Step 1 — Rate this mock</div>
+      <div class="bm-level-row">${lvHTML}</div>
+      <div class="bm-q-label">Step 2 — Mark wrong questions <span style="color:var(--text3);font-weight:500;text-transform:none;letter-spacing:0;font-size:10px;">(green=correct · click=wrong)</span></div>
+      <div class="bm-q-grid" id="bm-q-grid">${qBoxes}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--text3);margin-bottom:16px;">
+        <span id="bm-wrong-count">${wrongQs.length} questions marked wrong</span>
+        <button onclick="bmClearAll()" style="background:none;border:none;color:var(--acc);font-size:11px;font-weight:700;cursor:pointer;font-family:var(--fn);">Clear All</button>
+      </div>
+      <button class="bm-save-btn" id="bm-save-btn" onclick="saveBM('${sId}','${cId}','${chName.replace(/'/g,"\\'")}')" ${selLv?'':'disabled'}>💾 Save Bookmark</button>
+    </div>`;
+ 
+  window._bmState={level:selLv,wrongQs:[...wrongQs],total};
+}
+ 
+function bmSelectLevel(k){
+  window._bmState.level=k;
+  document.querySelectorAll('.bm-level-btn').forEach(el=>el.className='bm-level-btn');
+  document.getElementById('bm-lv-'+k).classList.add('sel-'+k);
+  const btn=document.getElementById('bm-save-btn');if(btn)btn.disabled=false;
+}
+ 
+function bmToggleQ(n){
+  const arr=window._bmState.wrongQs;
+  const idx=arr.indexOf(n);
+  if(idx>-1)arr.splice(idx,1);else arr.push(n);
+  const box=document.getElementById('bmq-'+n);
+  if(box)box.classList.toggle('wrong',arr.includes(n));
+  const cnt=document.getElementById('bm-wrong-count');
+  if(cnt)cnt.textContent=arr.length+' questions marked wrong';
+}
+ 
+function bmClearAll(){
+  window._bmState.wrongQs=[];
+  document.querySelectorAll('.bm-q-box').forEach(b=>b.classList.remove('wrong'));
+  const cnt=document.getElementById('bm-wrong-count');if(cnt)cnt.textContent='0 questions marked wrong';
+}
+ 
+function saveBM(sId,cId,chName){
+  const st=window._bmState;
+  if(!st.level){showToast('❌ Select a difficulty level first!','error');return;}
+  const bms=getBMs();const key=getBMKey(sId,cId);
+  bms[key]={sId,cId,chName,level:st.level,wrongQs:[...st.wrongQs],total:st.total,savedAt:new Date().toISOString()};
+  saveBMs(bms);
+  showToast('🔖 Bookmark saved!','success');
+  closeBMModal();
+  renderMocks();
+}
+ 
+function renderBMViewModal(sId,cId,chName,bm,result){
+  const lv=BM_LEVELS[bm.level]||BM_LEVELS.green;
+  const total=bm.total||result.maxScore||50;
+  const wrongSet=new Set(bm.wrongQs||[]);
+  const pct=result.percentage||0;
+  const score=result.score||0;const maxScore=result.maxScore||total;
+  const correct=result.correct||0;const incorrect=result.incorrect||0;
+  const accuracy=correct+incorrect>0?Math.round(correct/(correct+incorrect)*100):0;
+ 
+  const ansGrid=Array.from({length:total},(_,i)=>{
+    const n=i+1;const isW=wrongSet.has(n);
+    return`<div class="bm-ans-box ${isW?'wrong':'correct'}" title="Q${n}: ${isW?'❌ Wrong':'✅ Correct'}">${n}</div>`;
+  }).join('');
+ 
+  const baseUrl=SUBJECT_URLS[sId]||'';
+  const pdfUrl=baseUrl+cId+'.pdf';
+  const htmlUrl=baseUrl+cId+'.html';
+ 
+  document.getElementById('bm-modal').innerHTML=`
+    <div>
+      <div style="height:8px;background:linear-gradient(90deg,${lv.color},${lv.color}88);border-radius:24px 24px 0 0;"></div>
+      <div style="padding:18px 22px 22px;">
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">
+          <div style="flex:1;">
+            <div style="display:inline-flex;align-items:center;gap:6px;background:${lv.color}18;border:1.5px solid ${lv.color}45;border-radius:30px;padding:4px 12px;font-size:12px;font-weight:800;color:${lv.color};margin-bottom:7px;">${lv.icon} ${lv.label}</div>
+            <div style="font-size:16px;font-weight:900;line-height:1.4;">${escH(chName)}</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px;">Bookmarked ${fd(bm.savedAt)}</div>
+          </div>
+          <span class="bm-close" onclick="closeBMModal()">×</span>
+        </div>
+ 
+        <div class="bm-stat-row">
+          <div class="bm-stat-pill"><div class="sv" style="color:${rClr(pct)}">${pct.toFixed(1)}%</div><div class="sl">Score %</div></div>
+          <div class="bm-stat-pill"><div class="sv" style="color:var(--acc)">${score}/${maxScore}</div><div class="sl">Marks</div></div>
+          <div class="bm-stat-pill"><div class="sv" style="color:var(--green)">${correct}</div><div class="sl">Correct</div></div>
+          <div class="bm-stat-pill"><div class="sv" style="color:var(--red)">${incorrect}</div><div class="sl">Wrong</div></div>
+          <div class="bm-stat-pill"><div class="sv" style="color:var(--yellow)">${accuracy}%</div><div class="sl">Accuracy</div></div>
+        </div>
+ 
+        <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:14px;">
+          <div style="background:rgba(244,63,94,.1);border:1.5px solid rgba(244,63,94,.25);border-radius:30px;padding:4px 12px;font-size:12px;font-weight:800;color:var(--red);">❌ ${wrongSet.size} wrong</div>
+          <div style="background:rgba(16,185,129,.1);border:1.5px solid rgba(16,185,129,.25);border-radius:30px;padding:4px 12px;font-size:12px;font-weight:800;color:var(--green);">✅ ${total-wrongSet.size} correct</div>
+        </div>
+ 
+        <div class="bm-q-label" style="margin-bottom:8px;">Answer Review — 🟢 Correct &nbsp;·&nbsp; 🔴 Wrong</div>
+        <div class="bm-ans-grid">${ansGrid}</div>
+ 
+        <a href="${pdfUrl}" target="_blank" class="bm-pdf-btn">📄 View PDF Solution</a>
+ 
+        <div class="bm-action-row">
+          <button onclick="bmEditExisting('${sId}','${cId}','${chName.replace(/'/g,"\\'")}')" class="btn btn-ghost" style="flex:1;justify-content:center;padding:10px;">✏️ Edit</button>
+          <button onclick="bmDelete('${sId}','${cId}')" class="btn" style="flex:1;justify-content:center;padding:10px;background:rgba(244,63,94,.08);color:var(--red);border:1.5px solid rgba(244,63,94,.2);">🗑️ Remove</button>
+        </div>
+        <a href="${htmlUrl}" target="_blank" class="btn btn-prim" style="width:100%;justify-content:center;margin-top:9px;display:flex;">↻ Retake Mock</a>
+      </div>
+    </div>`;
+}
+ 
+function bmEditExisting(sId,cId,chName){
+  const bms=getBMs();const key=getBMKey(sId,cId);
+  const existing=bms[key];const result=lR(sId,cId);
+  if(!result)return;
+  renderBMEditModal(sId,cId,chName,result,existing);
+}
+ 
+function bmDelete(sId,cId){
+  if(!confirm('Remove this bookmark?'))return;
+  const bms=getBMs();delete bms[getBMKey(sId,cId)];saveBMs(bms);
+  closeBMModal();showToast('🗑️ Bookmark removed','success');renderMocks();
+}
+ 
+function getBMIcon(sId,cId){
+  const bm=getBMs()[getBMKey(sId,cId)];
+  if(!bm)return{icon:'🔖',cls:''};
+  const lv=BM_LEVELS[bm.level];
+  return{icon:lv.icon,cls:'bm-'+bm.level};
+}
 </script>
 </body>
 </html>
