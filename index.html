@@ -1,3 +1,7 @@
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5121,7 +5125,8 @@ function openBookmark(sId,cId,chName,e){
 function renderBMEditModal(sId,cId,chName,result,existing){
   const selLv=existing?existing.level:'';
   const wrongQs=existing?(existing.wrongQs||[]):[];
-  const total=result.maxScore||50;
+  // Divide by 5 if maxScore is 250 to show 50 boxes in view mode
+const total = (result.maxScore > 100) ? (result.maxScore / 5) : (bm.total || result.maxScore || 50);
  
   const lvHTML=Object.entries(BM_LEVELS).map(([k,v])=>
     `<div class="bm-level-btn ${selLv===k?'sel-'+k:''}" id="bm-lv-${k}" onclick="bmSelectLevel('${k}')">
@@ -5191,7 +5196,8 @@ function saveBM(sId,cId,chName){
  
 function renderBMViewModal(sId,cId,chName,bm,result){
   const lv=BM_LEVELS[bm.level]||BM_LEVELS.green;
-  const total=bm.total||result.maxScore||50;
+// Divide by 5 if maxScore is 250 to show 50 question boxes
+const total = (result.maxScore > 100) ? (result.maxScore / 5) : (result.maxScore || 50);
   const wrongSet=new Set(bm.wrongQs||[]);
   const pct=result.percentage||0;
   const score=result.score||0;const maxScore=result.maxScore||total;
