@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -893,6 +894,41 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
   0%   { opacity: 0.8; }
   100% { opacity: 0; }
 }
+/* ── NEW CONCEPT-4 HERO ── */
+.ts-hero{background:#fff;border:1px solid #dbeafe;border-radius:22px;overflow:hidden;box-shadow:0 2px 24px rgba(59,130,246,.08);margin-bottom:14px;}
+.ts-hero-top{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 13px;border-bottom:1px solid #eff6ff;gap:12px;flex-wrap:wrap;}
+.ts-hero-left{display:flex;align-items:center;gap:11px;}
+.ts-hero-av{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,#3b82f6,#6366f1);display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:900;color:#fff;flex-shrink:0;}
+.ts-hero-name{font-size:18px;font-weight:900;color:#1e3a5f;letter-spacing:-.3px;}
+.ts-hero-sid{font-size:11px;color:#64a0d4;margin-top:2px;font-weight:700;font-family:var(--mono);}
+.ts-hero-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;}
+.ts-level-pill{display:inline-flex;align-items:center;gap:5px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:30px;padding:5px 13px;font-size:12px;font-weight:800;color:#1d4ed8;}
+.ts-rank-pill{display:inline-flex;align-items:center;gap:5px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:30px;padding:4px 12px;font-size:11px;font-weight:700;color:#15803d;}
+.ts-tl-wrap{padding:16px 20px 12px;border-bottom:1px solid #eff6ff;}
+.ts-tl-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:#94a3b8;margin-bottom:11px;}
+.ts-tl-track{display:flex;align-items:flex-start;position:relative;}
+.ts-tl-line{position:absolute;top:13px;left:13px;right:13px;height:2px;background:#e0eeff;z-index:0;}
+.ts-tl-line-done{position:absolute;top:13px;left:13px;height:2px;background:linear-gradient(90deg,#3b82f6,#6366f1);z-index:1;}
+.ts-tl-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;z-index:2;}
+.ts-tl-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;}
+.ts-tl-dot.done{background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;}
+.ts-tl-dot.cur{background:#fff;border:2.5px solid #3b82f6;color:#3b82f6;}
+.ts-tl-dot.lock{background:#f0f7ff;border:1.5px solid #dbeafe;color:#bfdbfe;}
+.ts-tl-name{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;text-align:center;white-space:nowrap;}
+.ts-tl-name.done{color:#3b82f6;}.ts-tl-name.cur{color:#1d4ed8;}.ts-tl-name.lock{color:#bfdbfe;}
+.ts-rp-wrap{padding:5px 20px 12px;border-bottom:1px solid #eff6ff;}
+.ts-rp-bg{height:6px;background:#e0eeff;border-radius:6px;overflow:hidden;}
+.ts-rp-fill{height:100%;background:linear-gradient(90deg,#3b82f6,#6366f1);border-radius:6px;transition:width 1.2s cubic-bezier(.34,1.56,.64,1);}
+.ts-rp-nums{display:flex;justify-content:space-between;font-size:10px;color:#94a3b8;font-weight:600;margin-top:4px;}
+.ts-stats-grid{display:grid;grid-template-columns:repeat(3,1fr);}
+.ts-stat-cell{padding:12px 10px;text-align:center;border-right:1px solid #eff6ff;border-bottom:1px solid #eff6ff;}
+.ts-stat-cell:nth-child(3n){border-right:none;}
+.ts-stat-cell:nth-child(7),.ts-stat-cell:nth-child(8),.ts-stat-cell:nth-child(9){border-bottom:none;}
+.ts-stat-icon{font-size:13px;margin-bottom:2px;}
+.ts-stat-v{font-size:17px;font-weight:900;font-family:var(--mono);line-height:1;}
+.ts-stat-l{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#94a3b8;margin-top:3px;}
+.ts-hero-footer{padding:10px 20px;display:flex;align-items:center;justify-content:center;background:#f8fbff;}
+.ts-footer-aspirant{font-size:12px;font-weight:700;color:#64a0d4;}
 </style>
 </head>
 <body>
@@ -2287,7 +2323,7 @@ function renderHome(){
         <div class="welcome-step"><div class="welcome-step-num">2</div><div class="welcome-step-text">Attempt quizzes<span>Your scores appear here automatically</span></div></div>
         <div class="welcome-step"><div class="welcome-step-num">3</div><div class="welcome-step-text">Track progress<span>Analytics, badges, predictions & class rank</span></div></div>
       </div>
-      <button class="btn btn-prim" style="width:100%;justify-content:center;padding:13px;font-size:14px;" onclick="openAddSubjModal()">➕ Select Subjects to Get Started</button>
+      <button class="btn btn-prim" style="width:100%;justify-content:center;padding:13px;font-size:14px;" onclick="startOnboarding()">🚀 Get Started</button>
     </div></div>`;
     renderAdminNotices();
     renderExamCountdown();
@@ -2315,26 +2351,59 @@ function renderHome(){
   const goals=prof.goals||{};let H='';
 const heroGrads={'Apex':'linear-gradient(135deg,#f97316,#ec4899)','Thunder':'linear-gradient(135deg,#ef4444,#b91c1c)','Gold':'linear-gradient(135deg,#a855f7,#7c3aed)','Elite':'linear-gradient(135deg,#10b981,#0891b2)','Silver':'linear-gradient(135deg,#3b82f6,#60a5fa)','Bronze':'linear-gradient(135deg,#f59e0b,#d97706)','Explorer':'linear-gradient(135deg,#64748b,#94a3b8)','Rookie':'linear-gradient(135deg,#4f6ef7,#7c3aed)'};
 const heroGrad=heroGrads[currentTier.name]||'linear-gradient(135deg,#4f6ef7,#7c3aed)';
-H+=`<div style="margin-bottom:14px;">
-    <div class="rank-hero rank-hero-animated" style="background:${heroGrad};margin-bottom:0;position:relative;">
-<div class="hero-rank-badge">${getBadgeSVG(rank.name, window.innerWidth<=768?55:150, 'hero')}</div>
-      <div class="rh-label">CUET Preparation Rank</div>
-      <div class="rh-name">${uname}</div>
-      <div class="rank-pill-glossy">${rank.icon} ${rank.name} Rank &nbsp;·&nbsp; ${overallP.toFixed(1)}% Overall</div>
-      ${prof.college?`<div style="font-size:12px;opacity:.8;margin-bottom:14px;position:relative;z-index:1;">🎯 ${prof.college}</div>`:''}
-      <div class="rh-stats" style="position:relative;z-index:1;">
-        <div class="rh-stat"><div class="rh-val">${allAtt.length}</div><div class="rh-lbl">Tests Done</div></div>
-        <div class="rh-stat"><div class="rh-val">${sv.length}</div><div class="rh-lbl">Subjects</div></div>
-        <div class="rh-stat"><div class="rh-val">${tS}</div><div class="rh-lbl">Total Score</div></div>
-        <div class="rh-stat"><div class="rh-val">${totalXP}</div><div class="rh-lbl">XP Earned</div></div>
-        <div class="rh-stat"><div class="rh-val">${streak}</div><div class="rh-lbl">🔥 Streak</div></div>
-<div class="rh-stat"><div class="rh-val">${overallP.toFixed(1)}%</div><div class="rh-lbl">Accuracy</div></div>
-        <div class="rh-stat"><div class="rh-val">${rpCurrent}<span style="font-size:11px;opacity:.6">/${rpThreshold}</span></div><div class="rh-lbl">⚡ RP</div></div>
-        <div class="rh-stat"><div class="rh-val">${getHP().total}</div><div class="rh-lbl">💜 HP</div></div>
-        <div class="rh-stat"><div class="rh-val" style="font-size:14px;" id="hero-sid">—</div><div class="rh-lbl">🪪 Student ID</div></div>
-</div>
+H+=`<div class="ts-hero">
+  <div class="ts-hero-top">
+    <div class="ts-hero-left">
+      <div class="ts-hero-av" id="hero-av-new">${(uname[0]||'S').toUpperCase()}</div>
+      <div>
+        <div class="ts-hero-name">${escH(uname)}</div>
+        <div class="ts-hero-sid" id="hero-sid">🪪 ${getStudentID()||'—'}</div>
+      </div>
     </div>
-  </div>`;
+    <div class="ts-hero-right">
+      <div class="ts-level-pill">${xpInfo.icon} Level ${xpInfo.level} · ${xpInfo.name}</div>
+      <div class="ts-rank-pill">${rank.icon} Rank · ${rank.name}</div>
+    </div>
+  </div>
+ 
+  <div class="ts-tl-wrap">
+    <div class="ts-tl-label">Rank Journey</div>
+    <div class="ts-tl-track">
+      <div class="ts-tl-line"></div>
+      <div class="ts-tl-line-done" id="tl-done-line"></div>
+      ${RANK_TIERS.map((tier,ti)=>{
+        const earned=ti<=rpData.rankIndex, isCur=ti===rpData.rankIndex;
+        const cls=earned&&!isCur?'done':isCur?'cur':'lock';
+        const label=earned&&!isCur?'✓':ti+1;
+        return`<div class="ts-tl-item">
+          <div class="ts-tl-dot ${cls}">${label}</div>
+          <div class="ts-tl-name ${cls}">${tier.name}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>
+ 
+  <div class="ts-rp-wrap">
+    <div class="ts-rp-bg"><div class="ts-rp-fill" style="width:${rpPct.toFixed(1)}%"></div></div>
+    <div class="ts-rp-nums"><span>${rpCurrent} RP earned</span><span>${rpThreshold} RP → ${RANK_TIERS[Math.min(rpData.rankIndex+1,RANK_TIERS.length-1)].name}</span></div>
+  </div>
+ 
+  <div class="ts-stats-grid">
+    <div class="ts-stat-cell"><div class="ts-stat-icon">📝</div><div class="ts-stat-v" style="color:#3b82f6">${allAtt.length}</div><div class="ts-stat-l">Tests Done</div></div>
+    <div class="ts-stat-cell"><div class="ts-stat-icon">📚</div><div class="ts-stat-v" style="color:#6366f1">${sv.length}</div><div class="ts-stat-l">Subjects</div></div>
+    <div class="ts-stat-cell"><div class="ts-stat-icon">🏆</div><div class="ts-stat-v" style="color:#0ea5e9">${tS}</div><div class="ts-stat-l">Total Score</div></div>
+    <div class="ts-stat-cell"><div class="ts-stat-icon">⚡</div><div class="ts-stat-v" style="color:#8b5cf6">${totalXP}</div><div class="ts-stat-l">XP Earned</div></div>
+    <div class="ts-stat-cell"><div class="ts-stat-icon">🔥</div><div class="ts-stat-v" style="color:#f97316">${streak}</div><div class="ts-stat-l">Streak</div></div>
+    <div class="ts-stat-cell"><div class="ts-stat-icon">🎯</div><div class="ts-stat-v" style="color:#10b981">${overallP.toFixed(1)}%</div><div class="ts-stat-l">Accuracy</div></div>
+    <div class="ts-stat-cell"><div class="ts-stat-icon">⚡</div><div class="ts-stat-v" style="color:#3b82f6">${rpCurrent}<span style="font-size:11px;color:#94a3b8">/${rpThreshold}</span></div><div class="ts-stat-l">RP</div></div>
+    <div class="ts-stat-cell"><div class="ts-stat-icon">💜</div><div class="ts-stat-v" style="color:#7c3aed">${getHP().total}</div><div class="ts-stat-l">HP</div></div>
+    <div class="ts-stat-cell"><div class="ts-stat-icon">🪪</div><div class="ts-stat-v" style="font-size:13px;color:#1e40af;letter-spacing:1px;" id="hero-sid-grid">${getStudentID()||'—'}</div><div class="ts-stat-l">Student ID</div></div>
+  </div>
+ 
+  <div class="ts-hero-footer">
+    <div class="ts-footer-aspirant">CUET Aspirant</div>
+  </div>
+</div>`;
  H+=`<div style="margin-bottom:18px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
       <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--text3);">🏅 Rank Badges</div>
@@ -4717,11 +4786,11 @@ syncHistory();
 
   fetchLiveNoticesAndExams().then(()=>{
     if(shouldShowOnboarding()){
-      renderHome();
-      startOnboarding();
-      return;
-    }
     renderHome();
+    // Don't auto-start onboarding — user clicks Get Started button instead
+    return;
+  }
+  renderHome();
   });
   
   // Auto-refresh notices every 60 seconds
