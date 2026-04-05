@@ -2238,7 +2238,23 @@ function showToast(msg,type='success',duration=2400){
 /* STORAGE */
 function rKey(s,c){return`thunderstudy_result_${s}_${c}`;}
 function hKey(s,c){return`thunderstudy_history_${s}_${c}`;}
-function lR(s,c){try{return JSON.parse(localStorage.getItem(rKey(s,c)));}catch(e){return null;}}
+function lR(s,c){
+  try{
+    const r=JSON.parse(localStorage.getItem(rKey(s,c)));
+    if(!r)return null;
+    // Normalize CBT key names to dashboard key names
+    r.incorrect = r.incorrect ?? r.wrong ?? 0;
+    r.unanswered = r.unanswered ?? r.skipped ?? 0;
+    r.correct = r.correct ?? 0;
+    r.totalQ = r.totalQ ?? 50;
+    r.wrongQs = (r.wrongQs||[]).map(Number);
+    r.percentage = r.percentage ?? 0;
+    r.accuracy = r.accuracy ?? 0;
+    r.score = r.score ?? 0;
+    r.maxScore = r.maxScore ?? 0;
+    return r;
+  }catch(e){return null;}
+}
 function lH(s,c){try{return JSON.parse(localStorage.getItem(hKey(s,c))||'[]');}catch(e){return[];}}
 function getSS(){try{return JSON.parse(localStorage.getItem('ts_subs')||'[]');}catch(e){return[];}}
 function saveSS(a){localStorage.setItem('ts_subs',JSON.stringify(a));}
