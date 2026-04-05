@@ -2,6 +2,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -3457,6 +3458,97 @@ function renderLbView(data) {
 /* ══════════════════════════════════════════
    SETTINGS PAGE
 ══════════════════════════════════════════ */
+function getLocalStorageInfo() {
+    let total = 0;
+    const cats = {
+        results:     { label: '📝 Test Results',    color: '#4f6ef7', bytes: 0 },
+        history:     { label: '📅 Score History',   color: '#10b981', bytes: 0 },
+        bookmarks:   { label: '🔖 Bookmarks',       color: '#f59e0b', bytes: 0 },
+        gamification:{ label: '⚡ XP / HP / RP',    color: '#7c3aed', bytes: 0 },
+        profile:     { label: '👤 Profile & Prefs', color: '#06b6d4', bytes: 0 },
+        system:      { label: '⚙️ System / Sync',   color: '#94a3b8', bytes: 0 },
+        other:       { label: '📦 Other',            color: '#f97316', bytes: 0 },
+    };
+    for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        const v = localStorage.getItem(k) || '';
+        const bytes = (k.length + v.length) * 2;
+        total += bytes;
+        if      (k.startsWith('thunderstudy_result_'))   cats.results.bytes += bytes;
+        else if (k.startsWith('thunderstudy_history_'))  cats.history.bytes += bytes;
+        else if (k === 'ts_bookmarks')                   cats.bookmarks.bytes += bytes;
+        else if (['ts_hp','ts_rp_data','ts_bonus_xp','ts_rp_processed','ts_rp_init'].some(p=>k.startsWith(p)||k===p))
+                                                          cats.gamification.bytes += bytes;
+        else if (['ts_profile','cbtUserName','ts_subs','ts_student_id','ts_ob_done'].includes(k))
+                                                          cats.profile.bytes += bytes;
+        else if (k.startsWith('ts_'))                    cats.system.bytes += bytes;
+        else                                              cats.other.bytes += bytes;
+    }
+    return { total, cats };
+}
+
+function fmtBytes(b) {
+    if (b < 1024)      return b + ' B';
+    if (b < 1048576)   return (b/1024).toFixed(1) + ' KB';
+    return (b/1048576).toFixed(2) + ' MB';
+}
+
+function renderStorageCard() {
+    const { total, cats } = getLocalStorageInfo();
+    const LIMIT = 5 * 1024 * 1024;
+    const usedPct = Math.min(100, (total / LIMIT) * 100);
+    const statusColor = usedPct > 80 ? '#f43f5e' : usedPct > 50 ? '#f59e0b' : '#10b981';
+    const statusMsg = usedPct > 80 ? '⚠️ Running low!' : usedPct > 50 ? '📊 Moderate usage' : '✅ Plenty of space';
+    const rows = Object.values(cats).filter(c => c.bytes > 0).sort((a,b) => b.bytes - a.bytes).map(c => {
+        const pct = total > 0 ? (c.bytes / total * 100).toFixed(1) : 0;
+        return `<div style="margin-bottom:9px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+            <span style="font-size:12px;font-weight:700;">${c.label}</span>
+            <span style="font-size:11px;font-weight:800;font-family:var(--mono);color:${c.color};">${fmtBytes(c.bytes)}</span>
+          </div>
+          <div style="height:5px;background:var(--border);border-radius:5px;overflow:hidden;">
+            <div style="height:100%;width:${pct}%;background:${c.color};border-radius:5px;"></div>
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px;">${pct}% of your data</div>
+        </div>`;
+    }).join('');
+    return `<div class="card card-p" style="margin-bottom:14px;">
+      <div class="sec-hdr">
+        <div class="sec-title">💾 Local Storage Usage</div>
+        <div style="font-size:12px;font-weight:800;color:${statusColor};">${statusMsg}</div>
+      </div>
+      <div style="background:linear-gradient(135deg,rgba(79,110,247,.06),rgba(124,58,237,.04));border:1.5px solid rgba(79,110,247,.15);border-radius:14px;padding:14px 16px;margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div>
+            <div style="font-size:22px;font-weight:900;font-family:var(--mono);color:${statusColor};">${fmtBytes(total)}</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:2px;">used of ~5 MB browser limit</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:18px;font-weight:800;font-family:var(--mono);color:var(--text3);">${fmtBytes(LIMIT - total)}</div>
+            <div style="font-size:10px;color:var(--text3);">remaining</div>
+          </div>
+        </div>
+        <div style="height:10px;background:var(--border);border-radius:10px;overflow:hidden;">
+          <div style="height:100%;width:${usedPct.toFixed(1)}%;background:linear-gradient(90deg,${statusColor},${statusColor}99);border-radius:10px;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text3);margin-top:4px;font-family:var(--mono);">
+          <span>0 B</span><span>${usedPct.toFixed(1)}% used</span><span>5 MB</span>
+        </div>
+      </div>
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:12px;">Breakdown</div>
+      ${rows || '<div style="font-size:12px;color:var(--text3);">No data stored yet.</div>'}
+      <div style="background:var(--card2);border-radius:11px;padding:10px 13px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:4px;">
+        <div style="font-size:12px;color:var(--text3);">Total keys stored: <strong style="color:var(--text)">${localStorage.length}</strong></div>
+        <button onclick="refreshStorageCard()" class="btn btn-ghost" style="font-size:11px;padding:5px 12px;">↺ Refresh</button>
+      </div>
+    </div>`;
+}
+
+function refreshStorageCard() {
+    const el = document.getElementById('storage-card-wrap');
+    if (el) el.outerHTML = `<div id="storage-card-wrap">${renderStorageCard()}</div>`;
+}
+
 function renderSettings(){
   const sv=getSS(),allAtt=getAllAtt();
   let H=`
@@ -3542,6 +3634,8 @@ function renderSettings(){
     </div>
     <div id="cert-dl-status" style="font-size:12px;font-weight:600;margin-top:4px;min-height:16px;text-align:center;"></div>
   </div>
+
+<div id="storage-card-wrap">${renderStorageCard()}</div>
 
   <!-- SYNC -->
   <div class="card card-p" style="margin-bottom:14px;">
@@ -5117,17 +5211,35 @@ function openBookmark(sId,cId,chName,e){
   ensureBMModal();
   const bms=getBMs();
   const key=getBMKey(sId,cId);
-  if(bms[key]){renderBMViewModal(sId,cId,chName,bms[key],result);}
-  else{renderBMEditModal(sId,cId,chName,result,null);}
+  
+  // Auto-detect level from percentage
+  const pct=result.percentage||0;
+  const autoLevel = pct>=80?'green':pct>=40?'yellow':'red';
+  
+  if(bms[key]){
+    renderBMViewModal(sId,cId,chName,bms[key],result);
+  } else {
+    // Auto-save bookmark with detected level + wrongQs from result
+    bms[key]={
+      sId,cId,chName,
+      level:autoLevel,
+      wrongQs: result.wrongQs||[],
+      total: result.totalQ||50,
+      savedAt:new Date().toISOString(),
+      autoSaved:true
+    };
+    saveBMs(bms);
+    renderBMViewModal(sId,cId,chName,bms[key],result);
+  }
   openBMModal();
 }
  
 function renderBMEditModal(sId,cId,chName,result,existing){
   const selLv=existing?existing.level:'';
-  const wrongQs=existing?(existing.wrongQs||[]):[];
-  // Divide by 5 if maxScore is 250 to show 50 boxes in view mode
-const total = (result.maxScore > 100) ? (result.maxScore / 5) : (bm.total || result.maxScore || 50);
- 
+  // Use manual bookmarked wrongQs, or auto-detected from CBT result
+const wrongQs = existing ? (existing.wrongQs||[]).map(Number) : (result.wrongQs||[]).map(Number);
+const total = result.totalQ || 50;
+
   const lvHTML=Object.entries(BM_LEVELS).map(([k,v])=>
     `<div class="bm-level-btn ${selLv===k?'sel-'+k:''}" id="bm-lv-${k}" onclick="bmSelectLevel('${k}')">
       <div class="bm-level-icon">${v.icon}</div>
@@ -5194,11 +5306,18 @@ function saveBM(sId,cId,chName){
   renderMocks();
 }
  
-function renderBMViewModal(sId,cId,chName,bm,result){
-  const lv=BM_LEVELS[bm.level]||BM_LEVELS.green;
-// Divide by 5 if maxScore is 250 to show 50 question boxes
-const total = (result.maxScore > 100) ? (result.maxScore / 5) : (result.maxScore || 50);
-  const wrongSet=new Set(bm.wrongQs||[]);
+function renderBMViewModal(sId, cId, chName, bm, result) {
+    const lv = BM_LEVELS[bm.level] || BM_LEVELS.green;
+
+// wrongQs from CBT result (auto-detected during test)
+const autoWrong = (result.wrongQs||[]).map(Number);
+// wrongQs manually edited in bookmark
+const manualWrong = (bm.wrongQs||[]).map(Number);
+// Prefer manual edits, fallback to auto-detected from CBT
+const finalWrong = manualWrong.length > 0 ? manualWrong : autoWrong;
+
+const total = result.totalQ || result.totalQ || 50;
+    const wrongSet = new Set(finalWrong);
   const pct=result.percentage||0;
   const score=result.score||0;const maxScore=result.maxScore||total;
   const correct=result.correct||0;const incorrect=result.incorrect||0;
@@ -5235,7 +5354,7 @@ const total = (result.maxScore > 100) ? (result.maxScore / 5) : (result.maxScore
         </div>
  
         <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:14px;">
-          <div style="background:rgba(244,63,94,.1);border:1.5px solid rgba(244,63,94,.25);border-radius:30px;padding:4px 12px;font-size:12px;font-weight:800;color:var(--red);">❌ ${wrongSet.size} wrong</div>
+          <div style="background:rgba(244,63,94,.1);border:1.5px solid rgba(244,63,94,.25);border-radius:30px;padding:4px 12px;font-size:12px;font-weight:800;color:var(--red);">❌ ${wrongSet.size} wrong ${manualWrong.length > 0 ? '<span style="font-size:9px;color:var(--text3);">✏️ manually edited</span>' : autoWrong.length > 0 ? '<span style="font-size:9px;color:var(--green);">⚡ auto-detected</span>' : ''}</div>
           <div style="background:rgba(16,185,129,.1);border:1.5px solid rgba(16,185,129,.25);border-radius:30px;padding:4px 12px;font-size:12px;font-weight:800;color:var(--green);">✅ ${total-wrongSet.size} correct</div>
         </div>
  
@@ -5268,8 +5387,20 @@ function bmDelete(sId,cId){
  
 function getBMIcon(sId,cId){
   const bm=getBMs()[getBMKey(sId,cId)];
-  if(!bm)return{icon:'🔖',cls:''};
-  const lv=BM_LEVELS[bm.level];
+  const result=lR(sId,cId);
+  
+  if(!result)return{icon:'🔖',cls:''};
+  
+  // Auto-detect level from percentage
+  const pct=result.percentage||0;
+  const autoLevel=pct>=80?'green':pct>=40?'yellow':'red';
+  
+  if(!bm){
+    // Show auto-detected icon (no manual bookmark yet)
+    const lv=BM_LEVELS[autoLevel];
+    return{icon:lv.icon,cls:'bm-'+autoLevel};
+  }
+  const lv=BM_LEVELS[bm.level]||BM_LEVELS[autoLevel];
   return{icon:lv.icon,cls:'bm-'+bm.level};
 }
 </script>
