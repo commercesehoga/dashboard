@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>⚡ Thunderstudy | CBT </title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
@@ -527,13 +528,28 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
   position: fixed;
   inset: 0;
   z-index: 99999;
-  background: #f4f7ff;
+  background: #f2f6ff;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  /* Fade out the whole overlay at the end */
-  animation: tsBootExit 0.55s cubic-bezier(0.4,0,0.2,1) 5.1s forwards;
+  font-family: 'Outfit', sans-serif;
+}
+@media (min-width: 769px) {
+  #ts-boot {
+    /* Changed from 5.1s to 4.8s to start slightly earlier if desired */
+    animation: tsBootExit 0.8s cubic-bezier(0.4, 0, 0.2, 1) 4.8s forwards;
+  }
+}
+/* Mobile exit — slide down */
+@media (max-width: 768px) {
+  #ts-boot.exit-mobile {
+    animation: tsBootSlideDown 0.65s cubic-bezier(0.4,0,0.2,1) forwards;
+  }
+}
+@keyframes tsBootSlideDown {
+  0%  { transform: translateY(0);    opacity: 1; }
+  100%{ transform: translateY(100%); opacity: 0; pointer-events: none; }
 }
 
 /* Subtle blue dot grid */
@@ -552,9 +568,24 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
   to   { opacity: 1; }
 }
 
+/* Update the exit animation for Desktop */
 @keyframes tsBootExit {
-  0%   { opacity: 1; transform: scale(1);    pointer-events: all; }
-  100% { opacity: 0; transform: scale(1.04); pointer-events: none; }
+  0% { 
+    opacity: 1; 
+    transform: scale(1) translate(0, 0); 
+    pointer-events: all; 
+  }
+  100% { 
+    opacity: 0; 
+    /* This moves it towards the top-left and shrinks it */
+    transform: scale(0.3) translate(-150%, -150%); 
+    pointer-events: none; 
+  }
+}
+
+/* Ensure the stage can move smoothly */
+.ts-stage {
+  transition: all 0.5s ease-in-out;
 }
 
 /* ── PARTICLES ── */
@@ -637,8 +668,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
 .ts-bolt-svg {
   width: 96px;
   height: 128px;
-  /* Pulsing glow after landing */
   animation: tsBoltPulse 1.8s ease-in-out 1.2s infinite;
+}
+@media (max-width: 768px) {
+  .ts-bolt-svg { width: 80px; height: 108px; }
 }
 
 @keyframes tsBoltPulse {
@@ -758,6 +791,40 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
   align-items: center;
   gap: 6px;
   justify-content: center;
+}
+
+/* Mobile logo lockup (replaces plain text brand on small screens) */
+@media (max-width: 768px) {
+  .ts-brand-name { display: none; }
+  .ts-brand-sub  { display: none; }
+  .ts-logo-lockup { display: flex; }
+  .ts-brand-tagline { display: block; }
+}
+@media (min-width: 769px) {
+  .ts-logo-lockup   { display: none; }
+  .ts-brand-tagline { display: none; }
+}
+
+/* Logo lockup styles (from mobile file) */
+.ts-logo-lockup {
+  display: flex; align-items: center; gap: 12px; justify-content: center;
+}
+.ts-logo-icon {
+  width: 44px; height: 44px; background: #2563eb; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  box-shadow: 0 4px 18px rgba(37,99,235,.38);
+}
+.ts-logo-words  { display: flex; flex-direction: column; line-height: 1.15; }
+.ts-logo-main   { display: flex; align-items: baseline; }
+.ts-logo-thunder{ font-family:'Outfit',sans-serif; font-size:24px; font-weight:900; color:#2563eb; letter-spacing:-.6px; }
+.ts-logo-study  { font-family:'Outfit',sans-serif; font-size:24px; font-weight:700; color:#1e3a8a; letter-spacing:-.6px; }
+.ts-logo-sub    { display: flex; align-items: center; gap: 5px; margin-top: 2px; }
+.ts-logo-line   { width: 18px; height: 1px; background: #bfdbfe; }
+.ts-logo-by     { font-family:'Outfit',sans-serif; font-size:9.5px; font-weight:500; color:#60a5fa; letter-spacing:.8px; }
+.ts-brand-tagline {
+  font-family: 'Outfit', sans-serif; font-size: 10px;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(37,99,235,.5); margin-top: 8px; font-weight: 600;
 }
 
 .ts-bolt-char {
@@ -937,7 +1004,18 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
 .ts-stat-l{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#94a3b8;margin-top:3px;}
 .ts-hero-footer{padding:10px 20px;display:flex;align-items:center;justify-content:center;background:#f8fbff;}
 .ts-footer-aspirant{font-size:12px;font-weight:700;color:#64a0d4;}
-/* ★ START CSS ★ */
+
+/* ─── LOGO CLONE (flies to corner) ─── */
+#ts-logo-clone {
+  position: fixed;
+  z-index: 100001;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+  transform-origin: top left;
+  will-change: transform, top, left, opacity;
+}
  
 /* ── BOOKMARK BUTTON on card ── */
 .bm-btn {
@@ -1105,13 +1183,30 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
       <div class="ts-ground-line"></div>
     </div>
 
-    <!-- Brand name fades up after impact -->
-    <div class="ts-brand">
-      <div class="ts-brand-name">
-        <span class="ts-bolt-char">⚡</span>Thunderstudy
-      </div>
-      <div class="ts-brand-sub">CUET Preparation Dashboard</div>
+<!-- Brand name fades up after impact -->
+<div class="ts-brand">
+  <!-- Desktop: original text brand -->
+
+
+  <!-- Mobile: logo lockup (matches sidebar exactly) -->
+  <div class="ts-logo-lockup">
+    <div class="ts-logo-icon">
+      <svg width="24" height="26" viewBox="0 0 20 22" fill="none">
+        <path d="M13 1L3 13H9L4 21L17 9H11L13 1Z" fill="white"/>
+      </svg>
     </div>
+    <div class="ts-logo-words">
+      <div class="ts-logo-main">
+        <span class="ts-logo-thunder">Thunder</span><span class="ts-logo-study">Study</span>
+      </div>
+      <div class="ts-logo-sub">
+        <div class="ts-logo-line"></div>
+        <span class="ts-logo-by">by Wondermayank</span>
+      </div>
+    </div>
+  </div>
+  <div class="ts-brand-tagline">CUET Preparation Dashboard</div>
+</div>
 
     <!-- Glassmorphic loading ring -->
     <div class="ts-loader">
@@ -5515,13 +5610,22 @@ function saveIDFromPopup(){
   var boot = document.getElementById('ts-boot');
   if (!boot) return;
 
-  // Remove from DOM after animation fully completes
-  // 3.1s exit start + 0.55s exit duration + 100ms buffer
-  setTimeout(function () {
-    if (boot && boot.parentNode) {
-      boot.parentNode.removeChild(boot);
-    }
-  }, 5000);
+  var isMobile = window.innerWidth <= 768;
+
+  if (isMobile) {
+    // Mobile: slide down at 3.6s, then remove from DOM at 4.3s
+    setTimeout(function () {
+      boot.classList.add('exit-mobile');
+    }, 3600);
+    setTimeout(function () {
+      if (boot && boot.parentNode) boot.parentNode.removeChild(boot);
+    }, 4300);
+  } else {
+    // Desktop: CSS handles the fade+scale exit at 5.1s
+    setTimeout(function () {
+      if (boot && boot.parentNode) boot.parentNode.removeChild(boot);
+    }, 5700);
+  }
 })();
 /* ══════════════════════════════════════════
    BOOKMARK SYSTEM
@@ -5759,6 +5863,67 @@ function getBMIcon(sId,cId){
   }
   const lv=BM_LEVELS[bm.level]||BM_LEVELS[autoLevel];
   return{icon:lv.icon,cls:'bm-'+bm.level};
+}
+function exitDesktop() {
+  const boot = document.getElementById('ts-boot');
+  const lockup = document.querySelector('.ts-logo-lockup'); 
+  const mainStage = document.querySelector('.ts-stage');
+
+  if (!lockup || !boot) return;
+
+  // --- MOBILE CHECK ---
+  // If the screen is small, just fade out the boot screen and stop.
+  if (window.innerWidth <= 768) {
+    boot.style.transition = 'opacity 0.5s ease';
+    boot.style.opacity = '0';
+    setTimeout(() => boot.remove(), 500);
+    return; 
+  }
+
+  // --- DESKTOP ANIMATION LOGIC ---
+  const r = lockup.getBoundingClientRect();
+  const clone = document.createElement('div');
+  clone.id = 'ts-logo-clone';
+  clone.style.cssText = `
+    top: ${r.top}px;
+    left: ${r.left}px;
+    width: ${r.width}px;
+    height: ${r.height}px;
+    transition: top 0.65s cubic-bezier(0.4, 0, 0.2, 1), 
+                left 0.65s cubic-bezier(0.4, 0, 0.2, 1), 
+                transform 0.65s cubic-bezier(0.4, 0, 0.2, 1), 
+                opacity 0.3s ease 0.4s;
+  `;
+  
+  clone.innerHTML = lockup.innerHTML;
+  document.body.appendChild(clone);
+
+  lockup.style.opacity = '0';
+  boot.style.background = 'transparent'; 
+  if(mainStage) mainStage.style.opacity = '0';
+
+  const NAV_TOP = 20; 
+  const NAV_LEFT = 16;
+  const SCALE = 0.66; 
+
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      clone.style.top = NAV_TOP + 'px';
+      clone.style.left = NAV_LEFT + 'px';
+      clone.style.transform = `scale(${SCALE})`;
+      clone.style.opacity = '0'; 
+      boot.style.opacity = '0';
+    }, 50);
+  });
+
+  setTimeout(() => {
+    // Only shows sidebar on Desktop (width > 768px)
+    const sidebar = document.querySelector('.sidebar');
+    if(sidebar) sidebar.style.display = 'flex';
+    
+    clone.remove();
+    boot.remove();
+  }, 700);
 }
 </script>
 </body>
