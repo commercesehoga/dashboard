@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Blue rounded background -->
+  <rect width="32" height="32" rx="7" fill="#2563eb"/>
+  <!-- Inner subtle top highlight -->
+  <rect width="32" height="16" rx="7" fill="rgba(255,255,255,0.08)"/>
+  <!-- White lightning bolt -->
+  <path d="M19 4L8 18H15L10 28L24 14H17L19 4Z" fill="white"/>
+</svg>
