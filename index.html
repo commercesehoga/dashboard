@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,6 +10,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <style>
 :root {
   --bg:#f0f3fa;--sidebar:#ffffff;--card:#ffffff;--card2:#f7f8fd;--border:#e8ecf4;
@@ -21,6 +24,8 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
 body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
+@media(max-width:600px){#ts-promo-banners{grid-template-columns:1fr;}}
+@media(max-width:600px){#ts-promo-banners{grid-template-columns:1fr !important;}}
 
 /* ── SIDEBAR ── */
 .sidebar{width:var(--sidebar-w);height:100vh;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;position:relative;z-index:10;box-shadow:4px 0 24px rgba(79,110,247,.06);animation:sidebarIn .45s cubic-bezier(.34,1.56,.64,1) both;}
@@ -1094,8 +1099,45 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
 .bm-pdf-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;background:rgba(244,63,94,.07);border:1.5px solid rgba(244,63,94,.25);border-radius:12px;font-size:13px;font-weight:800;color:#f43f5e;cursor:pointer;transition:all .2s;font-family:var(--fn);text-decoration:none;margin-top:12px;}
 .bm-pdf-btn:hover{transform:translateY(-1px);background:rgba(244,63,94,.12);}
 .bm-action-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
- 
+ /* ── PULL TO REFRESH ── */
+.ptr-indicator{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:14px;font-size:13px;font-weight:700;color:var(--acc);
+  transform:translateY(-60px);transition:transform .25s ease;
+  position:sticky;top:0;z-index:50;background:var(--bg);
+  border-bottom:1px solid var(--border);
+}
+.ptr-indicator.visible{transform:translateY(0);}
+.ptr-spin{display:inline-block;width:18px;height:18px;border:2.5px solid var(--border);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite;}
+/* ── CHAPTER RING ENTRANCE ANIMATION ── */
+@keyframes ringDraw{
+  from{stroke-dashoffset:var(--ring-full,126);}
+  to{stroke-dashoffset:var(--ring-offset,0);}
+}
+.ring-animated circle:last-child{
+  animation:ringDraw 1.1s cubic-bezier(.34,1.2,.64,1) both;
+}
 /* ★ END CSS ★ */
+/* ── SKELETON LOADING ── */
+.skeleton{background:linear-gradient(90deg,var(--card2) 25%,var(--border) 50%,var(--card2) 75%);background-size:200% 100%;animation:skeletonShimmer 1.4s infinite;border-radius:8px;}
+@keyframes skeletonShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.sk-line{height:12px;margin-bottom:8px;border-radius:6px;}
+.sk-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:20px;margin-bottom:12px;}
+.badge-grid-wrap{background:#fff;border:0.5px solid rgba(0,0,0,.1);border-radius:16px;padding:18px;font-family:'Plus Jakarta Sans',system-ui,sans-serif;}
+.badge-grid-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.badge-grid-title{font-size:13px;font-weight:700;color:#1a1d2e;}
+.rp-pill{font-size:11px;font-weight:700;background:#fff3e0;color:#854F0B;border:0.5px solid #EF9F27;border-radius:30px;padding:3px 10px;}
+.badge-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.badge-card{border-radius:12px;padding:14px 8px 10px;text-align:center;border:1px solid rgba(0,0,0,.08);background:#fff;position:relative;transition:transform .2s,border-color .2s,box-shadow .2s;}
+.badge-card.current{border:2px solid #4f6ef7;background:rgba(79,110,247,.05);box-shadow:0 0 0 3px rgba(79,110,247,.08);}
+.badge-card.locked{filter:grayscale(.9);opacity:.4;}
+.badge-card-name{font-size:10px;font-weight:700;color:#1a1d2e;display:block;margin-top:6px;}
+.badge-card-rp{font-size:9px;color:#9298b5;display:block;margin-top:2px;}
+.badge-card-active-dot{position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;background:#4f6ef7;}
+.mini-progress{margin-top:14px;display:flex;align-items:center;gap:10px;}
+.mini-bar-track{flex:1;height:5px;background:#f0f3fa;border-radius:5px;overflow:hidden;border:0.5px solid rgba(0,0,0,.07);}
+.mini-bar-fill{height:100%;background:#4f6ef7;border-radius:5px;}
+.mini-bar-label{font-size:11px;color:#5a5f7a;font-weight:600;white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -1267,10 +1309,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
   <div class="page active" id="page-home">
     <div class="topbar">
       <div><div class="page-title" id="home-greeting">👋 Hello, Student!</div><div class="page-sub" id="home-sub">Track your CUET preparation journey</div></div>
-      <div class="topbar-right">
-        <button class="btn btn-ghost" onclick="openProfileModal()">✏️ Edit Profile</button>
-        <button class="btn btn-prim" onclick="openAddSubjModal()">+ Add Subject</button>
-      </div>
+      <div class="topbar-right" id="home-topbar-right">
+  <div id="home-google-area"></div>
+</div>
     </div>
     <div id="home-content"></div>
   </div>
@@ -1331,10 +1372,37 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
     </div>
     <!-- REPLACE existing ob-step-1 div with this: -->
 <div class="ob-step active" id="ob-step-1">
-  <div class="ob-icon">⚡</div>
-  <div class="ob-title">Welcome to Thunderstudy!</div>
-  <div class="ob-sub">Let's set up your CUET preparation dashboard in 3 quick steps.</div>
-  <div class="form-row"><div class="form-lbl">Your Name</div><input class="form-inp" id="ob-name" placeholder="Enter your full name" oninput="obValidate1()"></div>
+ <div class="ob-icon">⚡</div>
+<div class="ob-title">Welcome to Thunderstudy!</div>
+<div class="ob-sub">Let's set up your CUET preparation dashboard in 3 quick steps.</div>
+
+<!-- Firebase Google Sign-In Button -->
+<div style="margin-bottom:16px;">
+  <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Sign in with Google</div>
+  <button onclick="firebaseGoogleLogin()" id="firebase-google-btn" style="
+    width:100%;display:flex;align-items:center;justify-content:center;gap:12px;
+    padding:12px 16px;border-radius:12px;border:1.5px solid #dadce0;
+    background:#fff;font-size:14px;font-weight:700;cursor:pointer;
+    font-family:var(--fn);transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,.08);">
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20">
+    Sign in with Google
+  </button>
+</div>
+
+<!-- Google User Display (shown after login) -->
+<div id="google-user-display" style="display:none;background:linear-gradient(135deg,rgba(79,110,247,.08),rgba(124,58,237,.05));border:1.5px solid rgba(79,110,247,.2);border-radius:14px;padding:12px 16px;margin-bottom:14px;align-items:center;gap:12px;flex-wrap:wrap;">
+  <img id="google-avatar" width="40" height="40" style="border-radius:50%;flex-shrink:0;" src="" alt="">
+  <div style="flex:1;min-width:0;">
+    <div id="google-user-name" style="font-size:14px;font-weight:800;color:var(--text);"></div>
+    <div id="google-user-email" style="font-size:11px;color:var(--text3);margin-top:2px;"></div>
+  </div>
+  <button onclick="googleLogout()" style="background:none;border:1.5px solid var(--border);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;color:var(--text3);font-family:var(--fn);">Switch Account</button>
+</div>
+
+<div style="position:relative;margin:4px 0 14px;"><div style="position:absolute;inset:0;display:flex;align-items:center;"><div style="flex:1;border-top:1px solid var(--border);"></div><span style="padding:0 12px;font-size:11px;color:var(--text3);background:var(--card);">OR fill manually</span><div style="flex:1;border-top:1px solid var(--border);"></div></div></div>
+
+<div class="form-row"><div class="form-lbl">Your Name</div><input class="form-inp" id="ob-name" placeholder="Enter your full name" oninput="obValidate1()"></div>
+ <div class="form-row"><div class="form-lbl">Your Name</div><input class="form-inp" id="ob-name" placeholder="Enter your full name" oninput="obValidate1()"></div>
   <div class="form-row"><div class="form-lbl">Target College</div><input class="form-inp" id="ob-college" placeholder="e.g. Delhi University, Christ, Jamia..."></div>
   <div class="form-row"><div class="form-lbl">Stream / Board</div>
     <select class="form-inp" id="ob-class">
@@ -1355,7 +1423,18 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
     </div>
     <div style="font-size:10px;color:var(--text3);margin-top:4px;">Your unique 5-digit Student ID (00000–99999). Click Generate to get one.</div>
   </div>
-  <button class="ob-btn ob-btn-prim" id="ob-next-1" onclick="obNext(2)" disabled>Continue →</button>
+<button class="ob-btn ob-btn-prim" id="ob-next-1" onclick="obNext(2)" disabled>Continue →</button>
+  <div style="position:relative;margin:12px 0 0;"><div style="position:absolute;inset:0;display:flex;align-items:center;"><div style="flex:1;border-top:1px solid var(--border);"></div><span style="padding:0 12px;font-size:11px;color:var(--text3);background:var(--card);">OR</span><div style="flex:1;border-top:1px solid var(--border);"></div></div></div>
+  <div style="margin-top:12px;">
+    <div style="font-size:11px;font-weight:700;color:var(--text3);text-align:center;margin-bottom:9px;">Already used Thunderstudy before?</div>
+    <label style="display:block;border:2px dashed var(--border);border-radius:14px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;background:var(--card2);" onmouseenter="this.style.borderColor='var(--acc)'" onmouseleave="this.style.borderColor='var(--border)'">
+      <div style="font-size:28px;margin-bottom:5px;">📂</div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:3px;">Import Existing Backup</div>
+      <div style="font-size:11px;color:var(--text3);">Tap to choose your .json backup file</div>
+      <input type="file" accept=".json" style="display:none" onchange="obImportBackup(this.files[0])">
+    </label>
+    <div id="ob-import-status" style="font-size:12px;font-weight:600;margin-top:8px;text-align:center;min-height:18px;"></div>
+  </div>
 </div>
     <div class="ob-step" id="ob-step-2">
       <div class="ob-icon">📚</div>
@@ -1511,28 +1590,81 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
 </nav>
 
 <script>
+  
+  /* ══════════════════════════════════════════
+   FIREBASE CONFIG
+══════════════════════════════════════════ */
+const firebaseConfig = {
+  apiKey: "AIzaSyAoxORpjq2kIED1hBNAQ2MGJEWlwQ3FCJA",
+  authDomain: "thunderstudy.firebaseapp.com",
+  projectId: "thunderstudy",
+  storageBucket: "thunderstudy.firebasestorage.app",
+  messagingSenderId: "83506167126",
+  appId: "1:83506167126:web:9b3e7017ba871103672af7",
+  measurementId: "G-ZFLKZGW9FV"
+};
+
+firebase.initializeApp(firebaseConfig);
+const fbAuth = firebase.auth();
+const fbProvider = new firebase.auth.GoogleAuthProvider();
+
+// ── Handle redirect result after Google login ──
+fbAuth.getRedirectResult().then(function(result) {
+  if (result && result.user) {
+    const user = result.user;
+    const googleUser = {
+      name: user.displayName,
+      email: user.email,
+      picture: user.photoURL,
+      googleId: user.uid
+    };
+    localStorage.setItem('ts_google_user', JSON.stringify(googleUser));
+    localStorage.setItem('cbtUserName', googleUser.name);
+    applyGoogleUserToUI(googleUser);
+  }
+}).catch(function(e) {
+  console.error('Redirect result error:', e);
+});
+
+
+// Auto-restore session when page loads
+fbAuth.onAuthStateChanged(function(user) {
+  if (user) {
+    const gu = {
+      name: user.displayName,
+      email: user.email,
+      picture: user.photoURL,
+      googleId: user.uid
+    };
+    localStorage.setItem('ts_google_user', JSON.stringify(gu));
+    localStorage.setItem('cbtUserName', gu.name);
+  }
+});
 /* ══════════════════════════════════════════
    CONFIG
 ══════════════════════════════════════════ */
 const GS_URL="https://script.google.com/macros/s/AKfycbyEsrvdSuRh06TIKPK0ozP-jQNjqHO8PaIeBcW5r45aGdr4H3ZVFHpKMm3xaDHrYmqX/exec";
 const NOTICES_URL = "https://script.google.com/macros/s/AKfycbz300__XPoTsb2hZ4EEMWRgA503M4v4BPAaLyVym8gRDrXQSXTNnxyTanKYgkrEqwV_Fw/exec";
-const SUBJECT_URLS={bst:"https://commercesehoga.github.io/commerce/bst/",eco:"https://commercesehoga.github.io/commerce/eco/",acc:"https://commercesehoga.github.io/commerce/acc/",eng:"https://commercesehoga.github.io/english/",gat:"https://commercesehoga.github.io/gat/",phy:"https://commercesehoga.github.io/science/phy/",che:"https://commercesehoga.github.io/science/che/",bio:"https://commercesehoga.github.io/science/bio/",mat:"https://commercesehoga.github.io/science/mat/",his:"https://commercesehoga.github.io/humanities/his/",geo:"https://commercesehoga.github.io/humanities/geo/",pol:"https://commercesehoga.github.io/humanities/pol/",psy:"https://commercesehoga.github.io/humanities/psy/",pe:"https://commercesehoga.github.io/physical/"};
+const SUBJECT_URLS={bst:"https://commercesehoga.github.io/commerce/bst/",eco:"https://commercesehoga.github.io/commerce/eco/",acc:"https://commercesehoga.github.io/commerce/acc/",amat:"https://commercesehoga.github.io/commerce/amat/",eng:"https://commercesehoga.github.io/english/",gat:"https://commercesehoga.github.io/gat/",phy:"https://commercesehoga.github.io/science/phy/",che:"https://commercesehoga.github.io/science/che/",bio:"https://commercesehoga.github.io/science/bio/",mat:"https://commercesehoga.github.io/science/mat/",his:"https://commercesehoga.github.io/humanities/his/",geo:"https://commercesehoga.github.io/humanities/geo/",pol:"https://commercesehoga.github.io/humanities/pol/",psy:"https://commercesehoga.github.io/humanities/psy/",pe:"https://commercesehoga.github.io/physical/",ip:"https://commercesehoga.github.io/computer/ip/",cs:"https://commercesehoga.github.io/computer/cs/"};
 
 const SUBJECTS_MASTER=[
   {id:"bst",name:"Business Studies",icon:"📊",color:"#4f6ef7",group:"Commerce",chapters:[{id:"bst1",name:"Ch 1 – Nature & Significance",type:"chapwise"},{id:"bst2",name:"Ch 2 – Principles",type:"chapwise"},{id:"bst3",name:"Ch 3 – Business Environment",type:"chapwise"},{id:"bst4",name:"Ch 4 – Planning",type:"chapwise"},{id:"bst5",name:"Ch 5 – Organising",type:"chapwise"},{id:"bst6",name:"Ch 6 – Staffing",type:"chapwise"},{id:"bst7",name:"Ch 7 – Directing",type:"chapwise"},{id:"bst8",name:"Ch 8 – Controlling",type:"chapwise"},{id:"bst9",name:"Ch 9 – Financial Management",type:"chapwise"},{id:"bst10",name:"Ch 10 – Financial Markets",type:"chapwise"},{id:"bst11",name:"Ch 11 – Marketing",type:"chapwise"},{id:"bst12",name:"Ch 12 – Consumer Protection",type:"chapwise"},{id:"bst-img1",name:"Image Based Mock 1",type:"imgbased"},{id:"bst-full1",name:"Full Mock 1",type:"fullmock"},{id:"bst-full2",name:"Full Mock 2",type:"fullmock"},{id:"bst-full3",name:"Full Mock 3",type:"fullmock"},{id:"bst-full4",name:"Full Mock 4",type:"fullmock"},{id:"bst-full5",name:"Full Mock 5",type:"fullmock"},{id:"bst-full6",name:"Full Mock 6",type:"fullmock"},{id:"bst-full7",name:"Full Mock 7",type:"fullmock"},{id:"bst-full8",name:"Full Mock 8",type:"fullmock"},{id:"bst-full9",name:"Full Mock 9",type:"fullmock"},{id:"bst-full10",name:"Full Mock 10",type:"fullmock"},{id:"bst-andr1",name:"A&R Chapterwise 1",type:"andr"},{id:"bst-andr2",name:"A&R Chapterwise 2",type:"andr"},{id:"bst-pyq23",name:"PYQ 2023",type:"pyq"},{id:"bst-pyq24",name:"PYQ 2024",type:"pyq"},{id:"bst-pyq25",name:"PYQ 2025",type:"pyq"},{id:"bst-sp1",name:"Special Mock 1",type:"special"}]},
   {id:"eco",name:"Economics",icon:"📈",color:"#10b981",group:"Commerce",chapters:[{id:"macro1",name:"Macro Ch 1 – National Income Basics",type:"chapwise"},{id:"macro2",name:"Macro Ch 2 – Related Aggregates",type:"chapwise"},{id:"macro3",name:"Macro Ch 3 – Money & Banking",type:"chapwise"},{id:"macro4",name:"Macro Ch 4 – Income Determination",type:"chapwise"},{id:"macro5",name:"Macro Ch 5 – Government Budget",type:"chapwise"},{id:"macro6",name:"Macro Ch 6 – Balance of Payments",type:"chapwise"},{id:"micro1",name:"Micro Ch 1 – Introduction",type:"chapwise"},{id:"micro2",name:"Micro Ch 2 – Consumer Equilibrium",type:"chapwise"},{id:"micro3",name:"Micro Ch 3 – Demand",type:"chapwise"},{id:"micro4",name:"Micro Ch 4 – Production & Costs",type:"chapwise"},{id:"micro5",name:"Micro Ch 5 – Supply & Market",type:"chapwise"},{id:"indian1",name:"IED Unit I: Development Policies and Experience (1947-90)",type:"chapwise"},{id:"indian2",name:"IED Unit II Economic Reforms since 1991: Macroeconomics: Meaning",type:"chapwise"},{id:"indian3",name:"IED Unit III: Current challenges facing the Indian Economy",type:"chapwise"},{id:"indian4",name:"IED Unit IV: Development Experiences of India: A comparison with neighbours",type:"chapwise"},{id:"eco-img1",name:"Image Based Mock 1",type:"imgbased"},{id:"eco-full1",name:"Full Mock 1",type:"fullmock"},{id:"eco-full2",name:"Full Mock 2",type:"fullmock"},{id:"eco-andr1",name:"A&R Chapterwise 1",type:"andr"},{id:"eco-pyq23",name:"PYQ 2023",type:"pyq"},{id:"eco-pyq24",name:"PYQ 2024",type:"pyq"},{id:"eco-pyq25",name:"PYQ 2025",type:"pyq"},{id:"bst-sp1",name:"Special Mock 1",type:"special"}]},
-  {id:"acc",name:"Accountancy",icon:"📒",color:"#06b6d4",group:"Commerce",chapters:[{id:"acc1",name:"Ch 1 – Introduction",type:"chapwise"},{id:"acc2",name:"Ch 2 – Theory Base",type:"chapwise"},{id:"acc3",name:"Ch 3 – Recording",type:"chapwise"},{id:"acc4",name:"Ch 4 – Trial Balance",type:"chapwise"},{id:"acc5",name:"Ch 5 – Depreciation",type:"chapwise"},{id:"acc6",name:"Ch 6 – Financial Statements",type:"chapwise"},{id:"acc7",name:"Ch 7 – Ratio Analysis",type:"chapwise"},{id:"acc8",name:"Ch 8 – Cash Flow",type:"chapwise"},{id:"acc-img1",name:"Image Based Mock 1",type:"imgbased"},{id:"acc-img2",name:"Image Based Mock 2",type:"imgbased"},{id:"acc-full1",name:"Full Mock 1",type:"fullmock"},{id:"acc-full2",name:"Full Mock 2",type:"fullmock"},{id:"acc-andr1",name:"A&R Chapterwise 1",type:"andr"},{id:"acc-pyq23",name:"PYQ 2023",type:"pyq"},{id:"acc-pyq24",name:"PYQ 2024",type:"pyq"},{id:"acc-pyq25",name:"PYQ 2025",type:"pyq"}]},
+  {id:"acc",name:"Accountancy",icon:"📒",color:"#06b6d4",group:"Commerce",chapters:[{id:"acc1",name:"Unit I: Accounting for Partnership",type:"chapwise"},{id:"acc2",name:"Unit II: Reconstitution of a Partnership firm",type:"chapwise"},{id:"acc3",name:"Unit III: Dissolution of Partnership Firm ",type:"chapwise"},{id:"acc4",name:"Unit IV: Company Accounts",type:"chapwise"},{id:"acc5",name:"Unit V: Analysis of Financial Statements",type:"chapwise"},{id:"acc6",name:"Unit V: Computerised Accounting System",type:"chapwise"},{id:"acc-img1",name:"Image Based Mock 1",type:"imgbased"},{id:"acc-img2",name:"Image Based Mock 2",type:"imgbased"},{id:"acc-full1",name:"Full Mock 1",type:"fullmock"},{id:"acc-full2",name:"Full Mock 2",type:"fullmock"},{id:"acc-andr1",name:"A&R Chapterwise 1",type:"andr"},{id:"acc-pyq23",name:"PYQ 2023",type:"pyq"},{id:"acc-pyq24",name:"PYQ 2024",type:"pyq"},{id:"acc-pyq25",name:"PYQ 2025",type:"pyq"}]},
   {id:"eng",name:"English",icon:"📝",color:"#ec4899",group:"Languages",chapters:[{id:"eng-voc-ows",name:"One Word Substitution",type:"vocabulary",section:"Vocabulary"},{id:"eng-voc-spell",name:"Commonly Mis-Spelt Words",type:"vocabulary",section:"Vocabulary"},{id:"eng-voc-idiom",name:"Idioms",type:"vocabulary",section:"Vocabulary"},{id:"eng-voc-synant",name:"Antonyms & Synonyms",type:"vocabulary",section:"Vocabulary"},{id:"eng-voc-phv",name:"Phrasal Verbs",type:"vocabulary",section:"Vocabulary"},{id:"eng-voc-fos",name:"Figure of Speech",type:"vocabulary",section:"Vocabulary"},{id:"eng-voc-va",name:"Verbal Analogy",type:"vocabulary",section:"Vocabulary"},{id:"eng-voc-fw",name:"Foreign Words in English",type:"vocabulary",section:"Vocabulary"},{id:"eng-grm-basic",name:"Grammar Basic",type:"grammar",section:"Grammar"},{id:"eng-grm-sc",name:"Sentence Completion",type:"grammar",section:"Grammar"},{id:"eng-grm-cl",name:"Clauses",type:"grammar",section:"Grammar"},{id:"eng-grm-cond",name:"Conditional Sentences",type:"grammar",section:"Grammar"},{id:"eng-grm-noun",name:"Nouns",type:"grammar",section:"Grammar"},{id:"eng-grm-pron",name:"Pronouns",type:"grammar",section:"Grammar"},{id:"eng-grm-adj",name:"Adjectives",type:"grammar",section:"Grammar"},{id:"eng-grm-verb",name:"Verbs",type:"grammar",section:"Grammar"},{id:"eng-grm-sva",name:"Subject Verb Agreement",type:"grammar",section:"Grammar"},{id:"eng-grm-mod",name:"Modals",type:"grammar",section:"Grammar"},{id:"eng-grm-adv",name:"Adverb",type:"grammar",section:"Grammar"},{id:"eng-grm-prep",name:"Preposition",type:"grammar",section:"Grammar"},{id:"eng-grm-conj",name:"Conjunction",type:"grammar",section:"Grammar"},{id:"eng-grm-tense",name:"Tenses",type:"grammar",section:"Grammar"},{id:"eng-ra-cloze",name:"Cloze Test",type:"reading",section:"Reading Ability"},{id:"eng-ra-para",name:"Parajumbles",type:"reading",section:"Reading Ability"},{id:"eng-ra-letter",name:"Letter Writing",type:"reading",section:"Reading Ability"},{id:"eng-rc1",name:"Reading Comprehension 1",type:"rc"},{id:"eng-rc2",name:"Reading Comprehension 2",type:"rc"},{id:"eng-rc3",name:"Reading Comprehension 3",type:"rc"},{id:"eng-rc4",name:"Reading Comprehension 4",type:"rc"},{id:"eng-rc5",name:"Reading Comprehension 5",type:"rc"},{id:"eng-rc6",name:"Reading Comprehension 6",type:"rc"},{id:"eng-full1",name:"Full Mock 1",type:"fullmock"},{id:"eng-full2",name:"Full Mock 2",type:"fullmock"},{id:"eng-pyq23",name:"PYQ 2023",type:"pyq"},{id:"eng-pyq24",name:"PYQ 2024",type:"pyq"},{id:"eng-pyq25",name:"PYQ 2025",type:"pyq"},{id:"eng-sp1",name:"Special Mock 1",type:"special"}]},
   {id:"gat",name:"General Aptitude",icon:"🧠",color:"#f59e0b",group:"Aptitude",chapters:[{id:"gat1",name:"Quant Aptitude 1",type:"chapwise"},{id:"gat2",name:"Quant Aptitude 2",type:"chapwise"},{id:"gat3",name:"Logical Reasoning 1",type:"chapwise"},{id:"gat4",name:"Logical Reasoning 2",type:"chapwise"},{id:"gat5",name:"Verbal Ability 1",type:"chapwise"},{id:"gat-full1",name:"Full Mock 1",type:"fullmock"},{id:"gat-full2",name:"Full Mock 2",type:"fullmock"},{id:"gat-pyq23",name:"PYQ 2023",type:"pyq"},{id:"gat-pyq24",name:"PYQ 2024",type:"pyq"},{id:"gat-pyq25",name:"PYQ 2025",type:"pyq"},{id:"gat-sp1",name:"Special Mock 1",type:"special"}]},
   {id:"phy",name:"Physics",icon:"⚛️",color:"#6366f1",group:"Science",chapters:[{id:"phy1",name:"Unit 1: Electrostatics",type:"chapwise"},{id:"phy2",name:"Unit 2: Current Electricity",type:"chapwise"},{id:"phy3",name:"Unit 3: Magnetic Effects of Current and Magnetism",type:"chapwise"},{id:"phy4",name:"Unit 4: Electromagnetic Induction and Alternating Currents",type:"chapwise"},{id:"phy5",name:"Unit 5: Electromagnetic Waves",type:"chapwise"},{id:"phy6",name:"Unit 6: Optics",type:"chapwise"},{id:"phy7",name:"Unit 7: Dual Nature of Matter and Radiation",type:"chapwise"},{id:"phy8",name:"Unit 8: Atoms and Nuclei",type:"chapwise"},{id:"phy9",name:"Unit 9: Electronic Devices",type:"chapwise"},{id:"phy-full1",name:"Full Mock 1",type:"fullmock"},{id:"phy-full2",name:"Full Mock 2",type:"fullmock"},{id:"phy-full3",name:"Full Mock 3",type:"fullmock"},{id:"phy-pyq23",name:"PYQ 2023",type:"pyq"},{id:"phy-pyq24",name:"PYQ 2024",type:"pyq"},{id:"phy-pyq25",name:"PYQ 2025",type:"pyq"},{id:"phy-sp1",name:"Special Mock 1",type:"special"}]},
   {id:"che",name:"Chemistry",icon:"🧪",color:"#14b8a6",group:"Science",chapters:[{id:"che1",name:"Ch 1 – Solutions",type:"chapwise"},{id:"che2",name:"Ch 2 – Electrochemistry",type:"chapwise"},{id:"che3",name:"Ch 3 – Chemical Kinetics",type:"chapwise"},{id:"che4",name:"Ch 4 – d & f Block Elements",type:"chapwise"},{id:"che5",name:"Ch 5 – Coordination Compounds",type:"chapwise"},{id:"che6",name:"Ch 6 – Haloalkanes & Haloarenes",type:"chapwise"},{id:"che7",name:"Ch 7 – Alcohols, Phenols & Ethers",type:"chapwise"},{id:"che8",name:"Ch 8 – Aldehydes & Ketones",type:"chapwise"},{id:"che9",name:"Ch 9 – Amines",type:"chapwise"},{id:"che10",name:"Ch 10 – Biomolecules",type:"chapwise"},{id:"che-full1",name:"Full Mock 1",type:"fullmock"},{id:"che-full2",name:"Full Mock 2",type:"fullmock"},{id:"che-full3",name:"Full Mock 3",type:"fullmock"},{id:"che-pyq23",name:"PYQ 2023",type:"pyq"},{id:"che-pyq24",name:"PYQ 2024",type:"pyq"},{id:"che-pyq25",name:"PYQ 2025",type:"pyq"},{id:"che-sp1",name:"Special Mock 1",type:"special"}]},
-  {id:"bio",name:"Biology",icon:"🔬",color:"#22c55e",group:"Science",chapters:[{id:"bio1",name:"Ch 1 – Reproduction in Organisms",type:"chapwise"},{id:"bio2",name:"Ch 2 – Sexual Reproduction in Flowering Plants",type:"chapwise"},{id:"bio3",name:"Ch 3 – Human Reproduction",type:"chapwise"},{id:"bio4",name:"Ch 4 – Reproductive Health",type:"chapwise"},{id:"bio5",name:"Ch 5 – Principles of Inheritance",type:"chapwise"},{id:"bio6",name:"Ch 6 – Molecular Basis of Inheritance",type:"chapwise"},{id:"bio7",name:"Ch 7 – Evolution",type:"chapwise"},{id:"bio8",name:"Ch 8 – Human Health & Disease",type:"chapwise"},{id:"bio9",name:"Ch 9 – Microbes in Human Welfare",type:"chapwise"},{id:"bio10",name:"Ch 10 – Biotechnology Principles",type:"chapwise"},{id:"bio11",name:"Ch 11 – Biotechnology Applications",type:"chapwise"},{id:"bio12",name:"Ch 12 – Organisms & Populations",type:"chapwise"},{id:"bio13",name:"Ch 13 – Ecosystem",type:"chapwise"},{id:"bio14",name:"Ch 14 – Biodiversity & Conservation",type:"chapwise"},{id:"bio-full1",name:"Full Mock 1",type:"fullmock"},{id:"bio-full2",name:"Full Mock 2",type:"fullmock"},{id:"bio-full3",name:"Full Mock 3",type:"fullmock"},{id:"bio-pyq23",name:"PYQ 2023",type:"pyq"},{id:"bio-pyq24",name:"PYQ 2024",type:"pyq"},{id:"bio-pyq25",name:"PYQ 2025",type:"pyq"},{id:"bio-sp1",name:"Special Mock 1",type:"special"}]},
-  {id:"mat",name:"Mathematics",icon:"📐",color:"#f97316",group:"Science",chapters:[{id:"mat1",name:"Ch 1 – Relations & Functions",type:"chapwise"},{id:"mat2",name:"Ch 2 – Inverse Trigonometric Functions",type:"chapwise"},{id:"mat3",name:"Ch 3 – Matrices",type:"chapwise"},{id:"mat4",name:"Ch 4 – Determinants",type:"chapwise"},{id:"mat5",name:"Ch 5 – Continuity & Differentiability",type:"chapwise"},{id:"mat6",name:"Ch 6 – Application of Derivatives",type:"chapwise"},{id:"mat7",name:"Ch 7 – Integrals",type:"chapwise"},{id:"mat8",name:"Ch 8 – Application of Integrals",type:"chapwise"},{id:"mat9",name:"Ch 9 – Differential Equations",type:"chapwise"},{id:"mat10",name:"Ch 10 – Vector Algebra",type:"chapwise"},{id:"mat11",name:"Ch 11 – 3D Geometry",type:"chapwise"},{id:"mat12",name:"Ch 12 – Linear Programming",type:"chapwise"},{id:"mat13",name:"Ch 13 – Probability",type:"chapwise"},{id:"mat-full1",name:"Full Mock 1",type:"fullmock"},{id:"mat-full2",name:"Full Mock 2",type:"fullmock"},{id:"mat-full3",name:"Full Mock 3",type:"fullmock"},{id:"mat-pyq23",name:"PYQ 2023",type:"pyq"},{id:"mat-pyq24",name:"PYQ 2024",type:"pyq"},{id:"mat-pyq25",name:"PYQ 2025",type:"pyq"},{id:"mat-sp1",name:"Special Mock 1",type:"special"}]},
+  {id:"bio",name:"Biology",icon:"🔬",color:"#22c55e",group:"Science",chapters:[{id:"bio1",name:"Unit-VI:Sexual Reproduction in Flowering Plants",type:"chapwise"},{id:"bio2",name:"Unit-VI: Human Reproduction",type:"chapwise"},{id:"bio3",name:"Unit-VI:Reproductive Health",type:"chapwise"},{id:"bio4",name:"Unit-VII:Principles of Inheritance and Variation",type:"chapwise"},{id:"bio5",name:"Unit-VII:Molecular Basis of Inheritance",type:"chapwise"},{id:"bio6",name:"Unit-VII:Evolution",type:"chapwise"},{id:"bio7",name:"Unit-VIII:Human Health and Disease",type:"chapwise"},{id:"bio8",name:"Unit-VIII:Microbes in Human Welfare",type:"chapwise"},{id:"bio9",name:"Unit-IX:Biotechnology: Principles and Processes",type:"chapwise"},{id:"bio10",name:"Unit-IX:Biotechnology and its Applications",type:"chapwise"},{id:"bio11",name:"Unit-X:Organisms and Populations",type:"chapwise"},{id:"bio12",name:"Unit-X:Ecosystem",type:"chapwise"},{id:"bio13",name:"Unit-X:Biodiversity and Conservation",type:"chapwise"},{id:"bio-full1",name:"Full Mock 1",type:"fullmock"},{id:"bio-full2",name:"Full Mock 2",type:"fullmock"},{id:"bio-full3",name:"Full Mock 3",type:"fullmock"},{id:"bio-pyq23",name:"PYQ 2023",type:"pyq"},{id:"bio-pyq24",name:"PYQ 2024",type:"pyq"},{id:"bio-pyq25",name:"PYQ 2025",type:"pyq"},{id:"bio-sp1",name:"Special Mock 1",type:"special"}]},
+  {id:"mat",name:"Mathematics",icon:"📐",color:"#f97316",group:"Science",chapters:[{id:"mat-a1-algebra",name:"A1 – Algebra (Matrices, Determinants, Inverse)",type:"chapwise"},{id:"mat-a1-calculus",name:"A1 – Calculus (Derivatives, Maxima-Minima)",type:"chapwise"},{id:"mat-a1-integration",name:"A1 – Integration & Applications",type:"chapwise"},{id:"mat-a1-diffeq",name:"A1 – Differential Equations",type:"chapwise"},{id:"mat-a1-prob",name:"A1 – Probability Distributions",type:"chapwise"},{id:"mat-a1-lpp",name:"A1 – Linear Programming",type:"chapwise"},{id:"mat1",name:"Ch 1 – Relations & Functions",type:"chapwise"},{id:"mat2",name:"Ch 2 – Inverse Trigonometric Functions",type:"chapwise"},{id:"mat3",name:"Ch 3 – Matrices",type:"chapwise"},{id:"mat4",name:"Ch 4 – Determinants",type:"chapwise"},{id:"mat5",name:"Ch 5 – Continuity & Differentiability",type:"chapwise"},{id:"mat6",name:"Ch 6 – Application of Derivatives",type:"chapwise"},{id:"mat7",name:"Ch 7 – Integrals",type:"chapwise"},{id:"mat8",name:"Ch 8 – Application of Integrals",type:"chapwise"},{id:"mat9",name:"Ch 9 – Differential Equations",type:"chapwise"},{id:"mat10",name:"Ch 10 – Vectors",type:"chapwise"},{id:"mat11",name:"Ch 11 – Three-Dimensional Geometry",type:"chapwise"},{id:"mat12",name:"Ch 12 – Linear Programming",type:"chapwise"},{id:"mat13",name:"Ch 13 – Probability (Bayes & Conditional)",type:"chapwise"},{id:"mat-full1",name:"Full Mock 1",type:"fullmock"},{id:"mat-full2",name:"Full Mock 2",type:"fullmock"},{id:"mat-full3",name:"Full Mock 3",type:"fullmock"},{id:"mat-pyq23",name:"PYQ 2023",type:"pyq"},{id:"mat-pyq24",name:"PYQ 2024",type:"pyq"},{id:"mat-pyq25",name:"PYQ 2025",type:"pyq"},{id:"mat-sp1",name:"Special Mock 1",type:"special"}]},
+  {id:"amat",name:"Applied Mathematics",icon:"🧮",color:"#0ea5e9",group:"Commerce",chapters:[{id:"amat-a1-algebra",name:"A1 – Algebra (Matrices, Determinants, Inverse)",type:"chapwise"},{id:"amat-a1-calculus",name:"A1 – Calculus (Derivatives, Maxima-Minima)",type:"chapwise"},{id:"amat-a1-integration",name:"A1 – Integration & Applications",type:"chapwise"},{id:"amat-a1-diffeq",name:"A1 – Differential Equations",type:"chapwise"},{id:"amat-a1-prob",name:"A1 – Probability Distributions",type:"chapwise"},{id:"amat-a1-lpp",name:"A1 – Linear Programming",type:"chapwise"},{id:"amat-b2-modulo",name:"B2 U1A – Modulo Arithmetic",type:"chapwise"},{id:"amat-b2-congruence",name:"B2 U1B – Congruence Modulo",type:"chapwise"},{id:"amat-b2-allegation",name:"B2 U1C – Allegation & Mixture",type:"chapwise"},{id:"amat-b2-numerical",name:"B2 U1D – Numerical Problems",type:"chapwise"},{id:"amat-b2-boats",name:"B2 U1E – Boats & Streams",type:"chapwise"},{id:"amat-b2-pipes",name:"B2 U1F – Pipes & Cisterns",type:"chapwise"},{id:"amat-b2-races",name:"B2 U1G – Races & Games",type:"chapwise"},{id:"amat-b2-inequalities",name:"B2 U1H – Numerical Inequalities",type:"chapwise"},{id:"amat-b2-matrices",name:"B2 U2A/B – Matrices & Types",type:"chapwise"},{id:"amat-b2-algmat",name:"B2 U2C – Algebra of Matrices",type:"chapwise"},{id:"amat-b2-det",name:"B2 U2D – Determinants",type:"chapwise"},{id:"amat-b2-inverse",name:"B2 U2E/F – Inverse & Simultaneous Equations",type:"chapwise"},{id:"amat-b2-hod",name:"B2 U3A – Higher Order Derivatives",type:"chapwise"},{id:"amat-b2-appderiv",name:"B2 U3B/C – Application of Derivatives & Marginal Cost",type:"chapwise"},{id:"amat-b2-incdec",name:"B2 U3D – Increasing / Decreasing Functions",type:"chapwise"},{id:"amat-b2-maxmin",name:"B2 U3E – Maxima & Minima",type:"chapwise"},{id:"amat-b2-indef",name:"B2 U3F/G – Integration & Indefinite Integrals",type:"chapwise"},{id:"amat-b2-defint",name:"B2 U3H/I – Definite Integral & Consumer/Producer Surplus",type:"chapwise"},{id:"amat-b2-diffeq",name:"B2 U3J/K – Differential Equations",type:"chapwise"},{id:"amat-b2-probdist",name:"B2 U4A/B/C – Probability Distribution & Expectation",type:"chapwise"},{id:"amat-b2-binomial",name:"B2 U4D – Binomial Distribution",type:"chapwise"},{id:"amat-b2-poisson",name:"B2 U4E – Poisson Distribution",type:"chapwise"},{id:"amat-b2-normal",name:"B2 U4F – Normal Distribution",type:"chapwise"},{id:"amat-b2-timeseries",name:"B2 U5 – Time Series & Secular Trend",type:"chapwise"},{id:"amat-b2-sampling",name:"B2 U6A/B – Population, Sample & Statistical Inference",type:"chapwise"},{id:"amat-b2-ttest",name:"B2 U6C – t-Test (Hypothesis Testing)",type:"chapwise"},{id:"amat-b2-perpetuity",name:"B2 U7A – Perpetuity & Sinking Funds",type:"chapwise"},{id:"amat-b2-emi",name:"B2 U7B – EMI Calculation",type:"chapwise"},{id:"amat-b2-returns",name:"B2 U7C/D – Rate of Return & CAGR",type:"chapwise"},{id:"amat-b2-depreciation",name:"B2 U7E – Linear Depreciation",type:"chapwise"},{id:"amat-b2-bonds",name:"B2 U7F – Valuation of Bonds",type:"chapwise"},{id:"amat-b2-lpp",name:"B2 U8 – Linear Programming (Graphical Method)",type:"chapwise"},{id:"amat-full1",name:"Full Mock 1",type:"fullmock"},{id:"amat-full2",name:"Full Mock 2",type:"fullmock"},{id:"amat-full3",name:"Full Mock 3",type:"fullmock"},{id:"amat-pyq23",name:"PYQ 2023",type:"pyq"},{id:"amat-pyq24",name:"PYQ 2024",type:"pyq"},{id:"amat-pyq25",name:"PYQ 2025",type:"pyq"},{id:"amat-sp1",name:"Special Mock 1",type:"special"}]},
   {id:"pol",name:"Political Science",icon:"🏛️",color:"#8b5cf6",group:"Humanities",chapters:[{id:"pol1",name:"Ch 1 – Era of One-Party Dominance",type:"chapwise"},{id:"pol2",name:"Ch 2 – Nation",type:"chapwise"},{id:"pol3",name:"Ch 3 – Politics of Planned Development",type:"chapwise"},{id:"pol4",name:"Ch 4 – India's External Relation",type:"chapwise"},{id:"pol5",name:"Ch 5 –  Challenge to and Restoration of Congress System",type:"chapwise"},{id:"pol6",name:"Ch 6 – Crises of the Constitutional Order",type:"chapwise"},{id:"pol7",name:"Ch 7 – Regional Aspiration and Conflict",type:"chapwise"},{id:"pol8",name:"Ch 8 – Democratic Upsurge and Coalition Politics",type:"chapwise"},{id:"pol9",name:"Ch 9 – Recent Issues and Challenges",type:"chapwise"},{id:"pol10",name:"Ch 10 – Disintegration of the ‘Second World’ and the Collapse of Bipolarity",type:"chapwise"},{id:"pol11",name:"Ch 11 – Alternative Centers of Economic and Political Power",type:"chapwise"},{id:"pol12",name:"Ch 12 – South Asia in the Post Cold War Era",type:"chapwise"},{id:"pol13",name:"Ch 13 – International Organisations in a Unipolar World",type:"chapwise"},{id:"pol14",name:"Ch 14 – Security in Contemporary World",type:"chapwise"},{id:"pol15",name:"Ch 15 – Environment and Natural Resources in Global Politics",type:"chapwise"},{id:"pol16",name:"Ch 16 – Globalisation and its critics",type:"chapwise"},{id:"pol-full1",name:"Full Mock 1",type:"fullmock"},{id:"pol-full2",name:"Full Mock 2",type:"fullmock"},{id:"pol-pyq23",name:"PYQ 2023",type:"pyq"},{id:"pol-pyq24",name:"PYQ 2024",type:"pyq"},{id:"pol-pyq25",name:"PYQ 2025",type:"pyq"},{id:"pol-sp1",name:"Special Mock 1",type:"special"}]},
   {id:"geo",name:"Geography",icon:"🌏",color:"#0ea5e9",group:"Humanities",chapters:[{id:"geo1",name:"Ch 1 – Human Geography",type:"chapwise"},{id:"geo2",name:"Ch 2 – World Population Distribution",type:"chapwise"},{id:"geo3",name:"Ch 3 – Population Composition",type:"chapwise"},{id:"geo4",name:"Ch 4 – Human Development",type:"chapwise"},{id:"geo5",name:"Ch 5 – Primary Activities",type:"chapwise"},{id:"geo6",name:"Ch 6 – Secondary Activities",type:"chapwise"},{id:"geo7",name:"Ch 7 – Tertiary & Quaternary Activities",type:"chapwise"},{id:"geo8",name:"Ch 8 – Transport & Communication",type:"chapwise"},{id:"geo9",name:"Ch 9 – International Trade",type:"chapwise"},{id:"geo10",name:"Ch 10 – Human Settlements",type:"chapwise"},{id:"geo11",name:"Ch 11 – India – Location",type:"chapwise"},{id:"geo12",name:"Ch 12 – Morphology of India",type:"chapwise"},{id:"geo13",name:"Ch 13 – Drainage Systems",type:"chapwise"},{id:"geo14",name:"Ch 14 – Climate of India",type:"chapwise"},{id:"geo15",name:"Ch 15 – Natural Vegetation",type:"chapwise"},{id:"geo16",name:"Ch 16 – Soils",type:"chapwise"},{id:"geo17",name:"Ch 17 – Natural Hazards",type:"chapwise"},{id:"geo-full1",name:"Full Mock 1",type:"fullmock"},{id:"geo-full2",name:"Full Mock 2",type:"fullmock"},{id:"geo-pyq23",name:"PYQ 2023",type:"pyq"},{id:"geo-pyq24",name:"PYQ 2024",type:"pyq"},{id:"geo-pyq25",name:"PYQ 2025",type:"pyq"},{id:"geo-sp1",name:"Special Mock 1",type:"special"}]},
   {id:"his",name:"History",icon:"📜",color:"#d97706",group:"Humanities",chapters:[{id:"his1",name:"Harappan Civilisation and Archaeology",type:"chapwise"},{id:"his2",name:"Political and Economic Systems in Early States: Inscriptional Evidences",type:"chapwise"},{id:"his3",name:"Social Histories of Early Societies: Mahabharata",type:"chapwise"},{id:"his4",name:"History of Buddhism and Jainism: Cultural Developments",type:"chapwise"},{id:"his5",name:"Medieval Society through Travellers Accounts",type:"chapwise"},{id:"his6",name:"Religious History: Bhakti-Sufi Traditions",type:"chapwise"},{id:"his7",name:"Vijayanagara Empire: Politics, Economy and Architecture",type:"chapwise"},{id:"his8",name:"The Mughal Empire and Agrarian Society",type:"chapwise"},{id:"his9",name:"Colonialism and Rural Society: Evidence from Official Reports",type:"chapwise"},{id:"his10",name:"Revolt of 1857: Patterns and Representations",type:"chapwise"},{id:"his11",name:"Mahatma Gandhi and National Movements",type:"chapwise"},{id:"his12",name:"The Making of the Constitution",type:"chapwise"},{id:"his-full1",name:"Full Mock 1",type:"fullmock"},{id:"his-full2",name:"Full Mock 2",type:"fullmock"},{id:"his-pyq23",name:"PYQ 2023",type:"pyq"},{id:"his-pyq24",name:"PYQ 2024",type:"pyq"},{id:"his-pyq25",name:"PYQ 2025",type:"pyq"},{id:"his-sp1",name:"Special Mock 1",type:"special"}]},
   {id:"psy",name:"Psychology",icon:"🧠",color:"#a855f7",group:"Humanities",chapters:[{id:"psy1",name:"Ch 1 – Variations in Psychological Attributes",type:"chapwise"},{id:"psy2",name:"Ch 2 – Self and Personality",type:"chapwise"},{id:"psy3",name:"Ch 3 – Meeting Life Challenges",type:"chapwise"},{id:"psy4",name:"Ch 4 – Psychological Disorders",type:"chapwise"},{id:"psy5",name:"Ch 5 – Therapeutic Approaches",type:"chapwise"},{id:"psy6",name:"Ch 6 – Attitude and Social Cognition",type:"chapwise"},{id:"psy7",name:"Ch 7 – Social Influence & Group Processes",type:"chapwise"},{id:"psy8",name:"Ch 8 – Psychology and Life",type:"chapwise"},{id:"psy9",name:"Ch 9 – Developing Psychological Skills",type:"chapwise"},{id:"psy-full1",name:"Full Mock 1",type:"fullmock"},{id:"psy-full2",name:"Full Mock 2",type:"fullmock"},{id:"psy-pyq23",name:"PYQ 2023",type:"pyq"},{id:"psy-pyq24",name:"PYQ 2024",type:"pyq"},{id:"psy-pyq25",name:"PYQ 2025",type:"pyq"},{id:"psy-sp1",name:"Special Mock 1",type:"special"}]},
-  {id:"pe",name:"Physical Education",icon:"🏃",color:"#ef4444",group:"Physical Education",chapters:[{id:"pe1",name:"Ch 1 – Planning in Sports",type:"chapwise"},{id:"pe2",name:"Ch 2 – Sports & Nutrition",type:"chapwise"},{id:"pe3",name:"Ch 3 – Yoga as Preventive Measure",type:"chapwise"},{id:"pe4",name:"Ch 4 – Physical Education & Sports for CWSN",type:"chapwise"},{id:"pe5",name:"Ch 5 – Children & Sports",type:"chapwise"},{id:"pe6",name:"Ch 6 – Women & Sports",type:"chapwise"},{id:"pe7",name:"Ch 7 – Test & Measurement in Sports",type:"chapwise"},{id:"pe8",name:"Ch 8 – Physiology & Sports",type:"chapwise"},{id:"pe9",name:"Ch 9 – Sports Medicine",type:"chapwise"},{id:"pe10",name:"Ch 10 – Kinesiology, Biomechanics & Sports",type:"chapwise"},{id:"pe11",name:"Ch 11 – Psychology & Sports",type:"chapwise"},{id:"pe12",name:"Ch 12 – Training in Sports",type:"chapwise"},{id:"pe-full1",name:"Full Mock 1",type:"fullmock"},{id:"pe-full2",name:"Full Mock 2",type:"fullmock"},{id:"pe-full3",name:"Full Mock 3",type:"fullmock"},{id:"pe-pyq23",name:"PYQ 2023",type:"pyq"},{id:"pe-pyq24",name:"PYQ 2024",type:"pyq"},{id:"pe-pyq25",name:"PYQ 2025",type:"pyq"},{id:"pe-sp1",name:"Special Mock 1",type:"special"}]}
+  {id:"pe",name:"Physical Education",icon:"🏃",color:"#ef4444",group:"Physical Education",chapters:[{id:"pe1",name:"Ch 1 – Planning in Sports",type:"chapwise"},{id:"pe2",name:"Ch 2 – Sports & Nutrition",type:"chapwise"},{id:"pe3",name:"Ch 3 – Yoga as Preventive Measure",type:"chapwise"},{id:"pe4",name:"Ch 4 – Physical Education & Sports for CWSN",type:"chapwise"},{id:"pe5",name:"Ch 5 – Children & Sports",type:"chapwise"},{id:"pe6",name:"Ch 6 – Women & Sports",type:"chapwise"},{id:"pe7",name:"Ch 7 – Test & Measurement in Sports",type:"chapwise"},{id:"pe8",name:"Ch 8 – Physiology & Sports",type:"chapwise"},{id:"pe9",name:"Ch 9 – Sports Medicine",type:"chapwise"},{id:"pe10",name:"Ch 10 – Kinesiology, Biomechanics & Sports",type:"chapwise"},{id:"pe11",name:"Ch 11 – Psychology & Sports",type:"chapwise"},{id:"pe12",name:"Ch 12 – Training in Sports",type:"chapwise"},{id:"pe-full1",name:"Full Mock 1",type:"fullmock"},{id:"pe-full2",name:"Full Mock 2",type:"fullmock"},{id:"pe-full3",name:"Full Mock 3",type:"fullmock"},{id:"pe-pyq23",name:"PYQ 2023",type:"pyq"},{id:"pe-pyq24",name:"PYQ 2024",type:"pyq"},{id:"pe-pyq25",name:"PYQ 2025",type:"pyq"},{id:"pe-sp1",name:"Special Mock 1",type:"special"}]},
+  {id:"ip",name:"Informatics Practices",icon:"💻",color:"#0ea5e9",group:"Computer",chapters:[{id:"ip1",name:"Ch 1 – Computer Networks",type:"chapwise"},{id:"ip2",name:"Ch 2 – Database Concepts",type:"chapwise"},{id:"ip3",name:"Ch 3 – SQL",type:"chapwise"},{id:"ip4",name:"Ch 4 – Emerging Trends",type:"chapwise"},{id:"ip-full1",name:"Full Mock 1",type:"fullmock"},{id:"ip-full2",name:"Full Mock 2",type:"fullmock"},{id:"ip-pyq23",name:"PYQ 2023",type:"pyq"},{id:"ip-pyq24",name:"PYQ 2024",type:"pyq"},{id:"ip-pyq25",name:"PYQ 2025",type:"pyq"}]},
+  {id:"cs",name:"Computer Science",icon:"🖥️",color:"#6366f1",group:"Computer",chapters:[{id:"cs1",name:"Ch 1 – Functions",type:"chapwise"},{id:"cs2",name:"Ch 2 – File Handling",type:"chapwise"},{id:"cs3",name:"Ch 3 – Stack",type:"chapwise"},{id:"cs4",name:"Ch 4 – Queue",type:"chapwise"},{id:"cs5",name:"Ch 5 – Database & SQL",type:"chapwise"},{id:"cs6",name:"Ch 6 – Computer Networks",type:"chapwise"},{id:"cs7",name:"Ch 7 – Cybersecurity",type:"chapwise"},{id:"cs-full1",name:"Full Mock 1",type:"fullmock"},{id:"cs-full2",name:"Full Mock 2",type:"fullmock"},{id:"cs-pyq23",name:"PYQ 2023",type:"pyq"},{id:"cs-pyq24",name:"PYQ 2024",type:"pyq"},{id:"cs-pyq25",name:"PYQ 2025",type:"pyq"}]}
 ];
 
 const MOCK_TYPES=['fullmock','pyq','special','andr','imgbased'];
@@ -1721,8 +1853,11 @@ function showRPToast(result){
   t.style.cssText=`position:fixed;top:70px;right:24px;background:${bg};color:#fff;padding:12px 22px;border-radius:30px;font-size:14px;font-weight:800;font-family:var(--fn);z-index:99999;opacity:0;transform:translateY(-10px) scale(.95);transition:all .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 28px rgba(0,0,0,.25);pointer-events:none;`;
   requestAnimationFrame(()=>{t.style.opacity='1';t.style.transform='translateY(0) scale(1)';});
   clearTimeout(t._tid);t._tid=setTimeout(()=>{t.style.opacity='0';},4000);
+  // 🎉 Launch confetti on rank up
+  if(promoted){
+    setTimeout(()=>launchConfetti(),200);
+  }
 }
-
 // ↓↓↓ PASTE THE ENTIRE getBadgeSVG FUNCTION HERE ↓↓↓
 function getBadgeSVG(rankName, size=72, uid='') {
   const s = size;
@@ -2005,7 +2140,7 @@ function showFullMockClaim(sId,subj,hpGain){
       <div style="font-size:11px;color:var(--text3);margin-top:3px;">Added to your account!</div>
     </div>
     <div style="display:flex;gap:9px;">
-      <a href="https://wondermayank.github.io/book/" target="_blank" class="btn btn-prim" style="flex:1;justify-content:center;padding:12px;font-size:13px;">📚 Get Free Books</a>
+      <a href="https://commercesehoga.github.io/studyhub/" target="_blank" class="btn btn-prim" style="flex:1;justify-content:center;padding:12px;font-size:13px;">📚 Get Free Books</a>
       <button onclick="document.getElementById('fm-claim-modal').remove()" class="btn btn-ghost" style="flex:1;justify-content:center;padding:12px;font-size:13px;">✅ Awesome!</button>
     </div>
   </div>`;
@@ -2441,11 +2576,42 @@ async function syncWelcome(btn){
 ══════════════════════════════════════════ */
 function exportData(){
   const data={};
-  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('thunderstudy_')||k.startsWith('ts_')||k==='cbtUserName')data[k]=localStorage.getItem(k);}
-  data['_exported_at']=new Date().toISOString();data['_version']='2';
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k.startsWith('thunderstudy_')||k.startsWith('ts_')||k==='cbtUserName')
+      data[k]=localStorage.getItem(k);
+  }
+  // Enhanced metadata
+  const prof=getProfile();
+  const allAtt=getAllAtt();
+  const rpData=getRPData();
+  const hp=getHP();
+  const xp=calcTotalXP(allAtt);
+  const sid=getStudentID()||'';
+
+  data['_exported_at']=new Date().toISOString();
+  data['_version']='3';
+  data['_meta']=JSON.stringify({
+    studentName:prof.name||'Student',
+    studentId:sid,
+    college:prof.college||'',
+    class:prof.class||'',
+    subjects:getSS(),
+    totalTests:allAtt.length,
+    totalScore:allAtt.reduce((s,d)=>s+d.score,0),
+    totalHP:hp.total,
+    totalXP:xp,
+    currentRank:RANK_TIERS[rpData.rankIndex]?.name||'Rookie',
+    exportedFrom:'thunderstudy-dashboard',
+    exportedAt:new Date().toISOString(),
+  });
+
+  const fname=`thunderstudy_backup_${(prof.name||'student').replace(/\s+/g,'_')}_${sid?sid+'_':''}_${new Date().toISOString().split('T')[0]}.json`;
   const a=document.createElement('a');
-  a.download=`thunderstudy_backup_${new Date().toISOString().split('T')[0]}.json`;
-  a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.click();
+  a.download=fname;
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+  a.click();
+  showToast(`✅ Backup saved — ${allAtt.length} results, ${Object.keys(data).length} keys`,'success',3000);
 }
 function importData(file){
   if(!file)return;
@@ -2456,11 +2622,60 @@ function importData(file){
     try{
       const data=JSON.parse(e.target.result);
       if(!data||typeof data!=='object')throw new Error('Invalid format');
+
+      // Read metadata if present
+      let meta={};
+      if(data['_meta']){try{meta=JSON.parse(data['_meta']);}catch(x){}}
+      const version=data['_version']||'1';
+
+      // Count importable keys
+      const importable=Object.entries(data).filter(([k])=>
+        k.startsWith('thunderstudy_')||k.startsWith('ts_')||k==='cbtUserName'
+      );
+
+      if(!importable.length)throw new Error('No Thunderstudy data found in this file');
+
+      // Show preview before confirming
+      const previewName=meta.studentName||'Unknown';
+      const previewId=meta.studentId||'—';
+      const previewSubjs=(meta.subjects||[]).join(', ').toUpperCase()||'—';
+      const previewTests=meta.totalTests||'?';
+      const previewHP=meta.totalHP||'?';
+      const previewXP=meta.totalXP||'?';
+      const previewRank=meta.currentRank||'?';
+      const exportedAt=data['_exported_at']?new Date(data['_exported_at']).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'Unknown';
+
+      const confirmed=confirm(
+        `Import this backup?\n\n` +
+        `👤 Student: ${previewName}\n` +
+        `🪪 ID: ${previewId}\n` +
+        `📚 Subjects: ${previewSubjs}\n` +
+        `📝 Tests: ${previewTests}\n` +
+        `💜 HP: ${previewHP} | ⚡ XP: ${previewXP}\n` +
+        `🏅 Rank: ${previewRank}\n` +
+        `📅 Exported: ${exportedAt}\n` +
+        `📦 Keys: ${importable.length}\n\n` +
+        `⚠️ This will OVERWRITE your current data!`
+      );
+      if(!confirmed){st.innerHTML=`<span style="color:var(--text3)">Import cancelled.</span>`;return;}
+
+      // Do the import
       let count=0;
-      Object.entries(data).forEach(([k,v])=>{if(k.startsWith('thunderstudy_')||k.startsWith('ts_')||k==='cbtUserName'){localStorage.setItem(k,v);count++;}});
-      st.innerHTML=`<span style="color:var(--green)">✅ Imported ${count} records! Reloading…</span>`;
-      setTimeout(()=>location.reload(),1500);
-    }catch(err){st.innerHTML=`<span style="color:var(--red)">❌ Invalid file. Use a Thunderstudy backup .json</span>`;}
+      importable.forEach(([k,v])=>{localStorage.setItem(k,v);count++;});
+
+      // Also restore student ID if in meta
+      if(meta.studentId&&!data['ts_student_id']){
+        localStorage.setItem('ts_student_id',meta.studentId);
+      }
+      // Mark as onboarded if data has profile
+      if(data['ts_profile']){localStorage.setItem('ts_ob_done','1');}
+
+      st.innerHTML=`<span style="color:var(--green)">✅ Imported ${count} records for ${previewName}! Reloading in 2s…</span>`;
+      showToast(`✅ ${count} records imported!`,'success',2000);
+      setTimeout(()=>location.reload(),2000);
+    }catch(err){
+      st.innerHTML=`<span style="color:var(--red)">❌ ${err.message}. Use a valid Thunderstudy .json backup.</span>`;
+    }
   };
   reader.readAsText(file);
 }
@@ -2516,7 +2731,17 @@ document.querySelectorAll('.dock-item').forEach(d=>d.classList.remove('active'))
   }
   destroyCharts();
   const map={home:renderHome,scoreboard:renderScoreboard,subjects:renderSubjects,mocks:renderMocks,analytics:renderAnalytics,rank:renderRank,settings:renderSettings};
-  if(map[id])map[id]();
+  if(map[id]){
+  // Show skeleton first
+  const contentId={home:'home-content',scoreboard:'scoreboard-content',subjects:'subjects-content',mocks:'mocks-content',analytics:'analytics-content',rank:'rank-content',settings:'settings-content'}[id];
+  if(contentId){
+    const el=document.getElementById(contentId);
+    if(el){
+      el.innerHTML=`<div class="sk-card"><div class="skeleton sk-line" style="width:40%;height:22px;margin-bottom:16px;"></div><div class="skeleton sk-line" style="width:100%;height:14px;"></div><div class="skeleton sk-line" style="width:85%;height:14px;"></div><div class="skeleton sk-line" style="width:70%;height:14px;"></div></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;">${Array(4).fill(0).map(()=>`<div class="sk-card" style="padding:18px;"><div class="skeleton sk-line" style="width:38px;height:38px;border-radius:11px;margin-bottom:12px;"></div><div class="skeleton sk-line" style="width:60%;height:24px;"></div><div class="skeleton sk-line" style="width:80%;height:10px;"></div></div>`).join('')}</div><div class="sk-card"><div class="skeleton sk-line" style="width:30%;height:16px;margin-bottom:14px;"></div>${Array(3).fill(0).map(()=>`<div class="skeleton sk-line" style="width:100%;height:11px;"></div>`).join('')}</div>`;
+    }
+  }
+  setTimeout(()=>map[id](),80);
+}
 }
 
 /* ══════════════════════════════════════════
@@ -2536,8 +2761,19 @@ function renderHome(){
         <div class="welcome-step"><div class="welcome-step-num">2</div><div class="welcome-step-text">Attempt quizzes<span>Your scores appear here automatically</span></div></div>
         <div class="welcome-step"><div class="welcome-step-num">3</div><div class="welcome-step-text">Track progress<span>Analytics, badges, predictions & class rank</span></div></div>
       </div>
-      <button class="btn btn-prim" style="width:100%;justify-content:center;padding:13px;font-size:14px;" onclick="startOnboarding()">🚀 Get Started</button>
-    </div></div>`;
+<button class="btn btn-prim" style="width:100%;justify-content:center;padding:13px;font-size:14px;" onclick="startOnboarding()">🚀 Get Started</button>
+  <div style="position:relative;margin:16px 0 0;"><div style="position:absolute;inset:0;display:flex;align-items:center;"><div style="flex:1;border-top:1px solid var(--border);"></div><span style="padding:0 12px;font-size:11px;color:var(--text3);background:var(--card);">OR</span><div style="flex:1;border-top:1px solid var(--border);"></div></div></div>
+  <div style="margin-top:12px;">
+    <div style="font-size:11px;font-weight:700;color:var(--text3);text-align:center;margin-bottom:9px;">Already used Thunderstudy before?</div>
+    <label style="display:block;border:2px dashed var(--border);border-radius:14px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;background:var(--card2);" onmouseenter="this.style.borderColor='var(--acc)'" onmouseleave="this.style.borderColor='var(--border)'">
+      <div style="font-size:28px;margin-bottom:5px;">📂</div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:3px;">Import Existing Backup</div>
+      <div style="font-size:11px;color:var(--text3);">Tap to choose your .json backup file</div>
+      <input type="file" accept=".json" style="display:none" onchange="obImportBackup(this.files[0])">
+    </label>
+    <div id="ob-import-status" style="font-size:12px;font-weight:600;margin-top:8px;text-align:center;min-height:18px;"></div>
+  </div>
+</div></div>`;
     renderAdminNotices();
     renderExamCountdown();
     return;
@@ -2617,29 +2853,28 @@ H+=`<div class="ts-hero">
     <div class="ts-footer-aspirant">CUET Aspirant</div>
   </div>
 </div>`;
- H+=`<div style="margin-bottom:18px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
-      <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--text3);">🏅 Rank Badges</div>
-      <div style="font-size:12px;font-weight:900;font-family:var(--mono);color:${currentTier.color};">⚡ ${rpCurrent} / ${rpThreshold} RP${isAtApex?' (Apex Bonus)':''}</div>
-    </div>
-    <div style="height:7px;background:var(--border);border-radius:7px;overflow:hidden;margin-bottom:10px;">
-      <div style="height:100%;width:${rpPct.toFixed(1)}%;background:${currentTier.color};border-radius:7px;transition:width 1.2s cubic-bezier(.34,1.56,.64,1);"></div>
-    </div>
-    ${rpData.consecutiveBad>0?`<div style="background:rgba(244,63,94,.08);border:1.5px solid rgba(244,63,94,.3);border-radius:12px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;"><div style="font-size:22px;">⚠️</div><div><div style="font-size:12px;font-weight:800;color:var(--red);">${rpData.consecutiveBad}/3 Bad Mocks — Demotion Risk!</div><div style="font-size:10px;color:var(--text3);margin-top:2px;">${3-rpData.consecutiveBad} more test ≤30% = instant rank drop to previous rank</div></div></div>`:''}
-    <div style="display:flex;flex-direction:column;gap:6px;">
-      ${RANK_TIERS.map((tier,ti)=>{const earned=ti<=rpData.rankIndex,isCurrent=ti===rpData.rankIndex;
-        return`<div class="rank-badge-item ${earned?'earned':''} ${isCurrent?'current':''} ${!earned?'locked':''}" style="${isCurrent?`border-color:${tier.border};background:${tier.bg};`:''}">
-          <div class="rank-badge-icon">${getBadgeSVG(tier.name,34,'lb-'+tier.name)}</div>
-          <div class="rank-badge-info">
-            <div class="rank-badge-name" style="${isCurrent?`color:${tier.color}`:'color:var(--text2)'}">${tier.name}</div>
-            <div class="rank-badge-pct">${isCurrent?`${rpCurrent} / ${rpThreshold} RP`:`${tier.threshold} RP to unlock`}</div>
-            ${isCurrent?`<div style="height:3px;background:var(--border);border-radius:3px;margin-top:3px;overflow:hidden;"><div style="height:100%;width:${rpPct.toFixed(0)}%;background:${tier.color};border-radius:3px;"></div></div>`:''}
-          </div>
-          <div class="rank-badge-check">${isCurrent?'⬅️':earned?'✅':''}</div>
-        </div>`;
-      }).reverse().join('')}
-    </div>
-  </div>`;
+H+=`<div class="badge-grid-wrap" style="margin-bottom:18px;">
+  <div class="badge-grid-header">
+    <div class="badge-grid-title">🏅 Rank Badges</div>
+    <div class="rp-pill">${currentTier.name} · ${rpCurrent} RP</div>
+  </div>
+  <div class="badge-grid">
+    ${RANK_TIERS.map((tier,ti)=>{
+      const earned=ti<=rpData.rankIndex;
+      const isCurrent=ti===rpData.rankIndex;
+      return`<div class="badge-card ${isCurrent?'current':''} ${!earned?'locked':''}">
+        ${isCurrent?'<div class="badge-card-active-dot"></div>':''}
+        ${getBadgeSVG(tier.name,48,'hm-'+tier.name)}
+        <span class="badge-card-name">${tier.name}</span>
+        <span class="badge-card-rp">${isCurrent?`${rpCurrent}/${tier.threshold} RP`:earned?'✅ Earned':`${tier.threshold} RP`}</span>
+      </div>`;
+    }).join('')}
+  </div>
+  <div class="mini-progress">
+    <div class="mini-bar-track"><div class="mini-bar-fill" style="width:${rpPct.toFixed(1)}%"></div></div>
+    <div class="mini-bar-label">${rpCurrent} / ${rpThreshold} RP → ${RANK_TIERS[Math.min(rpData.rankIndex+1,RANK_TIERS.length-1)].name}</div>
+  </div>
+</div>`;
   
   H+=`<div class="streak-card">
     <div class="streak-flame">${streak>=3?'🔥':'💤'}</div>
@@ -2662,33 +2897,77 @@ H+=`<div class="ts-hero">
     <div class="ql-item" onclick="openProfileModal()"><div class="ql-icon">🎯</div><div class="ql-name">Set Goals</div><div class="ql-desc">Target % per subject</div></div>
   </div>`;
   if(sv.length>0){
-    H+=`<div style="margin-bottom:20px;">
-  <a href="https://wondermayank.github.io/book/" target="_blank" style="display:block;text-decoration:none;border-radius:18px;overflow:hidden;box-shadow:0 8px 32px rgba(79,110,247,.25);transition:transform .2s,box-shadow .2s;" onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='0 14px 40px rgba(79,110,247,.35)'" onmouseleave="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 32px rgba(79,110,247,.25)'">
-   <svg width="100%" viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg" style="display:block;">
-      <defs>
-        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6a65f0"/><stop offset="100%" stop-color="#4b44d4"/></linearGradient>
-        <filter id="glow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        <linearGradient id="glassBtn" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(255,255,255,0.45)"/><stop offset="100%" stop-color="rgba(255,255,255,0.15)"/></linearGradient>
-        <filter id="glassGlow"><feGaussianBlur stdDeviation="6" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        <linearGradient id="goldGrad"><stop offset="0%" stop-color="#ffd700"/><stop offset="100%" stop-color="#ffb300"/></linearGradient>
-        <linearGradient id="freeGrad"><stop offset="0%" stop-color="#00e6ff"/><stop offset="100%" stop-color="#7df9ff"/></linearGradient>
-      </defs>
-      <rect width="1200" height="420" rx="30" fill="url(#bg)"/>
-      <circle cx="1000" cy="100" r="160" fill="white" opacity="0.06"/>
-      <circle cx="200" cy="350" r="180" fill="white" opacity="0.05"/>
-      <text x="60" y="80" font-size="18" fill="rgba(255,255,255,0.7)" letter-spacing="2">SPECIAL OFFER</text>
-      <text x="60" y="140" font-size="40" fill="white" font-weight="700" filter="url(#glow)">Best Books &amp; Sample Papers</text>
-      <text x="60" y="190" font-size="28" fill="#e0e0ff">For Class 12 &amp; CUET</text>
-      <rect x="60" y="220" width="260" height="50" rx="25" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.4)"/>
-      <text x="190" y="252" text-anchor="middle" fill="white" font-size="18" font-weight="600">🔥 Limited Offer</text>
-      <text x="60" y="320" font-size="26" font-weight="700"><tspan fill="#ffd700">Worth ₹99</tspan><tspan fill="white"> → </tspan><tspan fill="#00e6ff" filter="url(#glow)">FREE</tspan></text>
-      <rect x="840" y="190" width="280" height="90" rx="25" fill="white" opacity="0.15"><animate attributeName="opacity" values="0.1;0.3;0.1" dur="2.5s" repeatCount="indefinite"/></rect>
-      <rect x="840" y="190" width="280" height="90" rx="25" fill="url(#glassBtn)" stroke="rgba(255,255,255,0.6)" stroke-width="1.2"/>
-      <rect x="840" y="190" width="280" height="45" rx="25" fill="rgba(255,255,255,0.25)" opacity="0.4"/>
-      <text x="980" y="245" text-anchor="middle" fill="#111" font-size="26" font-weight="600">Get Free Now →</text>
-      <text x="1100" y="380" text-anchor="end" font-size="14" fill="rgba(255,255,255,0.65)">By Thunderstudy</text>
-    </svg>
-  </a>
+H+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;" id="ts-promo-banners">
+
+<a href="https://wondermayank.github.io" target="_blank" style="border-radius:18px;overflow:hidden;display:block;text-decoration:none;transition:transform .2s,box-shadow .2s;" onmouseenter="this.style.transform='translateY(-4px)';this.style.boxShadow='0 16px 40px rgba(30,58,138,.22)'" onmouseleave="this.style.transform='none';this.style.boxShadow='none'">
+<svg width="100%" viewBox="0 0 360 170" xmlns="http://www.w3.org/2000/svg">
+  <rect width="360" height="170" fill="#0f172a" rx="18"/>
+  <rect x="0" y="0" width="360" height="170" fill="url(#b1g)" rx="18"/>
+  <defs>
+    <linearGradient id="b1g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1e3a8a"/><stop offset="100%" stop-color="#1e1b4b"/></linearGradient>
+    <linearGradient id="b1accent" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient>
+  </defs>
+  <circle cx="310" cy="-10" r="90" fill="#3b82f6" fill-opacity="0.08"/>
+  <circle cx="340" cy="150" r="60" fill="#6366f1" fill-opacity="0.07"/>
+  <circle cx="-10" cy="100" r="70" fill="#1d4ed8" fill-opacity="0.1"/>
+  <rect x="0" y="140" width="360" height="30" fill="#000" fill-opacity="0.15" rx="0"/>
+  <rect x="18" y="18" width="40" height="40" rx="10" fill="url(#b1accent)"/>
+  <path d="M31 26 L26 38 H33 L28 50 L46 36 H39 L43 26 Z" fill="#fff"/>
+  <text x="68" y="33" font-family="'Plus Jakarta Sans',sans-serif" font-size="9" font-weight="800" fill="#93c5fd" letter-spacing="2.5" opacity="0.9">MADE WITH LOVE</text>
+  <text x="68" y="51" font-family="'Plus Jakarta Sans',sans-serif" font-size="17" font-weight="900" fill="#ffffff" letter-spacing="-0.5">Thunderstudy</text>
+  <rect x="18" y="74" width="320" height="1" fill="#ffffff" fill-opacity="0.08"/>
+  <text x="18" y="98" font-family="'Plus Jakarta Sans',sans-serif" font-size="11" fill="#94a3b8">Built &amp; operated by</text>
+  <text x="18" y="120" font-family="'Outfit','Plus Jakarta Sans',sans-serif" font-size="22" font-weight="900" fill="url(#b1accent)" letter-spacing="-0.5">Wondermayank</text>
+  <rect x="18" y="137" width="160" height="22" rx="11" fill="#ffffff" fill-opacity="0.1" stroke="#ffffff" stroke-opacity="0.2" stroke-width="1"/>
+  <text x="98" y="152" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="10" font-weight="700" fill="#93c5fd">Portfolio ↗</text>
+</svg></a>
+
+<a href="https://commercesehoga.github.io/studyhub" target="_blank" style="border-radius:18px;overflow:hidden;display:block;text-decoration:none;transition:transform .2s,box-shadow .2s;" onmouseenter="this.style.transform='translateY(-4px)';this.style.boxShadow='0 16px 40px rgba(4,120,87,.22)'" onmouseleave="this.style.transform='none';this.style.boxShadow='none'">
+<svg width="100%" viewBox="0 0 360 170" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="b2g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#064e3b"/><stop offset="100%" stop-color="#022c22"/></linearGradient>
+    <linearGradient id="b2pill" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#059669"/></linearGradient>
+  </defs>
+  <rect width="360" height="170" fill="url(#b2g)" rx="18"/>
+  <circle cx="320" cy="170" r="100" fill="#059669" fill-opacity="0.08"/>
+  <circle cx="-20" cy="20" r="70" fill="#047857" fill-opacity="0.1"/>
+  <rect x="0" y="140" width="360" height="30" fill="#000" fill-opacity="0.15" rx="0"/>
+  <rect x="18" y="18" width="40" height="40" rx="10" fill="#065f46"/>
+  <text x="38" y="44" text-anchor="middle" font-size="20">📚</text>
+  <text x="68" y="33" font-family="'Plus Jakarta Sans',sans-serif" font-size="9" font-weight="800" fill="#6ee7b7" letter-spacing="2.5" opacity="0.9">FREE RESOURCES</text>
+  <text x="68" y="51" font-family="'Plus Jakarta Sans',sans-serif" font-size="17" font-weight="900" fill="#ffffff" letter-spacing="-0.5">StudyHub</text>
+  <rect x="18" y="74" width="320" height="1" fill="#ffffff" fill-opacity="0.08"/>
+  <text x="18" y="98" font-family="'Plus Jakarta Sans',sans-serif" font-size="11" fill="#6ee7b7" fill-opacity="0.8">Books · Notes · Study Material</text>
+  <rect x="18" y="108" width="110" height="22" rx="11" fill="#fcd34d" fill-opacity="0.15" stroke="#fcd34d" stroke-opacity="0.4" stroke-width="1"/>
+  <text x="73" y="123" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="11" font-weight="700" fill="#fcd34d">Worth ₹99</text>
+  <text x="138" y="123" font-family="'Plus Jakarta Sans',sans-serif" font-size="14" font-weight="900" fill="#94a3b8">→</text>
+  <rect x="150" y="108" width="60" height="22" rx="11" fill="url(#b2pill)"/>
+  <text x="180" y="123" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="800" fill="#fff">FREE</text>
+  <rect x="18" y="137" width="130" height="22" rx="11" fill="#ffffff" fill-opacity="0.1" stroke="#ffffff" stroke-opacity="0.2" stroke-width="1"/>
+  <text x="83" y="152" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="10" font-weight="700" fill="#6ee7b7">Get Free Now  ↗</text>
+</svg></a>
+
+<a href="https://commercesehoga.github.io/guide" target="_blank" style="border-radius:18px;overflow:hidden;display:block;text-decoration:none;transition:transform .2s,box-shadow .2s;" onmouseenter="this.style.transform='translateY(-4px)';this.style.boxShadow='0 16px 40px rgba(124,45,18,.22)'" onmouseleave="this.style.transform='none';this.style.boxShadow='none'">
+<svg width="100%" viewBox="0 0 360 170" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="b3g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7c2d12"/><stop offset="100%" stop-color="#431407"/></linearGradient>
+    <linearGradient id="b3accent" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#fde68a"/><stop offset="100%" stop-color="#fbbf24"/></linearGradient>
+  </defs>
+  <rect width="360" height="170" fill="url(#b3g)" rx="18"/>
+  <circle cx="330" cy="0" r="90" fill="#c2410c" fill-opacity="0.1"/>
+  <circle cx="20" cy="170" r="70" fill="#92400e" fill-opacity="0.12"/>
+  <rect x="0" y="140" width="360" height="30" fill="#000" fill-opacity="0.15" rx="0"/>
+  <rect x="18" y="18" width="40" height="40" rx="10" fill="#92400e"/>
+  <text x="38" y="44" text-anchor="middle" font-size="20">🗺️</text>
+  <text x="68" y="33" font-family="'Plus Jakarta Sans',sans-serif" font-size="9" font-weight="800" fill="#fde68a" letter-spacing="2.5" opacity="0.9">HOW TO USE</text>
+  <text x="68" y="51" font-family="'Plus Jakarta Sans',sans-serif" font-size="17" font-weight="900" fill="#ffffff" letter-spacing="-0.5">Complete Guide</text>
+  <rect x="18" y="74" width="320" height="1" fill="#ffffff" fill-opacity="0.08"/>
+  <text x="18" y="98" font-family="'Plus Jakarta Sans',sans-serif" font-size="11" fill="#fde68a" fill-opacity="0.8">Mocks · Purchases · Features</text>
+  <text x="18" y="120" font-family="'Plus Jakarta Sans',sans-serif" font-size="12" font-weight="700" fill="url(#b3accent)">Step-by-step walkthrough</text>
+  <rect x="18" y="137" width="130" height="22" rx="11" fill="#ffffff" fill-opacity="0.1" stroke="#ffffff" stroke-opacity="0.2" stroke-width="1"/>
+  <text x="83" y="152" text-anchor="middle" font-family="'Plus Jakarta Sans',sans-serif" font-size="10" font-weight="700" fill="#fde68a">Read Guide  ↗</text>
+</svg></a>
+
 </div>
     <div class="sec-hdr"><div class="sec-title">🎯 My Goals</div><div class="sec-link" onclick="openProfileModal()">Edit →</div></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:20px;">`;
     sv.forEach(sId=>{
@@ -2733,6 +3012,7 @@ fetch(GS_URL+'?action=getAll',{method:'GET',redirect:'follow'})
       if(sid&&myRow&&myRow[1]) sid.textContent=myRow[1];
     }
   }).catch(()=>{});
+  renderHomeTopbar();
   setTimeout(()=>{
     const xf=document.getElementById('xp-fill-bar');if(xf)setTimeout(()=>xf.style.width=xpInfo.progress+'%',100);
     document.querySelectorAll('.goal-fill').forEach(el=>{const w=el.style.width;el.style.width='0';setTimeout(()=>el.style.width=w,60);});
@@ -3007,6 +3287,27 @@ function applySubjFilter(sId){
   else f.sort((a,b)=>new Date(b.date)-new Date(a.date));
   const grid=document.getElementById(`cg-${sId}`);if(!grid)return;
   grid.innerHTML=f.map(d=>buildChCard(d,sId)).join('');
+  // Trigger ring entrance animations with staggered delay
+  setTimeout(()=>{
+    grid.querySelectorAll('svg').forEach((svg,i)=>{
+      svg.classList.add('ring-animated');
+      const animCircle=svg.querySelector('circle:last-child');
+      if(animCircle){
+        const circ=2*Math.PI*20;
+        const pct=parseFloat(svg.closest('.ch-card')?.querySelector('.ch-score')?.parentElement?.dataset?.pct||'0')||0;
+        const dashOffset=circ-(pct/100)*circ;
+        animCircle.style.setProperty('--ring-full',circ);
+        animCircle.style.setProperty('--ring-offset',dashOffset);
+        animCircle.style.animationDelay=(i*0.06)+'s';
+        // Reset then re-apply to trigger
+        const sd=animCircle.getAttribute('stroke-dashoffset');
+        animCircle.setAttribute('stroke-dashoffset',circ);
+        requestAnimationFrame(()=>{
+          setTimeout(()=>animCircle.setAttribute('stroke-dashoffset',sd),20);
+        });
+      }
+    });
+  },50);
 }
 
 function buildChCard(d,sId){
@@ -4906,7 +5207,7 @@ function showPromoHint(){
       <text x="1100" y="380" text-anchor="end" font-size="14" fill="rgba(255,255,255,0.65)">By Thunderstudy</text>
     </svg>
     <div style="display:flex;gap:9px;">
-      <a href="https://wondermayank.github.io/book/" target="_blank" class="btn btn-prim" style="flex:1;justify-content:center;padding:12px;font-size:13px;">📚 Get the Books</a>
+      <a href="https://commercesehoga.github.io/studyhub/" target="_blank" class="btn btn-prim" style="flex:1;justify-content:center;padding:12px;font-size:13px;">📚 Get the Books</a>
       <button onclick="this.closest('[style*=fixed]').remove()" class="btn btn-ghost" style="flex:1;justify-content:center;padding:12px;font-size:13px;">Got it!</button>
     </div>
   </div>`;
@@ -5201,7 +5502,8 @@ function startOnboarding(){
 function obValidate1(){
   const nameOk = document.getElementById('ob-name').value.trim().length >= 2;
   const sidOk = document.getElementById('ob-sid') && document.getElementById('ob-sid').value.trim().length >= 2;
-  document.getElementById('ob-next-1').disabled = !(nameOk && sidOk);
+  const googleOk = !!getGoogleUser();
+  document.getElementById('ob-next-1').disabled = !((nameOk && sidOk) || googleOk);
 }
 
 function obToggleSubj(id){
@@ -5387,6 +5689,18 @@ document.querySelector('.main').addEventListener('scroll',function(){
   if(btn)btn.classList.toggle('visible',this.scrollTop>300);
 },{passive:true});
 syncHistory();
+
+// Restore Google session
+// Restore Google session (Firebase handles this via onAuthStateChanged above)
+const _gu = getGoogleUser();
+if (_gu) {
+  localStorage.setItem('cbtUserName', _gu.name);
+  const p = getProfile();
+  if (!p.name && _gu.name) {
+    p.name = _gu.name;
+    localStorage.setItem('ts_profile', JSON.stringify(p));
+  }
+}
 
   fetchLiveNoticesAndExams().then(()=>{
     if(shouldShowOnboarding()){
@@ -5924,6 +6238,469 @@ function exitDesktop() {
     clone.remove();
     boot.remove();
   }, 700);
+}
+// ── CONFETTI ON RANK UP ──
+function launchConfetti(){
+  const colors=['#4f6ef7','#7c3aed','#f59e0b','#10b981','#f43f5e','#06b6d4','#ec4899'];
+  const count=120;
+  const container=document.createElement('div');
+  container.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:999999;overflow:hidden;';
+  document.body.appendChild(container);
+  for(let i=0;i<count;i++){
+    const el=document.createElement('div');
+    const color=colors[Math.floor(Math.random()*colors.length)];
+    const size=Math.random()*10+5;
+    const startX=Math.random()*100;
+    const delay=Math.random()*0.8;
+    const duration=1.8+Math.random()*1.4;
+    const rotation=Math.random()*720-360;
+    const shape=Math.random()>0.5?'50%':'2px';
+    el.style.cssText=`
+      position:absolute;
+      left:${startX}%;
+      top:-20px;
+      width:${size}px;
+      height:${size}px;
+      background:${color};
+      border-radius:${shape};
+      opacity:1;
+      animation:confettiFall ${duration}s ${delay}s ease-in forwards;
+    `;
+    container.appendChild(el);
+  }
+  const style=document.createElement('style');
+  style.textContent=`
+    @keyframes confettiFall{
+      0%{transform:translateY(0) rotate(0deg) scaleX(1);opacity:1;}
+      70%{opacity:1;}
+      100%{transform:translateY(110vh) rotate(${Math.random()*720}deg) scaleX(0.3);opacity:0;}
+    }
+  `;
+  document.head.appendChild(style);
+  setTimeout(()=>{container.remove();style.remove();},4000);
+}
+// ── PULL TO REFRESH (mobile leaderboard) ──
+(function(){
+  let startY=0,pulling=false,indicator=null;
+  function isRankPage(){return document.getElementById('page-rank')?.classList.contains('active');}
+  function getMainEl(){return document.querySelector('.main');}
+
+  document.addEventListener('touchstart',e=>{
+    if(!isRankPage())return;
+    const main=getMainEl();
+    if(main.scrollTop===0){startY=e.touches[0].clientY;pulling=true;}
+  },{passive:true});
+
+  document.addEventListener('touchmove',e=>{
+    if(!pulling||!isRankPage())return;
+    const dist=e.touches[0].clientY-startY;
+    if(dist>40){
+      if(!indicator){
+        indicator=document.createElement('div');
+        indicator.className='ptr-indicator';
+        indicator.innerHTML='<div class="ptr-spin"></div>Release to refresh';
+        const rankPage=document.getElementById('page-rank');
+        rankPage.insertAdjacentElement('afterbegin',indicator);
+        requestAnimationFrame(()=>indicator.classList.add('visible'));
+      }
+    }
+  },{passive:true});
+
+  document.addEventListener('touchend',()=>{
+    if(!pulling)return;
+    pulling=false;
+    if(indicator){
+      indicator.innerHTML='<div class="ptr-spin"></div>Refreshing…';
+      setTimeout(()=>{
+        if(indicator){indicator.remove();indicator=null;}
+        refreshLb();
+      },700);
+    }
+    startY=0;
+  },{passive:true});
+})();
+// ── WEBVIEW DETECTION ──
+(function detectWebView(){
+  const ua = navigator.userAgent || '';
+  const ref = document.referrer || '';
+
+  const isWebView = (
+    // Instagram
+    /Instagram/i.test(ua) ||
+    /\bFBIOS\b/i.test(ua) ||
+    // Facebook
+    /FBAN|FBAV/i.test(ua) ||
+    /\bFB_IAB\b/i.test(ua) ||
+    // Telegram
+    /Telegram/i.test(ua) ||
+    // Snapchat
+    /\bSnapchat\b/i.test(ua) ||
+    // Twitter/X
+    /\bTwitter\b/i.test(ua) ||
+    // LinkedIn
+    /\bLinkedIn\b/i.test(ua) ||
+    // WhatsApp
+    /\bWhatsApp\b/i.test(ua) ||
+    // TikTok
+    /\bMusically\b/i.test(ua) ||
+    /\bBytedance\b/i.test(ua) ||
+    // iOS in-app (non-Safari)
+    (/iPhone|iPad/i.test(ua) && !/Safari/i.test(ua) && /AppleWebKit/i.test(ua)) ||
+    // Android WebView
+    (/Android/i.test(ua) && /wv\)/i.test(ua)) ||
+    (/Android/i.test(ua) && !/Chrome/i.test(ua) && /Version\//i.test(ua)) ||
+    // Generic embedded
+    /\bGSA\b/i.test(ua) ||   // Google Search App
+    /\bDCBrowser\b/i.test(ua) ||
+    /\bMiuiBrowser\b/i.test(ua) ||
+    // Referrer-based (opened from social app)
+    /instagram\.com|facebook\.com|t\.co|tiktok\.com/i.test(ref)
+  );
+
+  if (!isWebView) return;
+
+  // Kill boot screen
+  const boot = document.getElementById('ts-boot');
+  if (boot) boot.style.display = 'none';
+
+  const SITE_URL = 'https://commercesehoga.github.io/dashboard/';
+
+  // Build the blocking overlay
+  const ov = document.createElement('div');
+  ov.id = 'webview-block';
+  ov.style.cssText = `
+    position:fixed;inset:0;z-index:2147483647;
+    background:linear-gradient(135deg,#f0f3fa 0%,#e8ecf4 100%);
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+    overflow-y:auto;
+  `;
+
+  ov.innerHTML = `
+  <div style="background:#fff;border-radius:28px;padding:32px 24px;max-width:400px;width:100%;text-align:center;
+    box-shadow:0 24px 80px rgba(79,110,247,.2);border:1px solid #e8ecf4;">
+
+    <!-- Logo -->
+    <div style="width:66px;height:66px;background:linear-gradient(135deg,#4f6ef7,#7c3aed);
+      border-radius:18px;display:flex;align-items:center;justify-content:center;
+      font-size:32px;margin:0 auto 16px;box-shadow:0 8px 28px rgba(79,110,247,.35);">⚡</div>
+
+    <!-- Heading -->
+    <div style="font-size:20px;font-weight:900;color:#1a1d2e;margin-bottom:6px;">
+      Open in Your Browser
+    </div>
+    <div style="font-size:13px;color:#5a5f7a;line-height:1.7;margin-bottom:20px;">
+      Thunderstudy doesn't work inside<br>
+      <strong>Instagram, Telegram, WhatsApp</strong><br>
+      or other in-app browsers.<br><br>
+      Please open it in <strong style="color:#4f6ef7">Chrome, Edge, Brave or Safari</strong>.
+    </div>
+
+    <!-- URL Box -->
+    <div style="background:#f7f8fd;border:1.5px solid #e8ecf4;border-radius:14px;
+      padding:11px 14px;margin-bottom:18px;display:flex;align-items:center;gap:10px;text-align:left;cursor:pointer;"
+      onclick="wvCopyURL('${SITE_URL}',this)">
+      <div style="font-size:20px;flex-shrink:0;">🔗</div>
+      <div style="font-size:11px;font-weight:700;color:#4f6ef7;word-break:break-all;flex:1;">${SITE_URL}</div>
+      <div id="wv-copy-label" style="font-size:10px;font-weight:700;color:#9298b5;white-space:nowrap;flex-shrink:0;">Tap to copy</div>
+    </div>
+
+    <!-- How to open steps -->
+    <div style="background:#f7f8fd;border-radius:14px;padding:14px 16px;margin-bottom:18px;text-align:left;">
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#9298b5;margin-bottom:10px;">
+        HOW TO OPEN
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <div style="width:22px;height:22px;background:#4f6ef7;border-radius:50%;display:flex;align-items:center;
+            justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;">1</div>
+          <div style="font-size:12px;color:#5a5f7a;padding-top:2px;">
+            Tap <strong style="color:#1a1d2e;">⋯ More</strong> or <strong style="color:#1a1d2e;">⋮ Menu</strong> in the top-right corner
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <div style="width:22px;height:22px;background:#4f6ef7;border-radius:50%;display:flex;align-items:center;
+            justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;">2</div>
+          <div style="font-size:12px;color:#5a5f7a;padding-top:2px;">
+            Select <strong style="color:#1a1d2e;">"Open in Browser"</strong> or <strong style="color:#1a1d2e;">"Open in Chrome"</strong>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <div style="width:22px;height:22px;background:#4f6ef7;border-radius:50%;display:flex;align-items:center;
+            justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;">3</div>
+          <div style="font-size:12px;color:#5a5f7a;padding-top:2px;">
+            Or copy the link above and paste it in Chrome
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div style="display:flex;flex-direction:column;gap:10px;">
+
+      <!-- Try open in browser -->
+      <button onclick="wvOpenInBrowser('${SITE_URL}')" style="
+        width:100%;padding:13px;border-radius:15px;border:none;cursor:pointer;
+        background:linear-gradient(135deg,#4f6ef7,#7c3aed);color:#fff;
+        font-size:13px;font-weight:800;font-family:inherit;
+        box-shadow:0 4px 14px rgba(79,110,247,.35);
+      ">🌐 Open in Chrome / Browser</button>
+
+      <!-- Copy URL fallback -->
+      <button onclick="wvCopyURL('${SITE_URL}',this)" style="
+        width:100%;padding:12px;border-radius:15px;border:1.5px solid #e8ecf4;cursor:pointer;
+        background:#f7f8fd;color:#5a5f7a;
+        font-size:13px;font-weight:700;font-family:inherit;
+      " id="wv-copy-btn">📋 Copy Link</button>
+
+      <!-- Download backup for returning users -->
+      <button onclick="wvDownloadBackup(this)" style="
+        width:100%;padding:12px;border-radius:15px;border:none;cursor:pointer;
+        background:linear-gradient(135deg,#10b981,#059669);color:#fff;
+        font-size:12px;font-weight:800;font-family:inherit;
+        box-shadow:0 4px 14px rgba(16,185,129,.25);
+      " id="wv-backup-btn">⬇️ Download My Backup (Existing Users)</button>
+
+    </div>
+
+    <div style="font-size:10px;color:#9298b5;margin-top:14px;line-height:1.6;">
+      New here? Just tap "Open in Chrome" above.<br>
+      Existing users: download backup first, then restore it after opening in browser.
+    </div>
+  </div>`;
+
+  document.body.appendChild(ov);
+
+  // Inject animation
+  if (!document.getElementById('wv-style')) {
+    const s = document.createElement('style');
+    s.id = 'wv-style';
+    s.textContent = `@keyframes mIn{from{opacity:0;transform:scale(.93) translateY(14px)}to{opacity:1;transform:none}}`;
+    document.head.appendChild(s);
+  }
+})();
+
+/* ── WEBVIEW HELPERS (must be global) ── */
+function wvOpenInBrowser(url) {
+  // Intent URL for Android Chrome
+  const intentUrl = 'intent://' + url.replace(/^https?:\/\//, '') +
+    '#Intent;scheme=https;package=com.android.chrome;end';
+
+  const ua = navigator.userAgent || '';
+  const isAndroid = /Android/i.test(ua);
+  const isIOS = /iPhone|iPad/i.test(ua);
+
+  if (isAndroid) {
+    // Try Chrome intent
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+    try { iframe.src = intentUrl; } catch(e) {}
+    setTimeout(() => {
+      document.body.removeChild(iframe);
+      window.location.href = url;
+    }, 500);
+  } else if (isIOS) {
+    // iOS: try opening via a link click
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => { window.location.href = url; }, 300);
+  } else {
+    window.open(url, '_blank');
+  }
+
+  // After 1.5s, if still here, show copy prompt
+  setTimeout(() => {
+    wvCopyURL(url, document.getElementById('wv-copy-btn'));
+  }, 1500);
+}
+
+function wvCopyURL(url, btn) {
+  const label = document.getElementById('wv-copy-label');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(() => {
+      if (btn) { btn.textContent = '✅ Link Copied!'; btn.style.background = '#10b981'; btn.style.color = '#fff'; btn.style.border = 'none'; }
+      if (label) label.textContent = '✅ Copied!';
+      setTimeout(() => {
+        if (btn && btn.id === 'wv-copy-btn') { btn.textContent = '📋 Copy Link'; btn.style.background = '#f7f8fd'; btn.style.color = '#5a5f7a'; btn.style.border = '1.5px solid #e8ecf4'; }
+        if (label) label.textContent = 'Tap to copy';
+      }, 2500);
+    }).catch(() => wvFallbackCopy(url, btn, label));
+  } else {
+    wvFallbackCopy(url, btn, label);
+  }
+}
+
+function wvFallbackCopy(url, btn, label) {
+  const ta = document.createElement('textarea');
+  ta.value = url;
+  ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try {
+    document.execCommand('copy');
+    if (btn) { btn.textContent = '✅ Copied!'; btn.style.color = '#10b981'; }
+    if (label) label.textContent = '✅ Copied!';
+  } catch(e) {
+    if (btn) btn.textContent = '📋 Paste in Chrome: ' + url;
+  }
+  document.body.removeChild(ta);
+}
+
+/* ══════════════════════════════════════════
+   GOOGLE OAUTH
+══════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   FIREBASE GOOGLE AUTH FUNCTIONS
+══════════════════════════════════════════ */
+function firebaseGoogleLogin() {
+  const btn = document.getElementById('firebase-google-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Signing in…'; }
+
+  fbAuth.signInWithRedirect(fbProvider).catch(function(e) {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Sign in with Google';
+    }
+    showToast('❌ Google login failed: ' + e.message, 'error');
+  });
+}
+
+function applyGoogleUserToUI(googleUser) {
+  // Auto-fill name field in onboarding
+  const nameField = document.getElementById('ob-name');
+  if (nameField) {
+    nameField.value = googleUser.name;
+    nameField.readOnly = true;
+    nameField.style.background = 'rgba(16,185,129,.05)';
+    nameField.style.borderColor = 'rgba(16,185,129,.4)';
+  }
+
+  // Show user card, hide Google button
+  const display = document.getElementById('google-user-display');
+  const firebaseBtn = document.getElementById('firebase-google-btn');
+  if (display) display.style.display = 'flex';
+  if (firebaseBtn) firebaseBtn.style.display = 'none';
+
+  const avatar = document.getElementById('google-avatar');
+  const nameEl = document.getElementById('google-user-name');
+  const emailEl = document.getElementById('google-user-email');
+  if (avatar) avatar.src = googleUser.picture || '';
+  if (nameEl) nameEl.textContent = googleUser.name;
+  if (emailEl) emailEl.textContent = googleUser.email;
+
+  // Auto-generate Student ID if missing
+  if (!getStudentID()) {
+    const newId = 'TS' + String(Math.floor(Math.random() * 100000)).padStart(5, '0');
+    localStorage.setItem('ts_student_id', newId);
+    const sidField = document.getElementById('ob-sid');
+    if (sidField) { sidField.value = newId; sidField.style.color = 'var(--green)'; }
+  }
+
+  obValidate1();
+  renderHomeTopbar();
+  showToast('✅ Signed in as ' + googleUser.name, 'success', 3000);
+}
+
+function googleLogout() {
+  fbAuth.signOut().then(function() {
+    localStorage.removeItem('ts_google_user');
+
+    const display = document.getElementById('google-user-display');
+    const firebaseBtn = document.getElementById('firebase-google-btn');
+    const nameField = document.getElementById('ob-name');
+
+    if (display) display.style.display = 'none';
+    if (firebaseBtn) {
+      firebaseBtn.style.display = 'flex';
+      firebaseBtn.disabled = false;
+      firebaseBtn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20"> Sign in with Google';
+    }
+    if (nameField) {
+      nameField.value = '';
+      nameField.readOnly = false;
+      nameField.style.background = '';
+      nameField.style.borderColor = '';
+    }
+
+    obValidate1();
+    renderHomeTopbar();
+    showToast('👋 Signed out from Google', 'success');
+  });
+}
+
+function getGoogleUser() {
+  try { return JSON.parse(localStorage.getItem('ts_google_user') || 'null'); } catch(e) { return null; }
+}
+
+function wvDownloadBackup(btn) {
+  try {
+    const data = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k.startsWith('thunderstudy_') || k.startsWith('ts_') || k === 'cbtUserName')
+        data[k] = localStorage.getItem(k);
+    }
+    data['_exported_at'] = new Date().toISOString();
+    data['_version'] = '3';
+
+    const prof = data['ts_profile'] ? JSON.parse(data['ts_profile']) : {};
+    const sid = localStorage.getItem('ts_student_id') || '';
+
+    if (Object.keys(data).length <= 3) {
+      if (btn) btn.textContent = 'ℹ️ No saved data found';
+      return;
+    }
+
+    const fname = `thunderstudy_backup_${(prof.name || 'student').replace(/\s/g, '_')}_${sid ? sid + '_' : ''}${new Date().toISOString().split('T')[0]}.json`;
+    const a = document.createElement('a');
+    a.download = fname;
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+    a.click();
+
+    if (btn) {
+      btn.textContent = '✅ Backup Downloaded!';
+      btn.style.background = 'linear-gradient(135deg,#059669,#047857)';
+    }
+  } catch(e) {
+    if (btn) btn.textContent = '❌ Try again in browser';
+  }
+}
+function renderHomeTopbar() {
+  const gu = getGoogleUser();
+  const area = document.getElementById('home-google-area');
+  if (!area) return;
+  if (gu) {
+    area.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;">
+        <img src="${gu.picture}" width="34" height="34"
+          style="border-radius:50%;border:2px solid var(--acc);"
+          onerror="this.style.display='none'">
+        <div>
+          <div style="font-size:13px;font-weight:800;">${escH(gu.name)}</div>
+          <div style="font-size:10px;color:var(--text3);">${escH(gu.email)}</div>
+        </div>
+        <button class="btn btn-ghost" onclick="googleLogout()" style="font-size:11px;">Sign Out</button>
+        <button class="btn btn-prim" onclick="openAddSubjModal()">+ Add Subject</button>
+      </div>`;
+  } else {
+    area.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button onclick="firebaseGoogleLogin()" style="
+          display:flex;align-items:center;gap:8px;padding:8px 14px;
+          border-radius:30px;border:1.5px solid #dadce0;background:#fff;
+          font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fn);">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="16">
+          Sign in
+        </button>
+        <button class="btn btn-prim" onclick="openAddSubjModal()">+ Add Subject</button>
+      </div>`;
+  }
 }
 </script>
 </body>
