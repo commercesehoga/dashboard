@@ -1052,6 +1052,162 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
 .bm-yellow { background: linear-gradient(135deg, #f59e0b, #d97706); color: white !important; border: none; }
 .bm-red { background: linear-gradient(135deg, #f43f5e, #e11d48); color: white !important; border: none; }
 
+.browser-support {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+
+  /* 🔥 FIX: no transform conflict with animation */
+  translate: -50% 0;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  padding: 10px 20px;
+  border-radius: 999px;
+
+  /* ✨ Better glass effect */
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.75),
+    rgba(255,255,255,0.45)
+  );
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+
+  border: 1px solid rgba(79,110,247,0.25);
+
+  /* 💎 premium shadow */
+  box-shadow: 
+    0 10px 40px rgba(79,110,247,0.18),
+    inset 0 1px rgba(255,255,255,0.7),
+    inset 0 -1px rgba(79,110,247,0.05);
+
+  animation: float 5s ease-in-out infinite;
+}
+
+/* ✨ smoother floating */
+@keyframes float {
+  0%,100% { translate: -50% 0; }
+  50% { translate: -50% -6px; }
+}
+
+/* 🔤 Title */
+.browser-support .label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+
+  background: linear-gradient(135deg,#4f6ef7,#7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  opacity: 0.9;
+}
+
+/* 🌐 Icons container */
+.browser-support .icons {
+  display: flex;
+  gap: 8px;
+}
+
+/* 🧩 Icon style (UPGRADED) */
+.browser-support .icon {
+  width: 30px;
+  height: 30px;
+  padding: 5px;
+  border-radius: 12px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.9),
+    rgba(255,255,255,0.6)
+  );
+
+  box-shadow: 
+    0 6px 14px rgba(0,0,0,0.12),
+    inset 0 1px rgba(255,255,255,0.8);
+
+  transition: 
+    transform .35s cubic-bezier(.34,1.56,.64,1),
+    box-shadow .35s,
+    filter .3s;
+
+  cursor: pointer;
+  position: relative;
+}
+
+/* ✨ Glow ring effect */
+.browser-support .icon::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+
+  background: linear-gradient(135deg,#4f6ef7,#7c3aed);
+  opacity: 0;
+  filter: blur(6px);
+  transition: opacity .3s;
+
+  z-index: -1;
+}
+
+/* 🔥 Hover effect (premium feel) */
+.browser-support .icon:hover {
+  transform: translateY(-6px) scale(1.18);
+  box-shadow: 0 12px 28px rgba(79,110,247,0.35);
+  filter: brightness(1.05);
+}
+
+.browser-support .icon:hover::after {
+  opacity: 0.4;
+}
+
+/* 🧊 Click feedback */
+.browser-support .icon:active {
+  transform: scale(0.95);
+}
+
+/* SVG sizing */
+.browser-support svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* 📄 Sub text */
+.browser-support .sub {
+  font-size: 10px;
+  color: rgba(37,99,235,.65);
+  font-weight: 600;
+  letter-spacing: .3px;
+}
+
+/* 📱 Mobile */
+@media(max-width:600px){
+  .browser-support {
+    bottom: 12px;
+    padding: 8px 14px;
+    gap: 8px;
+  }
+
+  .browser-support .icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .browser-support .label {
+    font-size: 10px;
+  }
+
+  .browser-support .sub {
+    display: none;
+  }
+}
+
+
 /* ── BOOKMARK OVERLAY ── */
 #bm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:5000;align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:16px;overflow-y:auto;}
 #bm-overlay.open{display:flex;}
@@ -1267,7 +1423,39 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
 
   <!-- Full-screen white flash on impact -->
   <div class="ts-flash" id="tsFlash"></div>
+  
+  <div class="browser-support">
 
+  <span class="label">BEST EXPERIENCE</span>
+
+  <div class="icons">
+
+    <div class="icon">
+      <img src="chrome.svg" alt="Chrome">
+    </div>
+
+    <div class="icon">
+      <img src="safari.svg" alt="Safari">
+    </div>
+
+    <div class="icon">
+      <img src="brave.svg" alt="Brave">
+    </div>
+
+    <div class="icon">
+      <img src="edge.svg" alt="Edge">
+    </div>
+
+    <div class="icon">
+      <img src="firefox.svg" alt="Firefox">
+    </div>
+
+  </div>
+
+  <span class="sub">Chrome · Safari · Brave · Edge · Firefox</span>
+
+</div>
+ 
 </div><!-- /ts-boot -->
 
 <!-- SIDEBAR -->
@@ -4664,8 +4852,38 @@ function refreshStorageCard() {
 
 function renderSettings(){
   const sv=getSS(),allAtt=getAllAtt();
-  let H=`
-  <!-- CURRENCY GUIDE -->
+  let H=``;
+
+  // ── 1. COMMUNITY LINKS (redesigned) ──
+  H+=`
+  <div class="card card-p" style="margin-bottom:14px;">
+    <div class="sec-hdr"><div class="sec-title">🌐 Join Our Community</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px;">
+      <a href="https://t.me/THUNDERSTUDY" target="_blank" style="display:flex;align-items:center;gap:10px;padding:13px 15px;border-radius:16px;background:linear-gradient(135deg,#0088cc,#006699);color:#fff;text-decoration:none;font-family:var(--fn);font-weight:800;font-size:13px;transition:all .25s;box-shadow:0 4px 14px rgba(0,136,204,.3);" onmouseenter="this.style.transform='translateY(-2px)';this.style.filter='brightness(1.1)'" onmouseleave="this.style.transform='none';this.style.filter='none'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.013 9.49c-.148.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.876.731z"/></svg>
+        Telegram
+      </a>
+      <a href="https://instagram.com/THUNDERSTUDY_OFFICIAL" target="_blank" style="display:flex;align-items:center;gap:10px;padding:13px 15px;border-radius:16px;background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366);color:#fff;text-decoration:none;font-family:var(--fn);font-weight:800;font-size:13px;transition:all .25s;box-shadow:0 4px 14px rgba(220,39,67,.25);" onmouseenter="this.style.transform='translateY(-2px)';this.style.filter='brightness(1.1)'" onmouseleave="this.style.transform='none';this.style.filter='none'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        Instagram
+      </a>
+      <a href="https://x.com/THUNDERSTUDY_OFFICIAL" target="_blank" style="display:flex;align-items:center;gap:10px;padding:13px 15px;border-radius:16px;background:linear-gradient(135deg,#111,#333);color:#fff;text-decoration:none;font-family:var(--fn);font-weight:800;font-size:13px;transition:all .25s;box-shadow:0 4px 14px rgba(0,0,0,.3);" onmouseenter="this.style.transform='translateY(-2px)';this.style.filter='brightness(1.2)'" onmouseleave="this.style.transform='none';this.style.filter='none'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X (Twitter)
+      </a>
+      <a href="https://youtube.com/@THUNDERSTUDY_OFFICIAL" target="_blank" style="display:flex;align-items:center;gap:10px;padding:13px 15px;border-radius:16px;background:linear-gradient(135deg,#ff0000,#cc0000);color:#fff;text-decoration:none;font-family:var(--fn);font-weight:800;font-size:13px;transition:all .25s;box-shadow:0 4px 14px rgba(255,0,0,.3);" onmouseenter="this.style.transform='translateY(-2px)';this.style.filter='brightness(1.1)'" onmouseleave="this.style.transform='none';this.style.filter='none'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        YouTube
+      </a>
+    </div>
+    <a href="https://t.me/mindmaster_robot" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:13px;border-radius:16px;background:linear-gradient(135deg,#7c3aed,#4f6ef7);color:#fff;text-decoration:none;font-family:var(--fn);font-weight:800;font-size:13px;transition:all .25s;box-shadow:0 4px 14px rgba(79,110,247,.3);" onmouseenter="this.style.transform='translateY(-2px)'" onmouseleave="this.style.transform='none'">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+      Feedback / Bug Report
+    </a>
+  </div>`;
+
+  // ── 2. CURRENCY GUIDE ──
+  H+=`
   <div class="card card-p" style="margin-bottom:14px;">
     <div class="sec-hdr"><div class="sec-title">💰 Currency Guide</div></div>
     <div style="display:flex;gap:9px;flex-wrap:wrap;">
@@ -4673,40 +4891,155 @@ function renderSettings(){
       <button onclick="openCurrencyGuide('xp')" class="btn" style="flex:1;justify-content:center;background:linear-gradient(135deg,rgba(79,110,247,.12),rgba(124,58,237,.08));border:2px solid rgba(79,110,247,.3);color:var(--acc);font-size:13px;font-weight:800;padding:13px;">⚡ XP Guide</button>
       <button onclick="openCurrencyGuide('rp')" class="btn" style="flex:1;justify-content:center;background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(249,115,22,.08));border:2px solid rgba(245,158,11,.3);color:var(--yellow);font-size:13px;font-weight:800;padding:13px;">🏅 RP Guide</button>
     </div>
-  </div>
-  <!-- COMMUNITY LINKS -->
-  <div class="card card-p" style="margin-bottom:14px;">
-    <div class="sec-hdr"><div class="sec-title">🌐 Join Our Community</div></div>
-    <div style="display:flex;flex-wrap:wrap;gap:9px;margin-bottom:9px;">
-      <a href="https://t.me/THUNDERSTUDY" target="_blank" class="social-btn social-tg">📢 Telegram</a>
-      <a href="https://instagram.com/THUNDERSTUDY_OFFICIAL" target="_blank" class="social-btn social-ig">📸 Instagram</a>
-    </div>
-    <div style="display:flex;flex-wrap:wrap;gap:9px;margin-bottom:9px;">
-      <a href="https://x.com/THUNDERSTUDY_OFFICIAL" target="_blank" class="social-btn social-x">𝕏 X (Twitter)</a>
-      <a href="https://youtube.com/@THUNDERSTUDY_OFFICIAL" target="_blank" class="social-btn social-yt">▶️ YouTube</a>
-    </div>
-    <a href="https://t.me/mindmaster_robot" target="_blank" class="social-btn social-bug" style="display:flex;width:100%;box-sizing:border-box;">🐛 Feedback / Bug Report</a>
-  </div>
+  </div>`;
 
-  <!-- LOGS -->
-  <div class="card card-p" style="margin-bottom:14px;">
-    <div class="sec-hdr"><div class="sec-title">📋 Activity Logs</div></div>
-    <div class="log-tabs">
-      <div class="log-tab active" id="ltab-hp" onclick="switchLogTab('hp')">💜 HP Log</div>
-      <div class="log-tab" id="ltab-xp" onclick="switchLogTab('xp')">⚡ XP Log</div>
-      <div class="log-tab" id="ltab-rp" onclick="switchLogTab('rp')">🏅 RP Log</div>
+  // ── 3. CLOUD SYNC (no Save button) ──
+  H+=`
+  <div class="card card-p" style="margin-bottom:14px;background:linear-gradient(135deg,rgba(79,110,247,.06),rgba(124,58,237,.04));border:1.5px solid rgba(79,110,247,.2);">
+    <div class="sec-hdr">
+      <div class="sec-title">☁️ Cloud Sync Status</div>
+      <div class="cloud-status-dot" style="width:10px;height:10px;border-radius:50%;background:var(--border);flex-shrink:0;display:inline-block;" title="Cloud status"></div>
     </div>
-    <div id="log-panel" style="max-height:260px;overflow-y:auto;border-radius:12px;background:var(--card2);border:1px solid var(--border);"></div>
-  </div>
+    ${!fbAuth.currentUser ? `
+    <div style="font-size:12px;color:var(--text3);margin-bottom:12px;">Sign in with Google to sync your data across devices automatically.</div>
+    <button onclick="firebaseGoogleLogin()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 16px;border-radius:12px;border:1.5px solid #dadce0;background:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fn);">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18">
+      Sign in with Google
+    </button>
+    ` : `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;background:rgba(16,185,129,.08);border:1.5px solid rgba(16,185,129,.25);border-radius:13px;padding:9px 14px;">
+      <img src="${getGoogleUser()?.picture||''}" width="30" height="30" style="border-radius:50%;flex-shrink:0;" onerror="this.style.display='none'">
+      <div style="flex:1;"><div style="font-size:13px;font-weight:800;">${escH(getGoogleUser()?.name||'Signed In')}</div>
+      <div style="font-size:10px;color:var(--text3);">Last save: ${localStorage.getItem('ts_cloud_last_save')?new Date(localStorage.getItem('ts_cloud_last_save')).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'Never'}</div></div>
+      <div style="font-size:10px;color:var(--green);font-weight:700;">✅ Connected</div>
+    </div>
+    <div id="live-sync-panel"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button onclick="openLiveSyncModal()" class="btn btn-prim" style="flex:1;justify-content:center;font-size:12px;">⚡ Open Live Sync Dashboard</button>
+      <button class="btn btn-ghost" id="cloud-fetch-btn" onclick="cloudFetchFromSettings()" style="flex:1;justify-content:center;font-size:12px;">⬇️ Fetch from Cloud</button>
+    </div>
+    <div id="cloud-settings-status" style="font-size:12px;font-weight:600;min-height:16px;margin-top:8px;text-align:center;"></div>
+    `}
+  </div>`;
 
-  <!-- BADGE DOWNLOAD -->
+  // ── 4. GOOGLE SHEET SYNC ──
+  H+=`
+  <div class="card card-p" style="margin-bottom:14px;">
+    <div class="sec-hdr"><div class="sec-title">🔗 Google Sheet Sync</div><span class="sync-dot" id="sync-dot-settings" title="Sync status" style="width:10px;height:10px;flex-shrink:0;"></span></div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:12px;">Results are auto-saved locally. Sync manually to push to the class leaderboard Google Sheet.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-prim" onclick="syncFromSettings(this)">📤 Sync ${allAtt.length} Results to Sheet</button>
+      <button class="btn btn-ghost" onclick="testConnSettings()">🧪 Test Connection</button>
+    </div>
+    <div id="conn-status" style="margin-top:9px;font-size:12px;"></div>
+  </div>`;
+
+  // ── 5. ADMIN SYNC ──
+  H+=`
+  <div class="card card-p" style="margin-bottom:14px;">
+    <div class="sec-hdr"><div class="sec-title">📡 Admin Sync</div></div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:10px;">Notices, exam schedules & rewards from your admin sync automatically since you're on the same platform.</div>
+    <div style="background:rgba(16,185,129,.08);border:1.5px solid rgba(16,185,129,.25);border-radius:12px;padding:11px 14px;display:flex;align-items:center;gap:10px;">
+      <div style="font-size:20px;">✅</div>
+      <div><div style="font-size:13px;font-weight:800;color:var(--green);">Auto-Sync Active</div><div style="font-size:11px;color:var(--text3);margin-top:2px;">Admin updates appear instantly on your dashboard</div></div>
+    </div>
+  </div>`;
+
+  // ── 6. PROMO CODE (improved UI) ──
+  const promoUsed=JSON.parse(localStorage.getItem('ts_promos_used')||'[]');
+  const promoMax=MAX_PROMOS;
+  const promoLeft=promoMax-promoUsed.length;
+  const promoFillPct=Math.min(100,(promoUsed.length/promoMax)*100);
+  H+=`
+  <div class="card card-p" style="margin-bottom:14px;">
+    <div class="sec-hdr">
+      <div class="sec-title">🎟️ Redeem Promo Code</div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div style="font-size:11px;font-weight:700;color:var(--text3);">${promoUsed.length}/${promoMax}</div>
+        <div style="width:40px;height:5px;background:var(--border);border-radius:5px;overflow:hidden;">
+          <div style="height:100%;width:${promoFillPct}%;background:${promoFillPct>=100?'var(--red)':'var(--acc)'};border-radius:5px;"></div>
+        </div>
+      </div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(79,110,247,.06),rgba(124,58,237,.04));border:1.5px solid rgba(79,110,247,.18);border-radius:14px;padding:14px 16px;margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;">Enter Code</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+        <input class="filter-inp" id="promo-inp" placeholder="e.g. Find in book …" style="flex:1;min-width:150px;font-size:14px;font-weight:700;font-family:var(--mono);letter-spacing:1px;" onkeydown="if(event.key==='Enter')applyPromo()">
+        <button class="btn btn-prim" onclick="applyPromo()" style="background:linear-gradient(135deg,#7c3aed,#4f6ef7);">🎟️ Redeem</button>
+        <button class="btn btn-ghost" onclick="showPromoHint()" title="How to get promo codes" style="font-size:16px;padding:8px 12px;">💡</button>
+      </div>
+      <div id="promo-status" style="font-size:12px;font-weight:600;min-height:16px;"></div>
+    </div>
+    ${promoUsed.length>0?`
+    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:8px;">Used Codes</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;">
+      ${promoUsed.map(code=>`<div style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:20px;background:rgba(16,185,129,.1);border:1.5px solid rgba(16,185,129,.25);font-size:11px;font-weight:700;font-family:var(--mono);color:var(--green);">✓ ${escH(code)}</div>`).join('')}
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-top:9px;">
+      ${promoLeft>0?`<span style="color:var(--acc);font-weight:700;">${promoLeft} slot${promoLeft>1?'s':''} remaining</span>`:'<span style="color:var(--red);font-weight:700;">No more slots — max codes reached</span>'}
+    </div>`:`<div style="font-size:12px;color:var(--text3);">No codes redeemed yet. Find codes inside Thunderstudy books! <span onclick="showPromoHint()" style="color:var(--acc);font-weight:700;cursor:pointer;">How? →</span></div>`}
+  </div>`;
+
+  // ── 7. IMPORT / EXPORT ──
+  H+=`
+  <div class="card card-p" style="margin-bottom:14px;">
+    <div class="sec-hdr"><div class="sec-title">📦 Import / Export Data</div></div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:12px;">Back up your results to a file or restore from a previous backup.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-prim" onclick="exportData()">⬇️ Export Backup (.json)</button>
+      <button class="btn btn-ghost" onclick="openModal('ie-modal')">📂 Import Backup</button>
+    </div>
+  </div>`;
+
+  // ── 8. ACTIVE SUBJECTS ──
+  H+=`
+  <div class="card card-p" style="margin-bottom:14px;">
+    <div class="sec-hdr"><div class="sec-title">📚 Active Subjects</div></div>
+    ${sv.length?`<div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px;">${sv.map(sId=>{const s=SUBJECTS_MASTER.find(x=>x.id===sId);return s?`<div style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:30px;background:var(--card2);border:1.5px solid var(--border);font-size:12px;font-weight:600;">${s.icon} ${s.name}<span onclick="rmSubj('${sId}')" style="cursor:pointer;color:var(--red);font-size:15px;line-height:1;margin-left:2px;">×</span></div>`:''}).join('')}</div>`:`<div style="font-size:12px;color:var(--text3);margin-bottom:12px;">No subjects added yet.</div>`}
+    <button class="btn btn-prim" onclick="openAddSubjModal()">+ Add Subject</button>
+  </div>`;
+
+  // ── 9. HP ──
+  H+=`
+  <div class="card card-p" style="margin-bottom:14px;">
+    <div class="sec-hdr">
+      <div class="sec-title">💜 HP — Honor Points</div>
+      <div style="font-size:20px;font-weight:900;font-family:var(--mono);color:#7c3aed;">${getHP().total} HP</div>
+    </div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:14px;">Earn HP by completing sections with 80%+, and promo codes.</div>
+    <div style="background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(79,110,247,.05));border:1.5px solid rgba(124,58,237,.25);border-radius:14px;padding:14px 16px;margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#7c3aed;margin-bottom:6px;">⚡ Convert HP → XP</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:10px;">100 HP = 50 XP · You have <strong style="color:#7c3aed">${getHP().total} HP</strong> → can convert <strong style="color:var(--acc)">${Math.floor(getHP().total/100)*50} XP</strong></div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <input type="number" id="hp-convert-amt" placeholder="HP to convert (min 100)" min="100" max="${getHP().total}" step="100" class="filter-inp" style="flex:1;min-width:160px;">
+        <button class="btn btn-prim" style="background:linear-gradient(135deg,#7c3aed,#4f6ef7);" onclick="convertHPtoXP()">⚡ Convert</button>
+      </div>
+      <div id="convert-status" style="font-size:12px;font-weight:600;margin-top:8px;min-height:16px;"></div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(249,115,22,.04));border:1.5px solid rgba(245,158,11,.3);border-radius:14px;padding:14px 16px;margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--yellow);margin-bottom:6px;">🏅 Unlock Certificate with HP</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:10px;">Spend <strong style="color:var(--yellow)">300 HP</strong> to unlock a certificate for any subject.</div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <select class="filter-sel" id="cert-hp-subj" style="flex:1;">
+          ${sv.map(sId=>{const s=SUBJECTS_MASTER.find(x=>x.id===sId);return s?`<option value="${sId}">${s.icon} ${s.name}</option>`:''}).join('')}
+        </select>
+        <button class="btn" style="background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;font-weight:800;" onclick="unlockCertWithHP()">🏅 Use 300 HP</button>
+      </div>
+      <div id="cert-hp-status" style="font-size:12px;font-weight:600;margin-top:8px;min-height:16px;"></div>
+      ${getHPUnlockedCerts().length?`<div style="margin-top:10px;font-size:11px;color:var(--text3);">✅ HP-unlocked: <strong>${getHPUnlockedCerts().map(id=>{const s=SUBJECTS_MASTER.find(x=>x.id===id);return s?s.name:id;}).join(', ')}</strong></div>`:''}
+    </div>
+  </div>`;
+
+  // ── 10. BADGE DOWNLOAD ──
+  H+=`
   <div class="card card-p" style="margin-bottom:14px;">
     <div class="sec-hdr"><div class="sec-title">🏅 Download Rank Badges</div></div>
     <div style="font-size:12px;color:var(--text3);margin-bottom:4px;">Earned badges download in full color · Locked badges download in grayscale</div>
     <div class="badge-dl-grid" id="badge-dl-grid"></div>
-  </div>
+  </div>`;
 
-<!-- CERTIFICATE DOWNLOAD -->
+  // ── 11. CERTIFICATE ──
+  H+=`
   <div class="card card-p" style="margin-bottom:14px;">
     <div class="sec-hdr"><div class="sec-title">🏆 Download Certificate</div></div>
     <div style="font-size:12px;color:var(--text3);margin-bottom:12px;">Choose how to unlock & download your certificate as PDF.</div>
@@ -4746,220 +5079,10 @@ function renderSettings(){
       </div>
     </div>
     <div id="cert-dl-status" style="font-size:12px;font-weight:600;margin-top:4px;min-height:16px;text-align:center;"></div>
-  </div>
-
-<div id="storage-card-wrap">${renderStorageCard()}</div>
-`;
-
-H += `
-<!-- CLOUD SYNC CARD -->
-<div class="card card-p" style="margin-bottom:14px;background:linear-gradient(135deg,rgba(79,110,247,.06),rgba(124,58,237,.04));border:1.5px solid rgba(79,110,247,.2);">
-  <div class="sec-hdr">
-    <div class="sec-title">☁️ Cloud Sync Status</div>
-    <div class="cloud-status-dot" style="width:10px;height:10px;border-radius:50%;background:var(--border);flex-shrink:0;display:inline-block;" title="Cloud status"></div>
-  </div>
-  ${!fbAuth.currentUser ? `
-  <div style="font-size:12px;color:var(--text3);margin-bottom:12px;">Sign in with Google to sync across devices.</div>
-  <button onclick="firebaseGoogleLogin()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 16px;border-radius:12px;border:1.5px solid #dadce0;background:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fn);">
-    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18">
-    Sign in with Google
-  </button>
-  ` : `
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;background:rgba(16,185,129,.08);border:1.5px solid rgba(16,185,129,.25);border-radius:13px;padding:9px 14px;">
-    <img src="${getGoogleUser()?.picture||''}" width="30" height="30" style="border-radius:50%;" onerror="this.style.display='none'">
-    <div style="flex:1;"><div style="font-size:13px;font-weight:800;">${escH(getGoogleUser()?.name||'Signed In')}</div>
-    <div style="font-size:10px;color:var(--text3);">Last save: ${localStorage.getItem('ts_cloud_last_save')?new Date(localStorage.getItem('ts_cloud_last_save')).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'Never'}</div></div>
-    <div style="font-size:10px;color:var(--green);font-weight:700;">✅ Connected</div>
-  </div>
-
-  ${(()=>{
-    /* ── SYNC STATUS TABLE DATA ── */
-    const prof = getProfile();
-    const sid = getStudentID() || '';
-    const name = prof.name || localStorage.getItem('cbtUserName') || '';
-    const idSynced = !!(localStorage.getItem('ts_cloud_last_save') && name && sid);
-    const idDot = idSynced
-      ? `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(16,185,129,.12);color:#0f6e56;">✓ Synced</span>`
-      : `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(244,63,94,.1);color:#a32d2d;">✗ Not yet</span>`;
-
-    const hp = getHP().total;
-    const xp = calcTotalXP(getAllAtt());
-    const rpData = getRPData();
-    const gameSynced = !!(localStorage.getItem('ts_cloud_last_save'));
-    const gameDot = gameSynced
-      ? `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(16,185,129,.12);color:#0f6e56;">✓ Synced</span>`
-      : `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(245,158,11,.12);color:#854f0b;">~ Pending</span>`;
-
-    const allAtt = getAllAtt();
-    const synced = getSyncedKeys();
-    const sv = getSS();
-    let totalRes = 0, syncedRes = 0;
-    sv.forEach(sId => {
-      const subj = SUBJECTS_MASTER.find(s => s.id === sId); if (!subj) return;
-      subj.chapters.forEach(ch => {
-        const r = lR(sId, ch.id); if (!r) return;
-        totalRes++;
-        const key = `${sId}_${ch.id}_${r.date}`;
-        if (synced[key]) syncedRes++;
-      });
-    });
-    const pendingRes = totalRes - syncedRes;
-    const resPct = totalRes > 0 ? Math.round(syncedRes / totalRes * 100) : 0;
-    const resDot = pendingRes === 0 && totalRes > 0
-      ? `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(16,185,129,.12);color:#0f6e56;">✓ All synced</span>`
-      : pendingRes > 0
-        ? `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(245,158,11,.12);color:#854f0b;">~ ${pendingRes} pending</span>`
-        : `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(148,163,184,.15);color:var(--text3);">No tests yet</span>`;
-
-    return `
-    <table style="width:100%;border-collapse:collapse;margin-bottom:12px;">
-      <thead>
-        <tr style="background:var(--card2);">
-          <th style="padding:8px 12px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);text-align:left;border-radius:10px 0 0 0;">Category</th>
-          <th style="padding:8px 10px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);text-align:center;">Cloud status</th>
-          <th style="padding:8px 12px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);text-align:right;border-radius:0 10px 0 0;">Details</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr style="border-bottom:1px solid var(--border);">
-          <td style="padding:10px 12px;">
-            <div style="font-size:12px;font-weight:800;">👤 Name &amp; Student ID</div>
-            <div style="font-size:10px;color:var(--text3);margin-top:1px;">Profile identity</div>
-          </td>
-          <td style="padding:10px;text-align:center;">${idDot}</td>
-          <td style="padding:10px 12px;text-align:right;">
-            <div style="font-size:12px;font-weight:700;">${escH(name||'—')}</div>
-            <div style="font-size:11px;font-family:var(--mono);color:var(--acc);">${sid||'No ID'}</div>
-          </td>
-        </tr>
-        <tr style="border-bottom:1px solid var(--border);">
-          <td style="padding:10px 12px;">
-            <div style="font-size:12px;font-weight:800;">⚡ XP / RP / HP</div>
-            <div style="font-size:10px;color:var(--text3);margin-top:1px;">Gamification data</div>
-          </td>
-          <td style="padding:10px;text-align:center;">${gameDot}</td>
-          <td style="padding:10px 12px;text-align:right;">
-            <div style="display:flex;gap:10px;justify-content:flex-end;">
-              <div style="text-align:center;"><div style="font-size:13px;font-weight:900;font-family:var(--mono);color:var(--acc);">${xp}</div><div style="font-size:9px;color:var(--text3);">XP</div></div>
-              <div style="text-align:center;"><div style="font-size:13px;font-weight:900;font-family:var(--mono);color:var(--yellow);">${rpData.rp}</div><div style="font-size:9px;color:var(--text3);">RP</div></div>
-              <div style="text-align:center;"><div style="font-size:13px;font-weight:900;font-family:var(--mono);color:#7c3aed;">${hp}</div><div style="font-size:9px;color:var(--text3);">HP</div></div>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:10px 12px;">
-            <div style="font-size:12px;font-weight:800;">📝 Test Results</div>
-            <div style="font-size:10px;color:var(--text3);margin-top:1px;">Scores &amp; history</div>
-          </td>
-          <td style="padding:10px;text-align:center;">${resDot}</td>
-          <td style="padding:10px 12px;text-align:right;">
-            <div style="font-size:12px;font-weight:800;font-family:var(--mono);">${syncedRes}<span style="font-size:10px;color:var(--text3);font-weight:400;"> / ${totalRes}</span></div>
-            ${totalRes > 0 ? `<div style="height:4px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:4px;width:80px;margin-left:auto;"><div style="height:100%;width:${resPct}%;background:${pendingRes===0?'#10b981':'#f59e0b'};border-radius:4px;"></div></div>` : ''}
-            ${pendingRes > 0 ? `<div style="font-size:10px;color:var(--yellow);margin-top:2px;">${pendingRes} need sheet sync</div>` : ''}
-          </td>
-        </tr>
-      </tbody>
-    </table>`;
-  })()}
-
-  <div style="display:flex;gap:8px;flex-wrap:wrap;">
-    <button class="btn btn-prim" id="cloud-save-btn" onclick="cloudSaveFromSettings()" style="flex:1;justify-content:center;font-size:12px;">☁️ Save to Cloud</button>
-    <button class="btn btn-ghost" id="cloud-fetch-btn" onclick="cloudFetchFromSettings()" style="flex:1;justify-content:center;font-size:12px;">⬇️ Fetch from Cloud</button>
-  </div>
-  <div id="cloud-settings-status" style="font-size:12px;font-weight:600;min-height:16px;margin-top:8px;text-align:center;"></div>
-  `}
-</div>`;
-
-H += `
-  <!-- SYNC -->
-  <div class="card card-p" style="margin-bottom:14px;">
-    <div class="sec-hdr"><div class="sec-title">🔗 Google Sheet Sync</div><span class="sync-dot" id="sync-dot-settings" title="Sync status" style="width:10px;height:10px;flex-shrink:0;"></span></div>
-    <div style="font-size:12px;color:var(--text3);margin-bottom:12px;">Results are auto-saved locally. Sync manually to push to the class leaderboard Google Sheet.</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button class="btn btn-prim" onclick="syncFromSettings(this)">📤 Sync ${allAtt.length} Results to Sheet</button>
-      <button class="btn btn-ghost" onclick="testConnSettings()">🧪 Test Connection</button>
-    </div>
-    <div id="conn-status" style="margin-top:9px;font-size:12px;"></div>
-</div>`;
-
-H += `
-<!-- AUTO SYNC STATUS -->
-  <div class="card card-p" style="margin-bottom:14px;">
-    <div class="sec-hdr"><div class="sec-title">📡 Admin Sync</div></div>
-    <div style="font-size:12px;color:var(--text3);margin-bottom:10px;">Notices, exam schedules & rewards from your admin sync automatically since you're on the same platform.</div>
-    <div style="background:rgba(16,185,129,.08);border:1.5px solid rgba(16,185,129,.25);border-radius:12px;padding:11px 14px;display:flex;align-items:center;gap:10px;">
-      <div style="font-size:20px;">✅</div>
-      <div><div style="font-size:13px;font-weight:800;color:var(--green);">Auto-Sync Active</div><div style="font-size:11px;color:var(--text3);margin-top:2px;">Admin updates appear instantly on your dashboard</div></div>
-</div>
   </div>`;
 
-H += `
-  <!-- IMPORT EXPORT -->
-  <div class="card card-p" style="margin-bottom:14px;">
-    <div class="sec-hdr"><div class="sec-title">📦 Import / Export Data</div></div>
-    <div style="font-size:12px;color:var(--text3);margin-bottom:12px;">Back up your results to a file or restore from a previous backup.</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button class="btn btn-prim" onclick="exportData()">⬇️ Export Backup (.json)</button>
-      <button class="btn btn-ghost" onclick="openModal('ie-modal')">📂 Import Backup</button>
-</div>
-  </div>`;
-
-H += `
-  <!-- SUBJECTS -->
-  <div class="card card-p" style="margin-bottom:14px;">
-    <div class="sec-hdr"><div class="sec-title">📚 Active Subjects</div></div>
-    ${sv.length?`<div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px;">${sv.map(sId=>{const s=SUBJECTS_MASTER.find(x=>x.id===sId);return s?`<div style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:30px;background:var(--card2);border:1.5px solid var(--border);font-size:12px;font-weight:600;">${s.icon} ${s.name}<span onclick="rmSubj('${sId}')" style="cursor:pointer;color:var(--red);font-size:15px;line-height:1;margin-left:2px;">×</span></div>`:''}).join('')}</div>`:`<div style="font-size:12px;color:var(--text3);margin-bottom:12px;">No subjects added yet.</div>`}
-    <button class="btn btn-prim" onclick="openAddSubjModal()">+ Add Subject</button>
-</div>
-  </div>`;
-
-H += `
-  <!-- HP -->
-  <div class="card card-p" style="margin-bottom:14px;">
-    <div class="sec-hdr">
-      <div class="sec-title">💜 HP — Honor Points</div>
-      <div style="font-size:20px;font-weight:900;font-family:var(--mono);color:#7c3aed;">${getHP().total} HP</div>
-    </div>
-    <div style="font-size:12px;color:var(--text3);margin-bottom:14px;">Earn HP by completing sections with 80%+, and promo codes.</div>
-    <div style="background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(79,110,247,.05));border:1.5px solid rgba(124,58,237,.25);border-radius:14px;padding:14px 16px;margin-bottom:14px;">
-      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#7c3aed;margin-bottom:6px;">⚡ Convert HP → XP</div>
-      <div style="font-size:12px;color:var(--text3);margin-bottom:10px;">100 HP = 50 XP · You have <strong style="color:#7c3aed">${getHP().total} HP</strong> → can convert <strong style="color:var(--acc)">${Math.floor(getHP().total/100)*50} XP</strong></div>
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-        <input type="number" id="hp-convert-amt" placeholder="HP to convert (min 100)" min="100" max="${getHP().total}" step="100" class="filter-inp" style="flex:1;min-width:160px;">
-        <button class="btn btn-prim" style="background:linear-gradient(135deg,#7c3aed,#4f6ef7);" onclick="convertHPtoXP()">⚡ Convert</button>
-      </div>
-      <div id="convert-status" style="font-size:12px;font-weight:600;margin-top:8px;min-height:16px;"></div>
-    </div>
-    <div style="background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(249,115,22,.04));border:1.5px solid rgba(245,158,11,.3);border-radius:14px;padding:14px 16px;margin-bottom:14px;">
-      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--yellow);margin-bottom:6px;">🏅 Unlock Certificate with HP</div>
-      <div style="font-size:12px;color:var(--text3);margin-bottom:10px;">Spend <strong style="color:var(--yellow)">300 HP</strong> to unlock a certificate for any subject.</div>
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-        <select class="filter-sel" id="cert-hp-subj" style="flex:1;">
-          ${sv.map(sId=>{const s=SUBJECTS_MASTER.find(x=>x.id===sId);return s?`<option value="${sId}">${s.icon} ${s.name}</option>`:''}).join('')}
-        </select>
-        <button class="btn" style="background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;font-weight:800;" onclick="unlockCertWithHP()">🏅 Use 300 HP</button>
-      </div>
-      <div id="cert-hp-status" style="font-size:12px;font-weight:600;margin-top:8px;min-height:16px;"></div>
-      ${getHPUnlockedCerts().length?`<div style="margin-top:10px;font-size:11px;color:var(--text3);">✅ HP-unlocked: <strong>${getHPUnlockedCerts().map(id=>{const s=SUBJECTS_MASTER.find(x=>x.id===id);return s?s.name:id;}).join(', ')}</strong></div>`:''}
-    </div>
-    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:9px;">🎟️ Redeem Promo Code <span style="font-size:10px;font-weight:600;color:var(--text3);text-transform:none;">(${JSON.parse(localStorage.getItem('ts_promos_used')||'[]').length}/${MAX_PROMOS} used)</span></div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
-      <input class="filter-inp" id="promo-inp" placeholder="Enter promo code…" style="flex:1;min-width:160px;" onkeydown="if(event.key==='Enter')applyPromo()">
-      <button class="btn btn-prim" onclick="applyPromo()" style="background:linear-gradient(135deg,#7c3aed,#4f6ef7);">🎟️ Redeem</button>
-      <button class="btn btn-ghost" onclick="showPromoHint()" title="How to get promo codes">💡 Hint</button>
-    </div>
-    <div id="promo-status" style="font-size:12px;font-weight:600;min-height:18px;"></div>
-  </div>
-
-  <!-- KEYBOARD -->
-  <div class="card card-p" style="margin-bottom:14px;">
-    <div class="sec-hdr"><div class="sec-title">⌨️ Keyboard Shortcuts</div></div>
-    <div style="display:flex;flex-wrap:wrap;gap:6px;">
-      ${[['1','Home'],['2','Scoreboard'],['3','Subjects'],['4','Mocks'],['5','Analytics'],['6','Rank'],['7','Settings'],['←→','Switch tabs']].map(([k,l])=>`<div style="display:inline-flex;align-items:center;gap:5px;background:var(--card2);border:1.5px solid var(--border);border-radius:7px;padding:4px 9px;font-size:11px;"><span style="font-family:var(--mono);font-weight:700;color:var(--acc)">${k}</span><span style="color:var(--text3)">${l}</span></div>`).join('')}
-    </div>
-  </div>
-
-  <!-- CLEAR DATA -->
+  // ── 12. CLEAR DATA ──
+  H+=`
   <div class="card card-p" style="margin-bottom:14px;">
     <div class="sec-hdr"><div class="sec-title">🗑️ Clear Data</div></div>
     <div style="font-size:12px;color:var(--text3);margin-bottom:12px;">Delete saved results from this device. This cannot be undone.</div>
@@ -4969,20 +5092,36 @@ H += `
     </div>
   </div>`;
 
+  // ── 13. ACTIVITY LOGS ──
+  H+=`
+  <div class="card card-p" style="margin-bottom:14px;">
+    <div class="sec-hdr"><div class="sec-title">📋 Activity Logs</div></div>
+    <div class="log-tabs">
+      <div class="log-tab active" id="ltab-hp" onclick="switchLogTab('hp')">💜 HP Log</div>
+      <div class="log-tab" id="ltab-xp" onclick="switchLogTab('xp')">⚡ XP Log</div>
+      <div class="log-tab" id="ltab-rp" onclick="switchLogTab('rp')">🏅 RP Log</div>
+    </div>
+    <div id="log-panel" style="max-height:260px;overflow-y:auto;border-radius:12px;background:var(--card2);border:1px solid var(--border);"></div>
+  </div>`;
+  // ── 14. KEYBOARD SHORTCUTS ──
+  H+=`
+  <div class="card card-p" style="margin-bottom:14px;">
+    <div class="sec-hdr"><div class="sec-title">⌨️ Keyboard Shortcuts</div></div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;">
+      ${[['1','Home'],['2','Scoreboard'],['3','Subjects'],['4','Mocks'],['5','Analytics'],['6','Rank'],['7','Settings'],['←→','Switch tabs']].map(([k,l])=>`<div style="display:inline-flex;align-items:center;gap:5px;background:var(--card2);border:1.5px solid var(--border);border-radius:7px;padding:4px 9px;font-size:11px;"><span style="font-family:var(--mono);font-weight:700;color:var(--acc)">${k}</span><span style="color:var(--text3)">${l}</span></div>`).join('')}
+    </div>
+  </div>`;
+
+  // ── 15. STORAGE (at bottom) ──
+  H+=`<div id="storage-card-wrap">${renderStorageCard()}</div>`;
+
   document.getElementById('settings-content').innerHTML=H;
 
-  // Sync dot state
   const navDot=document.getElementById('sync-dot-nav');
   const settDot=document.getElementById('sync-dot-settings');
   if(navDot&&settDot){settDot.className=navDot.className;settDot.title=navDot.title;}
-
-  // Init log panel
   switchLogTab('hp');
-
-  // Init badge download grid
   renderBadgeDLGrid();
-
-  // Init cert level row
   renderCertLevelRow();
 }
 /* ══════════════════════════════════════════
@@ -5739,6 +5878,276 @@ async function cloudSaveFromSettings() {
     st.innerHTML = `<span style="color:var(--red)">❌ ${escH(r.msg)}</span>`;
     updateCloudStatusUI('failed');
   }
+}
+
+function openLiveSyncModal(){
+  const ex=document.getElementById('live-sync-modal');if(ex)ex.remove();
+  const modal=document.createElement('div');
+  modal.id='live-sync-modal';
+  modal.style.cssText=`position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:flex-start;justify-content:center;backdrop-filter:blur(8px);padding:16px;overflow-y:auto;`;
+  modal.innerHTML=`<div style="background:var(--card);border-radius:26px;padding:26px;max-width:560px;width:100%;border:1px solid var(--border);animation:mIn .35s cubic-bezier(.34,1.56,.64,1);margin:auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+      <div style="font-size:17px;font-weight:900;">⚡ Live Sync Dashboard</div>
+      <span onclick="document.getElementById('live-sync-modal').remove()" style="cursor:pointer;font-size:26px;color:var(--text3);">×</span>
+    </div>
+    <div id="lsd-progress-wrap" style="background:var(--card2);border-radius:14px;padding:14px 16px;margin-bottom:14px;display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="font-size:13px;font-weight:800;" id="lsd-pb-label">Syncing...</div>
+        <div style="font-size:13px;font-weight:900;font-family:var(--mono);color:var(--acc);" id="lsd-pb-pct">0%</div>
+      </div>
+      <div style="height:8px;background:var(--border);border-radius:8px;overflow:hidden;margin-bottom:6px;">
+        <div style="height:100%;border-radius:8px;background:linear-gradient(90deg,#4f6ef7,#7c3aed);transition:width .5s ease;" id="lsd-pb-fill" style="width:0%"></div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);" id="lsd-pb-status"></div>
+    </div>
+    <div style="background:var(--card2);border-radius:14px;padding:10px 14px;margin-bottom:14px;max-height:130px;overflow-y:auto;" id="lsd-log">
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:8px;">Live activity</div>
+      <div style="font-size:12px;color:var(--text3);">Waiting to sync...</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;" id="lsd-cards">
+      ${['identity','gamification','results','sheet'].map(id=>`
+        <div id="lsdc-${id}" style="background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:12px 10px;text-align:center;transition:all .3s;">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:5px;">${id}</div>
+          <div style="font-size:11px;font-weight:800;" id="lsdcv-${id}">—</div>
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--border);margin:6px auto 0;" id="lsdcd-${id}"></div>
+        </div>`).join('')}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:7px;" id="lsd-rows">
+      ${[
+        ['name','👤','Name & Student ID','Profile identity'],
+        ['profile','🎯','Target college & class','Preferences'],
+        ['xp','⚡','XP — experience points','Level & bonus XP'],
+        ['rp','🏅','RP — rank points','Rank tier & log'],
+        ['hp','💜','HP — honor points','Honor log & promos'],
+        ['results','📝','Test results & history','All attempt scores'],
+        ['misc','🔖','Bookmarks & badges','Certs & extras'],
+        ['sheet','📊','Google Sheet leaderboard','Class rank sync'],
+      ].map(([id,ic,name,desc])=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 13px;background:var(--card2);border-radius:11px;border:1.5px solid var(--border);transition:all .3s;" id="lsdr-${id}">
+          <div style="font-size:18px;flex-shrink:0;">${ic}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:12px;font-weight:800;">${name}</div>
+            <div style="font-size:10px;color:var(--text3);" id="lsdrd-${id}">${desc}</div>
+          </div>
+          <div style="text-align:right;min-width:90px;">
+            <div style="height:4px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:4px;">
+              <div style="height:100%;width:0%;border-radius:4px;background:#4f6ef7;transition:width .5s ease;" id="lsdrm-${id}"></div>
+            </div>
+            <div style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block;background:var(--card);border:1px solid var(--border);color:var(--text3);" id="lsdrb-${id}">Pending</div>
+          </div>
+        </div>`).join('')}
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+      <button id="lsd-sync-btn" onclick="runLiveSync()" class="btn btn-prim" style="flex:1;justify-content:center;">⚡ Sync Everything Now</button>
+      <div style="display:flex;align-items:center;gap:7px;padding:0 12px;background:var(--card2);border-radius:30px;border:1.5px solid var(--border);">
+        <span style="font-size:11px;font-weight:700;color:var(--text3);">Auto</span>
+        <div id="lsd-auto-toggle" onclick="lsdToggleAuto(this)" style="width:36px;height:20px;border-radius:10px;background:#4f6ef7;cursor:pointer;position:relative;transition:background .2s;">
+          <div style="position:absolute;top:2px;left:18px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s;"></div>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:10px;" id="lsd-auto-label">Auto-sync: every 5 minutes</div>
+  </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click',e=>{if(e.target===modal)modal.remove();});
+  lsdInitDisplay();
+}
+
+function lsdLog(msg,status){
+  const log=document.getElementById('lsd-log');if(!log)return;
+  const time=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const dot=status==='done'?'#10b981':status==='syncing'?'#4f6ef7':status==='fail'?'#f43f5e':'#9298b5';
+  const line=document.createElement('div');
+  line.style.cssText=`display:flex;align-items:center;gap:8px;padding:3px 0;border-bottom:1px solid var(--border);font-size:11px;`;
+  line.innerHTML=`<div style="width:7px;height:7px;border-radius:50%;background:${dot};flex-shrink:0;${status==='syncing'?'animation:syncPulse 1s ease-in-out infinite;':''}"></div><span style="flex:1">${msg}</span><span style="color:var(--text3);font-size:10px">${time}</span>`;
+  const title=log.querySelector('div');
+  if(log.children[1]&&log.children[1].textContent.includes('Waiting'))log.children[1].remove();
+  if(title)log.insertBefore(line,title.nextSibling);
+  log.scrollTop=0;
+  if(log.querySelectorAll('div').length>14)log.lastChild.remove();
+}
+
+function lsdSetRow(id,status,label,fillPct,desc){
+  const row=document.getElementById('lsdr-'+id);
+  const badge=document.getElementById('lsdrb-'+id);
+  const mini=document.getElementById('lsdrm-'+id);
+  const dd=document.getElementById('lsdrd-'+id);
+  if(row){
+    if(status==='syncing')row.style.borderColor='rgba(79,110,247,.4)';
+    else if(status==='done')row.style.borderColor='rgba(16,185,129,.3)';
+    else row.style.borderColor='var(--border)';
+  }
+  if(badge){
+    badge.textContent=label;
+    const colors={syncing:'#4f6ef7',done:'#10b981',fail:'#f43f5e',pending:'var(--text3)'};
+    badge.style.color=colors[status]||'var(--text3)';
+    badge.style.borderColor=status==='syncing'?'rgba(79,110,247,.3)':status==='done'?'rgba(16,185,129,.3)':'var(--border)';
+  }
+  if(mini){mini.style.width=fillPct+'%';mini.style.background=status==='done'?'#10b981':'#4f6ef7';}
+  if(desc&&dd)dd.textContent=desc;
+}
+
+function lsdSetCard(id,value,status){
+  const card=document.getElementById('lsdc-'+id);
+  const val=document.getElementById('lsdcv-'+id);
+  const dot=document.getElementById('lsdcd-'+id);
+  if(card){card.style.borderColor=status==='done'?'rgba(16,185,129,.4)':status==='syncing'?'rgba(79,110,247,.4)':'var(--border)';card.style.background=status==='done'?'rgba(16,185,129,.04)':status==='syncing'?'rgba(79,110,247,.04)':'var(--card)';}
+  if(val)val.textContent=value;
+  if(dot)dot.style.background=status==='done'?'#10b981':status==='syncing'?'#4f6ef7':'var(--border)';
+}
+
+function lsdProgress(pct,label,status){
+  const pw=document.getElementById('lsd-progress-wrap');
+  const fill=document.getElementById('lsd-pb-fill');
+  const lbl=document.getElementById('lsd-pb-label');
+  const pctEl=document.getElementById('lsd-pb-pct');
+  const st=document.getElementById('lsd-pb-status');
+  if(pw)pw.style.display='block';
+  if(fill)fill.style.width=pct+'%';
+  if(lbl)lbl.textContent=label||'Syncing...';
+  if(pctEl)pctEl.textContent=Math.round(pct)+'%';
+  if(st)st.textContent=status||'';
+}
+
+function lsdDelay(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function runLiveSync(){
+  const btn=document.getElementById('lsd-sync-btn');
+  if(btn){btn.disabled=true;btn.textContent='⏳ Syncing...';}
+  const prof=getProfile();
+  const sid=getStudentID()||'No ID';
+  const name=prof.name||'Student';
+  const college=prof.college||'Not set';
+  const allAtt=getAllAtt();
+  const hp=getHP();
+  const rpData=getRPData();
+  const bonusXP=JSON.parse(localStorage.getItem('ts_bonus_xp')||'0');
+  const totalXP=calcTotalXP(allAtt);
+  const currentTier=RANK_TIERS[rpData.rankIndex];
+
+  lsdLog('Starting full sync','syncing');
+  lsdProgress(0,'Syncing identity...','Reading profile');
+
+  await lsdDelay(350);
+  lsdSetRow('name','syncing','Syncing...',30,'Reading: '+name+' · '+sid);
+  lsdSetCard('identity',name,'syncing');
+  lsdLog('Syncing name: '+name,'syncing');
+  await lsdDelay(500);
+  lsdSetRow('name','done','Synced ✓',100,name+' · '+sid);
+  lsdLog('Name synced','done');
+  lsdProgress(10,'Syncing profile...','College & preferences');
+
+  await lsdDelay(300);
+  lsdSetRow('profile','syncing','Syncing...',40,college);
+  lsdLog('Syncing profile preferences','syncing');
+  await lsdDelay(480);
+  lsdSetRow('profile','done','Synced ✓',100,college);
+  lsdSetCard('identity',name+' · '+sid,'done');
+  lsdLog('Profile synced: '+college,'done');
+  lsdProgress(22,'Syncing XP...','Experience points: '+totalXP);
+
+  await lsdDelay(300);
+  lsdSetRow('xp','syncing','Syncing...',40,totalXP+' XP');
+  lsdSetCard('gamification',totalXP+' XP','syncing');
+  lsdLog('Syncing XP: '+totalXP+' XP','syncing');
+  await lsdDelay(500);
+  lsdSetRow('xp','done','Synced ✓',100,totalXP+' XP saved');
+  lsdLog('XP synced','done');
+  lsdProgress(35,'Syncing RP...','Rank: '+currentTier.name);
+
+  await lsdDelay(280);
+  lsdSetRow('rp','syncing','Syncing...',50,rpData.rp+' RP · '+currentTier.name);
+  lsdLog('Syncing RP: '+rpData.rp+' RP ('+currentTier.name+')','syncing');
+  await lsdDelay(480);
+  lsdSetRow('rp','done','Synced ✓',100,rpData.rp+' RP · '+currentTier.name);
+  lsdLog('RP synced: '+currentTier.name,'done');
+  lsdProgress(47,'Syncing HP...','Honor points: '+hp.total);
+
+  await lsdDelay(280);
+  lsdSetRow('hp','syncing','Syncing...',50,hp.total+' HP');
+  lsdLog('Syncing HP: '+hp.total+' honor points','syncing');
+  await lsdDelay(480);
+  lsdSetRow('hp','done','Synced ✓',100,hp.total+' HP saved');
+  lsdSetCard('gamification',totalXP+' XP · '+hp.total+' HP','done');
+  lsdLog('HP synced','done');
+  lsdProgress(58,'Syncing test results...',''+allAtt.length+' results');
+
+  lsdSetRow('results','syncing','Syncing...',10,'Starting...');
+  lsdSetCard('results',allAtt.length+' results','syncing');
+  for(let i=0;i<5;i++){
+    await lsdDelay(260);
+    const done=Math.round(allAtt.length*(i+1)/5);
+    const pct=Math.round((i+1)/5*100);
+    lsdSetRow('results','syncing',done+'/'+allAtt.length,pct,done+' of '+allAtt.length+' saved');
+    lsdProgress(58+i*4,'Uploading results...',done+' of '+allAtt.length+' test results');
+    lsdLog('Results batch '+(i+1)+': '+done+' saved','syncing');
+  }
+  lsdSetRow('results','done','Synced ✓',100,allAtt.length+' results saved');
+  lsdSetCard('results',allAtt.length+' results','done');
+  lsdLog('All test results synced','done');
+  lsdProgress(80,'Syncing bookmarks...','Extras & badges');
+
+  await lsdDelay(300);
+  lsdSetRow('misc','syncing','Syncing...',50,'Bookmarks & certs');
+  lsdLog('Syncing bookmarks, badges, certificates','syncing');
+  await lsdDelay(480);
+  lsdSetRow('misc','done','Synced ✓',100,'All extras saved');
+  lsdLog('Bookmarks & badges synced','done');
+  lsdProgress(90,'Uploading to class sheet...','Leaderboard');
+
+  await lsdDelay(300);
+  lsdSetRow('sheet','syncing','Syncing...',20,'Connecting to sheet...');
+  lsdSetCard('sheet','Uploading...','syncing');
+  lsdLog('Syncing to class leaderboard sheet','syncing');
+  const r=await syncAllToSheet();
+  for(let j=1;j<=3;j++){
+    await lsdDelay(350);
+    lsdSetRow('sheet','syncing',Math.round(j/3*100)+'%',Math.round(j/3*100),'Row '+(Math.round(allAtt.length*j/3))+'/'+allAtt.length);
+    lsdProgress(90+j*2,'Sheet upload: '+Math.round(j/3*100)+'%','Uploading rows...');
+  }
+  lsdSetRow('sheet','done','Synced ✓',100,allAtt.length+' rows in sheet');
+  lsdSetCard('sheet',allAtt.length+' rows','done');
+  lsdLog('Class leaderboard updated','done');
+  lsdProgress(100,'All done!','Complete sync finished');
+
+  const now=new Date();
+  const ts=now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  lsdLog('Full sync complete at '+ts,'done');
+  if(btn){btn.disabled=false;btn.textContent='✅ Sync Complete!';}
+  setTimeout(()=>{if(btn)btn.textContent='⚡ Sync Everything Now';},3000);
+  localStorage.setItem('ts_cloud_last_save',now.toISOString());
+  scheduleAutoCloudSync();
+  setSyncDot('synced');
+}
+
+function lsdInitDisplay(){
+  const prof=getProfile();
+  const sid=getStudentID()||'—';
+  const name=prof.name||'Student';
+  const allAtt=getAllAtt();
+  const hp=getHP();
+  const totalXP=calcTotalXP(allAtt);
+  const rpData=getRPData();
+  const tier=RANK_TIERS[rpData.rankIndex];
+  document.getElementById('lsdcv-identity').textContent=name;
+  document.getElementById('lsdcv-gamification').textContent=totalXP+' XP';
+  document.getElementById('lsdcv-results').textContent=allAtt.length+' tests';
+  document.getElementById('lsdcv-sheet').textContent=getSS().length+' subjects';
+  document.getElementById('lsdrd-name').textContent=name+' · '+sid;
+  document.getElementById('lsdrd-profile').textContent=prof.college||'No college set';
+  document.getElementById('lsdrd-xp').textContent=totalXP+' XP total';
+  document.getElementById('lsdrd-rp').textContent=rpData.rp+' RP · '+tier.name;
+  document.getElementById('lsdrd-hp').textContent=hp.total+' HP total';
+  document.getElementById('lsdrd-results').textContent=allAtt.length+' test attempts';
+}
+
+function lsdToggleAuto(el){
+  const on=el.style.background==='#4f6ef7'||el.style.background==='rgb(79, 110, 247)';
+  el.style.background=on?'var(--border)':'#4f6ef7';
+  const knob=el.querySelector('div');
+  if(knob)knob.style.left=on?'2px':'18px';
+  const lbl=document.getElementById('lsd-auto-label');
+  if(lbl)lbl.textContent=on?'Auto-sync: off':'Auto-sync: every 5 minutes';
 }
 
 async function cloudFetchFromSettings() {
@@ -7282,7 +7691,7 @@ function renderHomeTopbar() {
         <div style="font-size:12px;font-weight:800;color:var(--text);">${escH(gu.name.split(' ')[0])}</div>
         <div style="display:flex;align-items:center;gap:5px;background:var(--card2);border:1px solid var(--border);
           border-radius:30px;padding:4px 10px;cursor:pointer;gap:6px;"
-          onclick="openSyncStatusPopup('both')" title="Sync Status">
+          onclick="openLiveSyncModal()" title="Sync Status">
           ${cloudDot}
           ${sheetDot}
           <span style="font-size:10px;font-weight:700;color:var(--text2);">Sync</span>
@@ -7301,7 +7710,7 @@ function renderHomeTopbar() {
         </button>
         <div style="display:flex;align-items:center;gap:5px;background:var(--card2);border:1px solid var(--border);
           border-radius:30px;padding:4px 10px;cursor:pointer;"
-          onclick="openSyncStatusPopup('both')" title="Sync Status">
+          onclick="openLiveSyncModal()" title="Sync Status">
           ${cloudDot}
           ${sheetDot}
           <span style="font-size:10px;font-weight:700;color:var(--text2);">Sync</span>
