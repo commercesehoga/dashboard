@@ -4980,8 +4980,7 @@ function renderSettings(){
     <div id="live-sync-panel"></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
       <button onclick="openLiveSyncModal()" class="btn btn-prim" style="flex:1;justify-content:center;font-size:12px;">⚡ Open Live Sync Dashboard</button>
-      <button class="btn btn-ghost" id="cloud-fetch-btn" onclick="cloudFetchFromSettings()" style="flex:1;justify-content:center;font-size:12px;">⬇️ Fetch from Cloud</button>
-    </div>
+<button class="btn btn-ghost" id="cloud-fetch-btn" onclick="cloudFetchFromSettings()" style="flex:1;justify-content:center;font-size:12px;">⬇️ Restore / Compare Cloud</button>    </div>
     <div id="cloud-settings-status" style="font-size:12px;font-weight:600;min-height:16px;margin-top:8px;text-align:center;"></div>
     `}
   </div>`;
@@ -6218,185 +6217,317 @@ async function cloudFetchFromSettings() {
   const user = fbAuth.currentUser;
   const btn = document.getElementById('cloud-fetch-btn');
   const st = document.getElementById('cloud-settings-status');
-  if (!user) { 
-    if(st) st.innerHTML = `<span style="color:var(--red)">❌ Not signed in to Google.</span>`; 
-    return; 
+  if (!user) {
+    if(st) st.innerHTML = `<span style="color:var(--red)">❌ Not signed in to Google.</span>`;
+    return;
   }
-  if (!confirm('⚠️ This will overwrite local data with cloud data.\n\nDownload a backup first if you have local-only data.\n\nContinue?')) return;
 
-  // Create progress overlay
-  const overlay = document.createElement('div');
-  overlay.id = 'cloud-fetch-overlay';
-  overlay.style.cssText = `position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:16px;`;
-  overlay.innerHTML = `
-  <div style="background:var(--card);border-radius:24px;padding:28px;max-width:420px;width:100%;border:1px solid var(--border);box-shadow:0 24px 80px rgba(79,110,247,.2);">
-    <div style="text-align:center;margin-bottom:20px;">
-      <div style="font-size:40px;margin-bottom:8px;">☁️</div>
-      <div style="font-size:17px;font-weight:900;">Restoring from Google Cloud</div>
-      <div style="font-size:12px;color:var(--text3);margin-top:4px;">Please wait, do not close this page</div>
+  // ── STEP 1: Quick preview fetch ──
+  if(btn){ btn.disabled=true; btn.textContent='⏳ Checking cloud…'; }
+  if(st) st.innerHTML = `<span style="color:var(--acc)">⏳ Fetching cloud preview…</span>`;
+
+  let cloudData = null;
+  try {
+    const fetchResult = await Promise.race([
+      fbDb.collection('users').doc(user.uid).get(),
+      new Promise((_,r) => setTimeout(()=>r(new Error('Connection timed out. Check internet.')), 20000))
+    ]);
+    cloudData = fetchResult.exists ? fetchResult.data() : null;
+  } catch(err) {
+    if(btn){ btn.disabled=false; btn.textContent='⬇️ Fetch from Cloud'; }
+    if(st) st.innerHTML = `<span style="color:var(--red)">❌ ${escH(err.message)}</span>`;
+    return;
+  }
+
+  if(btn){ btn.disabled=false; btn.textContent='⬇️ Fetch from Cloud'; }
+  if(st) st.innerHTML = '';
+
+  // ── PARSE CLOUD DATA ──
+  let cloudProfile = {};
+  try { cloudProfile = JSON.parse(cloudData?.['ts_profile'] || '{}'); } catch(e) {}
+  const cloudName = cloudProfile.name || cloudData?.['cbtUserName'] || 'Unknown';
+  const cloudSID = cloudData?.['ts_student_id'] || '—';
+  let cloudTestCount = 0;
+  let cloudSubjects = [];
+  if(cloudData){
+    Object.keys(cloudData).forEach(k=>{ if(k.startsWith('thunderstudy_result_')) cloudTestCount++; });
+    try { cloudSubjects = JSON.parse(cloudData['ts_subs']||'[]'); } catch(e){}
+  }
+  const cloudSavedAt = cloudData?.['_savedAt']
+    ? new Date(cloudData['_savedAt']).toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
+    : 'Unknown';
+
+  // ── PARSE LOCAL DATA ──
+  const localProfile = getProfile();
+  const localName = localProfile.name || localStorage.getItem('cbtUserName') || '(none)';
+  const localSID = getStudentID() || '—';
+  const localAllAtt = getAllAtt();
+  const localTestCount = localAllAtt.length;
+  const localSubjects = getSS();
+  const localHP = getHP().total;
+  const localRank = RANK_TIERS[getRPData().rankIndex]?.name || 'Rookie';
+  const cloudHP = (() => { try { return JSON.parse(cloudData?.['ts_hp']||'{"total":0}').total; } catch(e){ return 0; } })();
+  const cloudRank = (() => { try { return RANK_TIERS[JSON.parse(cloudData?.['ts_rp_data']||'{"rankIndex":0}').rankIndex]?.name||'Rookie'; } catch(e){ return 'Rookie'; } })();
+
+  const isSameDevice =
+    (localSID && cloudSID && localSID === cloudSID) ||
+    (localName && cloudName && localName.toLowerCase() === cloudName.toLowerCase());
+
+  // ── SHOW SELECTION MODAL ──
+  const existing = document.getElementById('cloud-select-modal');
+  if(existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'cloud-select-modal';
+  modal.style.cssText = `position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99999;display:flex;align-items:flex-start;justify-content:center;backdrop-filter:blur(10px);padding:16px;overflow-y:auto;`;
+
+  const noCloudData = !cloudData || cloudTestCount === 0;
+
+  modal.innerHTML = `
+  <div style="background:var(--card);border-radius:26px;padding:26px;max-width:500px;width:100%;border:1px solid var(--border);box-shadow:0 24px 80px rgba(79,110,247,.2);animation:mIn .35s cubic-bezier(.34,1.56,.64,1);margin:auto;">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+      <div>
+        <div style="font-size:17px;font-weight:900;">☁️ Cloud Restore</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px;">Choose which data to keep on this device</div>
+      </div>
+      <span onclick="document.getElementById('cloud-select-modal').remove()" style="cursor:pointer;color:var(--text3);font-size:26px;line-height:1;">×</span>
     </div>
-    <div style="height:8px;background:var(--border);border-radius:8px;overflow:hidden;margin-bottom:10px;">
-      <div id="cfp-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#4f6ef7,#7c3aed);border-radius:8px;transition:width .5s ease;"></div>
+
+    ${noCloudData ? `
+    <!-- No cloud data -->
+    <div style="background:rgba(245,158,11,.08);border:1.5px solid rgba(245,158,11,.3);border-radius:16px;padding:20px;text-align:center;margin-bottom:16px;">
+      <div style="font-size:36px;margin-bottom:8px;">☁️</div>
+      <div style="font-size:14px;font-weight:800;color:var(--yellow);margin-bottom:6px;">No Cloud Backup Found</div>
+      <div style="font-size:12px;color:var(--text3);line-height:1.7;">This Google account has no saved data in the cloud yet.<br>Sync your local data to the cloud first!</div>
     </div>
-    <div id="cfp-pct" style="text-align:center;font-size:13px;font-weight:800;font-family:var(--mono);color:var(--acc);margin-bottom:14px;">0%</div>
-    <div style="display:flex;flex-direction:column;gap:6px;" id="cfp-steps">
-      ${['identity','gamification','results','bookmarks','all'].map((id,i)=>`
-        <div id="cfps-${id}" style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--card2);border-radius:11px;border:1.5px solid var(--border);transition:all .3s;">
-          <div style="width:22px;height:22px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;" id="cfpsi-${id}">${i+1}</div>
-          <div style="flex:1;font-size:12px;font-weight:700;" id="cfpsl-${id}">${['👤 Identity & Profile','⚡ XP / HP / Rank Points','📝 Test Results & History','🔖 Bookmarks & Badges','✅ Verifying & Applying'][i]}</div>
-          <div style="font-size:11px;font-weight:700;color:var(--text3);" id="cfpsb-${id}">Pending</div>
-        </div>`).join('')}
+    <button onclick="cloudSaveAndClose()" style="width:100%;padding:13px;border-radius:15px;border:none;cursor:pointer;background:linear-gradient(135deg,#4f6ef7,#7c3aed);color:#fff;font-size:13px;font-weight:800;font-family:var(--fn);">☁️ Upload My Data to Cloud</button>
+    ` : `
+
+    <!-- Side by side comparison -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+
+      <!-- LOCAL CARD -->
+      <div id="cs-local-card" style="border:2.5px solid rgba(79,110,247,.3);background:rgba(79,110,247,.06);border-radius:18px;padding:14px 12px;cursor:pointer;transition:all .2s;position:relative;" onclick="csSelectOption('local')">
+        <div style="position:absolute;top:10px;right:10px;width:18px;height:18px;border-radius:50%;border:2px solid rgba(79,110,247,.4);background:transparent;transition:all .2s;" id="cs-radio-local"></div>
+        <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--acc);margin-bottom:8px;">📱 This Device</div>
+        <div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escH(localName)}</div>
+        <div style="font-size:10px;font-family:var(--mono);color:var(--text3);margin-bottom:8px;">${escH(localSID)}</div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);"><span>📝</span><strong style="color:var(--text)">${localTestCount}</strong> tests</div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);"><span>📚</span><strong style="color:var(--text)">${localSubjects.length}</strong> subjects</div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);"><span>💜</span><strong style="color:var(--text)">${localHP}</strong> HP</div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);"><span>🏅</span><strong style="color:var(--text)">${localRank}</strong></div>
+        </div>
+        ${localTestCount===0?`<div style="margin-top:8px;font-size:9px;background:rgba(148,163,184,.15);border-radius:6px;padding:3px 7px;color:var(--text3);text-align:center;">Empty / New Device</div>`:''}
+      </div>
+
+      <!-- CLOUD CARD -->
+      <div id="cs-cloud-card" style="border:2px solid rgba(16,185,129,.25);background:rgba(16,185,129,.05);border-radius:18px;padding:14px 12px;cursor:pointer;transition:all .2s;position:relative;" onclick="csSelectOption('cloud')">
+        <div style="position:absolute;top:10px;right:10px;width:18px;height:18px;border-radius:50%;border:2px solid rgba(16,185,129,.4);background:transparent;transition:all .2s;" id="cs-radio-cloud"></div>
+        <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--green);margin-bottom:8px;">☁️ Cloud Backup</div>
+        <div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escH(cloudName)}</div>
+        <div style="font-size:10px;font-family:var(--mono);color:var(--text3);margin-bottom:8px;">${escH(cloudSID)}</div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);"><span>📝</span><strong style="color:var(--text)">${cloudTestCount}</strong> tests</div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);"><span>📚</span><strong style="color:var(--text)">${cloudSubjects.length}</strong> subjects</div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);"><span>💜</span><strong style="color:var(--text)">${cloudHP}</strong> HP</div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);"><span>🏅</span><strong style="color:var(--text)">${cloudRank}</strong></div>
+        </div>
+        <div style="margin-top:8px;font-size:9px;background:rgba(16,185,129,.12);border-radius:6px;padding:3px 7px;color:var(--green);text-align:center;">Saved: ${cloudSavedAt}</div>
+      </div>
     </div>
-    <div id="cfp-log" style="margin-top:14px;font-size:11px;color:var(--text3);text-align:center;min-height:16px;"></div>
+
+    <!-- Student ID info if different -->
+    ${!isSameDevice && localSID !== '—' && cloudSID !== '—' ? `
+    <div style="background:rgba(244,63,94,.06);border:1.5px solid rgba(244,63,94,.2);border-radius:13px;padding:10px 14px;margin-bottom:14px;font-size:11px;color:var(--red);line-height:1.7;">
+      ⚠️ <strong>Different Student IDs detected.</strong><br>
+      Local: <span style="font-family:var(--mono);font-weight:700;">${escH(localSID)}</span> · Cloud: <span style="font-family:var(--mono);font-weight:700;">${escH(cloudSID)}</span><br>
+      The data you keep will be auto-synced to cloud from next time.
+    </div>
+    ` : isSameDevice ? `
+    <div style="background:rgba(16,185,129,.06);border:1.5px solid rgba(16,185,129,.2);border-radius:13px;padding:8px 14px;margin-bottom:14px;font-size:11px;color:var(--green);">
+      ✅ Same student detected. Cloud has your latest backup.
+    </div>
+    ` : ''}
+
+    <!-- Action note -->
+    <div style="background:var(--card2);border-radius:12px;padding:10px 13px;margin-bottom:14px;font-size:11px;color:var(--text3);line-height:1.7;">
+      💡 <strong style="color:var(--text)">How it works:</strong> The option you choose will become your main data on this device. The other will be deleted locally. Your selected data auto-syncs to cloud from next time.
+    </div>
+
+    <!-- Selected action display -->
+    <div id="cs-action-bar" style="display:none;background:var(--card2);border-radius:14px;padding:12px 14px;margin-bottom:12px;">
+      <div id="cs-action-text" style="font-size:12px;font-weight:700;margin-bottom:8px;"></div>
+      <div style="display:flex;gap:7px;">
+        <button id="cs-confirm-btn" onclick="csConfirmRestore()" style="flex:1;padding:10px;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,#4f6ef7,#7c3aed);color:#fff;font-size:12px;font-weight:800;font-family:var(--fn);">✅ Confirm & Apply</button>
+        <button onclick="csSelectOption(null)" style="padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);cursor:pointer;background:var(--card);color:var(--text2);font-size:12px;font-weight:700;font-family:var(--fn);">Cancel</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;">
+      <button onclick="exportData();showToast('📦 Backup downloaded!','success')" class="btn btn-ghost" style="flex:1;justify-content:center;font-size:11px;">⬇️ Download Backup First</button>
+      <button onclick="document.getElementById('cloud-select-modal').remove()" class="btn btn-ghost" style="justify-content:center;font-size:11px;padding:8px 14px;">Close</button>
+    </div>
+    `}
+
+    <div id="cs-progress-wrap" style="display:none;margin-top:14px;">
+      <div style="height:6px;background:var(--border);border-radius:6px;overflow:hidden;margin-bottom:6px;">
+        <div id="cs-progress-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#4f6ef7,#7c3aed);border-radius:6px;transition:width .4s ease;"></div>
+      </div>
+      <div id="cs-progress-text" style="font-size:11px;color:var(--text3);text-align:center;"></div>
+    </div>
+
   </div>`;
-  document.body.appendChild(overlay);
 
-  function setStep(id, status, label, desc) {
-    const row = document.getElementById('cfps-'+id);
-    const icon = document.getElementById('cfpsi-'+id);
-    const badge = document.getElementById('cfpsb-'+id);
-    const lbl = document.getElementById('cfpsl-'+id);
-    const colors = {syncing:'rgba(79,110,247,.1)',done:'rgba(16,185,129,.08)',fail:'rgba(244,63,94,.08)'};
-    const borderColors = {syncing:'rgba(79,110,247,.4)',done:'rgba(16,185,129,.3)',fail:'rgba(244,63,94,.3)'};
-    const badgeColors = {syncing:'var(--acc)',done:'var(--green)',fail:'var(--red)',pending:'var(--text3)'};
-    if(row){ row.style.background=colors[status]||'var(--card2)'; row.style.borderColor=borderColors[status]||'var(--border)'; }
-    if(icon){ icon.textContent=status==='done'?'✓':status==='syncing'?'⟳':status==='fail'?'✗':(parseInt(icon.textContent)||'?'); icon.style.background=status==='done'?'#10b981':status==='syncing'?'#4f6ef7':status==='fail'?'#f43f5e':'var(--border)'; icon.style.color=status==='syncing'||status==='done'||status==='fail'?'#fff':'var(--text3)'; }
-    if(badge){ badge.textContent=label; badge.style.color=badgeColors[status]||'var(--text3)'; }
-    if(desc&&lbl) lbl.textContent=desc;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if(e.target === modal) modal.remove(); });
+
+  // Store cloud data for restore
+  window._csCloudData = cloudData;
+  window._csSelectedOption = null;
+}
+
+// ── CLOUD SELECT HELPERS ──
+function csSelectOption(choice) {
+  window._csSelectedOption = choice;
+  const localCard = document.getElementById('cs-local-card');
+  const cloudCard = document.getElementById('cs-cloud-card');
+  const radioLocal = document.getElementById('cs-radio-local');
+  const radioCloud = document.getElementById('cs-radio-cloud');
+  const actionBar = document.getElementById('cs-action-bar');
+  const actionText = document.getElementById('cs-action-text');
+
+  // Reset
+  if(localCard){ localCard.style.borderColor='rgba(79,110,247,.3)'; localCard.style.boxShadow='none'; }
+  if(cloudCard){ cloudCard.style.borderColor='rgba(16,185,129,.25)'; cloudCard.style.boxShadow='none'; }
+  if(radioLocal){ radioLocal.style.background='transparent'; radioLocal.style.borderColor='rgba(79,110,247,.4)'; }
+  if(radioCloud){ radioCloud.style.background='transparent'; radioCloud.style.borderColor='rgba(16,185,129,.4)'; }
+
+  if(!choice){ if(actionBar) actionBar.style.display='none'; return; }
+
+  if(choice === 'local'){
+    if(localCard){ localCard.style.borderColor='#4f6ef7'; localCard.style.boxShadow='0 0 0 3px rgba(79,110,247,.15)'; }
+    if(radioLocal){ radioLocal.style.background='#4f6ef7'; radioLocal.style.borderColor='#4f6ef7'; }
+    if(actionText) actionText.innerHTML = `📱 <strong>Keep This Device's Data</strong> · Upload to cloud & delete cloud backup. Next time this device syncs automatically.`;
+  } else {
+    if(cloudCard){ cloudCard.style.borderColor='#10b981'; cloudCard.style.boxShadow='0 0 0 3px rgba(16,185,129,.15)'; }
+    if(radioCloud){ radioCloud.style.background='#10b981'; radioCloud.style.borderColor='#10b981'; }
+    if(actionText) actionText.innerHTML = `☁️ <strong>Restore Cloud Data</strong> · Download to this device & replace local data. Auto-syncs from next time.`;
   }
+  if(actionBar) actionBar.style.display='block';
+}
 
-  function setProgress(pct, log) {
-    const bar = document.getElementById('cfp-bar');
-    const pctEl = document.getElementById('cfp-pct');
-    const logEl = document.getElementById('cfp-log');
-    if(bar) bar.style.width = pct+'%';
-    if(pctEl) pctEl.textContent = Math.round(pct)+'%';
-    if(log&&logEl) logEl.textContent = log;
+async function csConfirmRestore() {
+  const choice = window._csSelectedOption;
+  const cloudData = window._csCloudData;
+  const modal = document.getElementById('cloud-select-modal');
+
+  const progressWrap = document.getElementById('cs-progress-wrap');
+  const progressBar = document.getElementById('cs-progress-bar');
+  const progressText = document.getElementById('cs-progress-text');
+  const confirmBtn = document.getElementById('cs-confirm-btn');
+  const actionBar = document.getElementById('cs-action-bar');
+
+  if(!choice) return;
+
+  if(progressWrap) progressWrap.style.display='block';
+  if(actionBar) actionBar.style.display='none';
+  if(confirmBtn) confirmBtn.disabled = true;
+
+  function setProgress(pct, text) {
+    if(progressBar) progressBar.style.width = pct+'%';
+    if(progressText) progressText.textContent = text;
   }
 
   function delay(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
-  try {
-    if(btn){ btn.disabled=true; btn.textContent='⏳ Fetching from cloud…'; }
+  const user = fbAuth.currentUser;
 
-    // ── STEP 1: Connect & fetch ──
-    setStep('identity','syncing','Fetching…');
-    setProgress(10, 'Connecting to Google Cloud…');
+  if(choice === 'local'){
+    // Keep local, upload to cloud
+    setProgress(20, '⏳ Preparing local data…');
+    await delay(400);
+    setProgress(50, '☁️ Uploading to cloud…');
+    if(user) await cloudSave(user.uid, true);
+    setProgress(80, '🔗 Saving student ID as primary…');
+    await delay(400);
+    // Save student ID as "primary" so no conflict next time
+    localStorage.setItem('ts_cloud_primary_sid', getStudentID()||'');
+    localStorage.setItem('ts_cloud_last_save', new Date().toISOString());
+    setProgress(100, '✅ Done! This device is now primary.');
+    await delay(800);
+    showToast('✅ Local data saved as primary!', 'success', 3000);
+    if(modal) modal.remove();
+    delete window._csCloudData;
+    delete window._csSelectedOption;
+    renderHomeTopbar();
+    if(document.getElementById('cloud-settings-status')){
+      document.getElementById('cloud-settings-status').innerHTML=`<span style="color:var(--green)">✅ Local data uploaded to cloud as primary!</span>`;
+    }
+
+  } else {
+    // Restore cloud data
+    setProgress(15, '📥 Reading cloud identity…');
     await delay(300);
 
-    let cloudData = null;
-    try {
-      const fetchResult = await Promise.race([
-        fbDb.collection('users').doc(user.uid).get(),
-        new Promise((_,r) => setTimeout(()=>r(new Error('Connection timed out after 20s. Check internet.')), 20000))
-      ]);
-      cloudData = fetchResult.exists ? fetchResult.data() : null;
-    } catch(fetchErr) {
-      setStep('identity','fail','Failed',`👤 Error: ${fetchErr.message}`);
-      setProgress(0, `❌ ${fetchErr.message}`);
-      setTimeout(()=>overlay.remove(),3000);
-      if(btn){ btn.disabled=false; btn.textContent='⬇️ Fetch from Cloud'; }
-      if(st) st.innerHTML=`<span style="color:var(--red)">❌ ${escH(fetchErr.message)}</span>`;
-      return;
-    }
-
-    if (!cloudData) {
-      setStep('identity','fail','No Data','👤 No cloud backup found for this Google account');
-      setProgress(100,'No data found in cloud for this account.');
-      setTimeout(()=>overlay.remove(),2500);
-      if(btn){ btn.disabled=false; btn.textContent='⬇️ Fetch from Cloud'; }
-      if(st) st.innerHTML=`<span style="color:var(--yellow)">⚠️ No cloud data found. Try syncing first!</span>`;
-      return;
-    }
-
-    // ── STEP 2: Identity (name, student ID, profile) ──
-    setProgress(20,'Reading identity & profile…');
-    await delay(350);
     const identityKeys = ['ts_profile','ts_student_id','cbtUserName','ts_subs','ts_ob_done'];
-    let identityRestored = 0;
-    identityKeys.forEach(k=>{
-      if(cloudData[k]!==undefined&&cloudData[k]!==null){ localStorage.setItem(k,cloudData[k]); identityRestored++; }
-    });
-    const profile = identityRestored > 0 ? (()=>{try{return JSON.parse(cloudData['ts_profile']||'{}')}catch(e){return{}}})() : {};
-    const restoredName = profile.name || cloudData['cbtUserName'] || 'Unknown';
+    identityKeys.forEach(k=>{ if(cloudData[k]!==undefined&&cloudData[k]!==null) localStorage.setItem(k,cloudData[k]); });
+
+    let prof = {};
+    try { prof = JSON.parse(cloudData['ts_profile']||'{}'); } catch(e) {}
+    const restoredName = prof.name || cloudData['cbtUserName'] || 'Unknown';
     const restoredSID = cloudData['ts_student_id'] || '—';
-    setStep('identity','done','Done ✓',`👤 ${restoredName} · ${restoredSID}`);
-    setProgress(35,'Identity restored!');
+    setProgress(30, `👤 Restoring ${restoredName} · ${restoredSID}…`);
     await delay(400);
 
-    // ── STEP 3: Gamification (XP, HP, RP) ──
-    setStep('gamification','syncing','Restoring…');
-    setProgress(45,'Restoring XP, HP, Rank Points…');
-    await delay(350);
-    const gamKeys = ['ts_hp','ts_rp_data','ts_bonus_xp','ts_rp_processed','ts_rp_init','ts_hp_sections','ts_hp_certs','ts_promos_used'];
-    let gamRestored = 0;
-    gamKeys.forEach(k=>{
-      if(cloudData[k]!==undefined&&cloudData[k]!==null){ localStorage.setItem(k,cloudData[k]); gamRestored++; }
-    });
-    setStep('gamification','done','Done ✓',`⚡ ${gamRestored} gamification keys restored`);
-    setProgress(58,'Gamification restored!');
+    setProgress(45, '⚡ Restoring XP, HP, Rank…');
+    const gamKeys=['ts_hp','ts_rp_data','ts_bonus_xp','ts_rp_processed','ts_rp_init','ts_hp_sections','ts_hp_certs','ts_promos_used'];
+    gamKeys.forEach(k=>{ if(cloudData[k]!==undefined&&cloudData[k]!==null) localStorage.setItem(k,cloudData[k]); });
     await delay(400);
 
-    // ── STEP 4: Test Results (one by one) ──
-    setStep('results','syncing','Restoring…');
     const resultKeys = Object.keys(cloudData).filter(k=>k.startsWith('thunderstudy_result_')||k.startsWith('thunderstudy_history_'));
-    const totalResults = resultKeys.length;
-    let doneResults = 0;
-    setProgress(60, `Restoring ${totalResults} test results…`);
-
-    // Apply in small batches to show progress
-    const BATCH = 10;
+    const BATCH = 15;
+    let done = 0;
     for(let i=0; i<resultKeys.length; i+=BATCH){
       const batch = resultKeys.slice(i, i+BATCH);
       batch.forEach(k=>{ if(cloudData[k]!==null&&cloudData[k]!==undefined) localStorage.setItem(k,cloudData[k]); });
-      doneResults = Math.min(i+BATCH, totalResults);
-      const resPct = 60 + Math.round((doneResults/Math.max(totalResults,1))*22);
-      setStep('results','syncing',`${doneResults}/${totalResults}`,`📝 Restored ${doneResults} of ${totalResults} results`);
-      setProgress(resPct, `Applying results… ${doneResults}/${totalResults}`);
-      await delay(80);
+      done = Math.min(i+BATCH, resultKeys.length);
+      const pct = 50 + Math.round((done/Math.max(resultKeys.length,1))*35);
+      setProgress(pct, `📝 Restored ${done}/${resultKeys.length} test results…`);
+      await delay(60);
     }
-    setStep('results','done','Done ✓',`📝 ${totalResults} test results & history restored`);
-    setProgress(83,'Results restored!');
-    await delay(400);
 
-    // ── STEP 5: Bookmarks & remaining keys ──
-    setStep('bookmarks','syncing','Restoring…');
-    setProgress(88,'Restoring bookmarks, badges & extras…');
-    await delay(350);
+    setProgress(87, '🔖 Restoring bookmarks & extras…');
     const skipKeys = new Set(['_savedAt','_version','_exported_at','_meta',...identityKeys,...gamKeys,...resultKeys]);
-    let extraRestored = 0;
     Object.entries(cloudData).forEach(([k,v])=>{
       if(skipKeys.has(k)||k.startsWith('_')) return;
-      if(v!==null&&v!==undefined){ localStorage.setItem(k,v); extraRestored++; }
+      if(v!==null&&v!==undefined) localStorage.setItem(k,v);
     });
-    setStep('bookmarks','done','Done ✓',`🔖 ${extraRestored} extra keys restored`);
-    setProgress(95,'Almost done…');
-    await delay(400);
+    await delay(300);
 
-    // ── STEP 6: Final verify ──
-    setStep('all','syncing','Verifying…');
-    const savedAt = cloudData['_savedAt'] ? new Date(cloudData['_savedAt']).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : 'Unknown';
-    setProgress(100,`✅ All data restored! Cloud backup was from ${savedAt}`);
-    await delay(400);
-    setStep('all','done','Complete ✓',`✅ All data restored from cloud · Saved: ${savedAt}`);
-    
-    if(btn){ btn.disabled=false; btn.textContent='✅ Restored! Reloading…'; }
-    if(st) st.innerHTML=`<span style="color:var(--green)">✅ ${restoredName} · ${restoredSID} · ${totalResults} results · Reloading in 3s…</span>`;
-    showToast(`☁️ Restored for ${restoredName}!`,'success',3000);
-    
-    await delay(2500);
-    overlay.remove();
-    location.reload();
+    // Mark cloud SID as primary
+    localStorage.setItem('ts_cloud_primary_sid', restoredSID);
+    localStorage.setItem('ts_ob_done','1');
+    localStorage.setItem('ts_cloud_last_save', new Date().toISOString());
 
-  } catch(err) {
-    const logEl = document.getElementById('cfp-log');
-    if(logEl) logEl.innerHTML = `<span style="color:var(--red)">❌ Error: ${escH(err.message)}</span>`;
-    setProgress(0,'Error occurred');
-    setTimeout(()=>overlay.remove(),4000);
-    if(btn){ btn.disabled=false; btn.textContent='⬇️ Fetch from Cloud'; }
-    if(st) st.innerHTML=`<span style="color:var(--red)">❌ ${escH(err.message)}</span>`;
-    console.error('Cloud fetch error:',err);
+    setProgress(100, `✅ Restored! Reloading in 2s…`);
+    await delay(600);
+    showToast(`☁️ Restored as ${restoredName} · ${restoredSID}`, 'success', 3000);
+
+    delete window._csCloudData;
+    delete window._csSelectedOption;
+    if(modal) modal.remove();
+    setTimeout(()=>location.reload(), 1500);
   }
+}
+
+async function cloudSaveAndClose(){
+  const user = fbAuth.currentUser;
+  if(user){ await cloudSave(user.uid, true); showToast('☁️ Uploaded to cloud!','success'); }
+  document.getElementById('cloud-select-modal')?.remove();
+  renderHomeTopbar();
 }
 
 async function syncFromSettings(btn){
@@ -8053,9 +8184,16 @@ function openSyncStatusPopup(focus) {
       <div style="font-size:10px;color:var(--text3);margin-bottom:10px;">
         ${sheetCount} of ${allAtt.length} results synced to leaderboard sheet
       </div>
-      <button onclick="sheetSyncFromHomeTopbar(this)" style="width:100%;padding:8px;border-radius:10px;border:none;
+<button onclick="sheetSyncFromHomeTopbar(this)" style="width:100%;padding:8px;border-radius:10px;border:none;
         background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:12px;font-weight:800;
         cursor:pointer;font-family:var(--fn);">📤 Sync to Sheet Now</button>
+    </div>
+
+    <!-- FETCH FROM CLOUD -->
+    <div style="margin-top:10px;">
+      <button onclick="document.getElementById('sync-status-popup').remove();cloudFetchFromSettings();" style="width:100%;padding:9px;border-radius:10px;border:1.5px solid rgba(79,110,247,.3);
+        background:rgba(79,110,247,.07);color:var(--acc);font-size:12px;font-weight:800;
+        cursor:pointer;font-family:var(--fn);">⬇️ Fetch / Restore from Cloud</button>
     </div>`;
 
   document.body.appendChild(popup);
