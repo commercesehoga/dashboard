@@ -1658,10 +1658,13 @@ async function cloudSave(uid, silent) {
 async function cloudFetch(uid) {
   if (!uid) return { ok: false, msg: 'Not signed in', data: null };
   try {
-    const doc = await fbDb.collection('users').doc(uid).get();
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Cloud fetch timed out')), 8000)
+    );
+    const fetchPromise = fbDb.collection('users').doc(uid).get();
+    const doc = await Promise.race([fetchPromise, timeoutPromise]);
     if (!doc.exists) return { ok: true, data: null };
-    const data = doc.data();
-    return { ok: true, data };
+    return { ok: true, data: doc.data() };
   } catch (e) {
     return { ok: false, msg: e.message, data: null };
   }
@@ -1882,11 +1885,13 @@ fbAuth.onAuthStateChanged(function(user) {
       p.name = gu.name;
       localStorage.setItem('ts_profile', JSON.stringify(p));
     }
-    // Auto-sync every 5 minutes while signed in
+    // NON-BLOCKING: auto-sync in background only, don't await
     clearInterval(window._cloudAutoSyncInterval);
     window._cloudAutoSyncInterval = setInterval(() => {
       cloudSave(user.uid, true);
     }, 5 * 60 * 1000);
+    // Background cloud save after 10s delay (non-blocking)
+    setTimeout(() => cloudSave(user.uid, true), 10000);
   } else {
     clearInterval(window._cloudAutoSyncInterval);
   }
@@ -5771,22 +5776,28 @@ function markSynced(keys){
     });
   });
   if(!results.length)return{success:true,ok:0,fail:0,total:0,upToDate:true};
-const sends=results.map(({key,...d})=>
-    fetch(GS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(d)})
-      .then(()=>({ok:true,key}))
-      .catch(()=>({ok:false,key}))
+const CHUNK = 3;
+const good = [];
+for (let i = 0; i < results.length; i += CHUNK) {
+  const chunk = results.slice(i, i + CHUNK);
+  const settled = await Promise.allSettled(
+    chunk.map(({key, ...d}) =>
+      fetch(GS_URL, {method:'POST', mode:'no-cors',
+        headers:{'Content-Type':'text/plain'},
+        body: JSON.stringify(d)})
+      .then(() => ({ok: true, key}))
+      .catch(() => ({ok: false, key}))
+    )
   );
-  const settled=await Promise.allSettled(sends);
-  const good=settled
-    .filter(r=>r.status==='fulfilled'&&r.value?.ok)
-    .map(r=>r.value.key);
-  // Only mark synced after a small delay to let the sheet process
-  if(good.length){
-    await new Promise(r=>setTimeout(r,400));
-    markSynced(good);
-  }
-  const failCount=settled.length-good.length;
-  return{success:true,ok:good.length,fail:failCount,total:results.length};
+  settled.filter(r => r.status==='fulfilled' && r.value?.ok)
+    .forEach(r => good.push(r.value.key));
+}
+if (good.length) {
+  await new Promise(r => setTimeout(r, 300));
+  markSynced(good);
+}
+const failCount = results.length - good.length;
+return {success: true, ok: good.length, fail: failCount, total: results.length};
 }
 
 async function testAndSyncToSheet(){
