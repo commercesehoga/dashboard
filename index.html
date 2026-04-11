@@ -1608,23 +1608,6 @@ firebase.initializeApp(firebaseConfig);
 const fbAuth = firebase.auth();
 const fbProvider = new firebase.auth.GoogleAuthProvider();
 
-// ── Handle redirect result after Google login ──
-fbAuth.getRedirectResult().then(function(result) {
-  if (result && result.user) {
-    const user = result.user;
-    const googleUser = {
-      name: user.displayName,
-      email: user.email,
-      picture: user.photoURL,
-      googleId: user.uid
-    };
-    localStorage.setItem('ts_google_user', JSON.stringify(googleUser));
-    localStorage.setItem('cbtUserName', googleUser.name);
-    applyGoogleUserToUI(googleUser);
-  }
-}).catch(function(e) {
-  console.error('Redirect result error:', e);
-});
 
 
 // Auto-restore session when page loads
@@ -1639,8 +1622,13 @@ fbAuth.onAuthStateChanged(function(user) {
     };
     localStorage.setItem('ts_google_user', JSON.stringify(gu));
     localStorage.setItem('cbtUserName', gu.name);
-    // Update topbar if home is already rendered
-    renderHomeTopbar();
+    renderHomeTopbar();   // already there — keep this
+    // Also update profile name if missing
+    const p = getProfile();
+    if (!p.name && gu.name) {
+      p.name = gu.name;
+      localStorage.setItem('ts_profile', JSON.stringify(p));
+    }
   }
 });
 /* ══════════════════════════════════════════
@@ -6573,13 +6561,29 @@ function firebaseGoogleLogin() {
   const btn = document.getElementById('firebase-google-btn');
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Signing in…'; }
 
-  fbAuth.signInWithRedirect(fbProvider).catch(function(e) {
-    if (btn) {
-      btn.disabled = false;
-      btn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Sign in with Google';
-    }
-    showToast('❌ Google login failed: ' + e.message, 'error');
-  });
+  fbAuth.signInWithPopup(fbProvider)
+    .then(function(result) {
+      const user = result.user;
+      const googleUser = {
+        name: user.displayName,
+        email: user.email,
+        picture: user.photoURL,
+        googleId: user.uid
+      };
+      localStorage.setItem('ts_google_user', JSON.stringify(googleUser));
+      localStorage.setItem('cbtUserName', googleUser.name);
+      applyGoogleUserToUI(googleUser);
+      showToast('✅ Signed in as ' + googleUser.name, 'success');
+    })
+    .catch(function(e) {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20"> Sign in with Google';
+      }
+      if (e.code !== 'auth/popup-closed-by-user') {
+        showToast('❌ Google login failed: ' + e.message, 'error');
+      }
+    });
 }
 
 function applyGoogleUserToUI(googleUser) {
