@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,6 +13,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
 :root {
   --bg:#f0f3fa;--sidebar:#ffffff;--card:#ffffff;--card2:#f7f8fd;--border:#e8ecf4;
@@ -1401,7 +1403,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
 
 <div style="position:relative;margin:4px 0 14px;"><div style="position:absolute;inset:0;display:flex;align-items:center;"><div style="flex:1;border-top:1px solid var(--border);"></div><span style="padding:0 12px;font-size:11px;color:var(--text3);background:var(--card);">OR fill manually</span><div style="flex:1;border-top:1px solid var(--border);"></div></div></div>
 
-<div class="form-row"><div class="form-lbl">Your Name</div><input class="form-inp" id="ob-name" placeholder="Enter your full name" oninput="obValidate1()"></div>
  <div class="form-row"><div class="form-lbl">Your Name</div><input class="form-inp" id="ob-name" placeholder="Enter your full name" oninput="obValidate1()"></div>
   <div class="form-row"><div class="form-lbl">Target College</div><input class="form-inp" id="ob-college" placeholder="e.g. Delhi University, Christ, Jamia..."></div>
   <div class="form-row"><div class="form-lbl">Stream / Board</div>
@@ -1605,8 +1606,266 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+const fbDb = firebase.firestore();
 const fbAuth = firebase.auth();
 const fbProvider = new firebase.auth.GoogleAuthProvider();
+
+/* ══════════════════════════════════════════
+   CLOUD SYNC — Firebase Firestore
+══════════════════════════════════════════ */
+const CLOUD_SYNC_KEYS_PREFIX = ['ts_', 'thunderstudy_'];
+const CLOUD_SYNC_EXCLUDE = ['ts_rp_processed', 'ts_rp_init', 'ts_sync_asked', 'ts_ob_done'];
+const CLOUD_SYNC_DEBOUNCE_MS = 8000;
+let _cloudSyncTimer = null;
+
+function getAllCloudKeys() {
+  const keys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (!k) continue;
+    if (CLOUD_SYNC_EXCLUDE.includes(k)) continue;
+    if (CLOUD_SYNC_KEYS_PREFIX.some(p => k.startsWith(p)) || k === 'cbtUserName') {
+      keys.push(k);
+    }
+  }
+  return keys;
+}
+
+function buildCloudPayload() {
+  const payload = { _savedAt: new Date().toISOString(), _version: '3' };
+  getAllCloudKeys().forEach(k => {
+    payload[k] = localStorage.getItem(k);
+  });
+  return payload;
+}
+
+async function cloudSave(uid, silent) {
+  if (!uid) return { ok: false, msg: 'Not signed in' };
+  try {
+    const payload = buildCloudPayload();
+    await fbDb.collection('users').doc(uid).set(payload, { merge: true });
+    if (!silent) showToast('☁️ Data saved to cloud!', 'success');
+    localStorage.setItem('ts_cloud_last_save', new Date().toISOString());
+    updateCloudStatusUI('saved');
+    return { ok: true };
+  } catch (e) {
+    if (!silent) showToast('❌ Cloud save failed: ' + e.message, 'error');
+    updateCloudStatusUI('failed');
+    return { ok: false, msg: e.message };
+  }
+}
+
+async function cloudFetch(uid) {
+  if (!uid) return { ok: false, msg: 'Not signed in', data: null };
+  try {
+    const doc = await fbDb.collection('users').doc(uid).get();
+    if (!doc.exists) return { ok: true, data: null };
+    const data = doc.data();
+    return { ok: true, data };
+  } catch (e) {
+    return { ok: false, msg: e.message, data: null };
+  }
+}
+
+async function applyCloudData(data) {
+  if (!data) return;
+  Object.entries(data).forEach(([k, v]) => {
+    if (k.startsWith('_')) return;
+    if (v !== null && v !== undefined) {
+      localStorage.setItem(k, v);
+    }
+  });
+  localStorage.setItem('ts_ob_done', '1');
+}
+
+function scheduleAutoCloudSync() {
+  clearTimeout(_cloudSyncTimer);
+  _cloudSyncTimer = setTimeout(() => {
+    const user = fbAuth.currentUser;
+    if (user) cloudSave(user.uid, true);
+  }, CLOUD_SYNC_DEBOUNCE_MS);
+}
+
+function updateCloudStatusUI(status) {
+  const els = document.querySelectorAll('.cloud-status-dot');
+  els.forEach(el => {
+    el.className = 'cloud-status-dot cloud-status-' + status;
+    el.title = status === 'saved' ? '☁️ Cloud synced' :
+               status === 'saving' ? '⏳ Saving to cloud…' :
+               status === 'failed' ? '❌ Cloud sync failed' : '☁️ Not synced';
+  });
+}
+
+/* ── CONFLICT DETECTION ── */
+async function checkCloudConflictAndSignIn(user) {
+  const cloudResult = await cloudFetch(user.uid);
+  const localName = (getProfile().name || '').trim();
+  const localSID = getStudentID() || '';
+  const localTestCount = getAllAtt().length;
+  const hasLocalData = localTestCount > 0 || localName.length > 0;
+
+  if (!cloudResult.ok || !cloudResult.data) {
+    // No cloud data — just sign in and upload local
+    const gu = buildGoogleUser(user);
+    applyGoogleUserAfterConflict(gu);
+    if (hasLocalData) {
+      await cloudSave(user.uid, true);
+    }
+    return;
+  }
+
+  const cloudData = cloudResult.data;
+  let cloudProfile = {};
+  try { cloudProfile = JSON.parse(cloudData['ts_profile'] || '{}'); } catch(e) {}
+  const cloudName = (cloudProfile.name || cloudData['cbtUserName'] || '').trim();
+  const cloudSID = cloudData['ts_student_id'] || '';
+  let cloudTestCount = 0;
+  Object.keys(cloudData).forEach(k => {
+    if (k.startsWith('thunderstudy_result_')) cloudTestCount++;
+  });
+
+  const isSamePerson = (localName && cloudName &&
+    localName.toLowerCase() === cloudName.toLowerCase()) ||
+    (localSID && cloudSID && localSID === cloudSID);
+
+  if (!hasLocalData || isSamePerson) {
+    // No conflict — apply cloud data silently
+    const gu = buildGoogleUser(user);
+    await applyCloudData(cloudData);
+    applyGoogleUserAfterConflict(gu);
+    showToast('☁️ Data loaded from cloud!', 'success');
+    scheduleAutoCloudSync();
+    return;
+  }
+
+  // CONFLICT — show modal
+  showConflictModal(user, cloudData, {
+    localName, localSID, localTestCount,
+    cloudName, cloudSID, cloudTestCount,
+    cloudSavedAt: cloudData['_savedAt']
+  });
+}
+
+function buildGoogleUser(user) {
+  return {
+    name: user.displayName,
+    email: user.email,
+    picture: user.photoURL,
+    googleId: user.uid
+  };
+}
+
+function applyGoogleUserAfterConflict(gu) {
+  localStorage.setItem('ts_google_user', JSON.stringify(gu));
+  localStorage.setItem('cbtUserName', gu.name);
+  const p = getProfile();
+  if (!p.name && gu.name) {
+    p.name = gu.name;
+    localStorage.setItem('ts_profile', JSON.stringify(p));
+  }
+  applyGoogleUserToUI(gu);
+  renderHome();
+}
+
+function showConflictModal(user, cloudData, info) {
+  const existing = document.getElementById('cloud-conflict-modal');
+  if (existing) existing.remove();
+
+  const cloudDate = info.cloudSavedAt
+    ? new Date(info.cloudSavedAt).toLocaleString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
+    : 'Unknown';
+
+  const modal = document.createElement('div');
+  modal.id = 'cloud-conflict-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);padding:16px;overflow-y:auto;';
+
+  modal.innerHTML = `
+  <div style="background:var(--card);border-radius:26px;padding:28px;max-width:480px;width:100%;border:2px solid rgba(245,158,11,.4);animation:mIn .35s cubic-bezier(.34,1.56,.64,1);text-align:center;">
+    <div style="font-size:48px;margin-bottom:10px;">⚠️</div>
+    <div style="font-size:19px;font-weight:900;margin-bottom:6px;">Data Conflict Detected</div>
+    <div style="font-size:13px;color:var(--text3);line-height:1.7;margin-bottom:20px;">
+      This Google account has existing cloud data from a different device. Choose which data to keep.
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
+      <div style="background:rgba(79,110,247,.07);border:1.5px solid rgba(79,110,247,.25);border-radius:16px;padding:14px 12px;">
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--acc);margin-bottom:8px;">📱 This Device</div>
+        <div style="font-size:15px;font-weight:800;margin-bottom:3px;">${escH(info.localName||'No name')}</div>
+        <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">${escH(info.localSID||'No ID')}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:5px;">📝 ${info.localTestCount} tests</div>
+      </div>
+      <div style="background:rgba(16,185,129,.07);border:1.5px solid rgba(16,185,129,.25);border-radius:16px;padding:14px 12px;">
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--green);margin-bottom:8px;">☁️ Cloud Data</div>
+        <div style="font-size:15px;font-weight:800;margin-bottom:3px;">${escH(info.cloudName||'No name')}</div>
+        <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">${escH(info.cloudSID||'No ID')}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:5px;">📝 ${info.cloudTestCount} tests · ${cloudDate}</div>
+      </div>
+    </div>
+
+    <div style="background:rgba(244,63,94,.06);border:1.5px solid rgba(244,63,94,.25);border-radius:13px;padding:11px 14px;margin-bottom:18px;text-align:left;font-size:12px;color:var(--red);line-height:1.7;">
+      ⚠️ <strong>Warning:</strong> Choosing either option will <strong>permanently overwrite</strong> the other. Download a backup first if unsure.
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:9px;">
+      <button onclick="conflictKeepLocal('${user.uid}')" style="
+        width:100%;padding:13px;border-radius:15px;border:none;cursor:pointer;
+        background:linear-gradient(135deg,#4f6ef7,#7c3aed);color:#fff;
+        font-size:13px;font-weight:800;font-family:var(--fn);">
+        📱 Keep This Device's Data → Upload to Cloud
+      </button>
+      <button onclick="conflictUseCloud('${user.uid}')" style="
+        width:100%;padding:13px;border-radius:15px;border:none;cursor:pointer;
+        background:linear-gradient(135deg,#10b981,#059669);color:#fff;
+        font-size:13px;font-weight:800;font-family:var(--fn);">
+        ☁️ Use Cloud Data → Download to This Device
+      </button>
+      <button onclick="conflictDownloadAndDecide()" style="
+        width:100%;padding:11px;border-radius:15px;border:1.5px solid var(--border);cursor:pointer;
+        background:var(--card2);color:var(--text2);
+        font-size:12px;font-weight:700;font-family:var(--fn);">
+        ⬇️ Download Local Backup First
+      </button>
+      <button onclick="document.getElementById('cloud-conflict-modal').remove()" style="
+        background:none;border:none;font-size:12px;color:var(--text3);
+        cursor:pointer;font-family:var(--fn);padding:6px;">
+        Cancel — Stay signed out
+      </button>
+    </div>
+  </div>`;
+
+  document.body.appendChild(modal);
+
+  // Store cloud data for use in conflict resolution
+  window._pendingCloudData = cloudData;
+  window._pendingCloudUser = user;
+}
+
+async function conflictKeepLocal(uid) {
+  document.getElementById('cloud-conflict-modal')?.remove();
+  const gu = buildGoogleUser(window._pendingCloudUser);
+  applyGoogleUserAfterConflict(gu);
+  showToast('⏳ Uploading local data to cloud…', 'success', 2000);
+  await cloudSave(uid, false);
+  delete window._pendingCloudData;
+  delete window._pendingCloudUser;
+}
+
+async function conflictUseCloud(uid) {
+  document.getElementById('cloud-conflict-modal')?.remove();
+  const gu = buildGoogleUser(window._pendingCloudUser);
+  showToast('⏳ Loading cloud data…', 'success', 2000);
+  await applyCloudData(window._pendingCloudData);
+  applyGoogleUserAfterConflict(gu);
+  scheduleAutoCloudSync();
+  delete window._pendingCloudData;
+  delete window._pendingCloudUser;
+  setTimeout(() => location.reload(), 1500);
+}
+
+function conflictDownloadAndDecide() {
+  exportData(); // uses existing export function
+  showToast('📦 Backup downloaded! Now choose which data to keep.', 'success', 3500);
+}
 
 
 
@@ -1614,21 +1873,22 @@ const fbProvider = new firebase.auth.GoogleAuthProvider();
 // NEW
 fbAuth.onAuthStateChanged(function(user) {
   if (user) {
-    const gu = {
-      name: user.displayName,
-      email: user.email,
-      picture: user.photoURL,
-      googleId: user.uid
-    };
+    const gu = buildGoogleUser(user);
     localStorage.setItem('ts_google_user', JSON.stringify(gu));
     localStorage.setItem('cbtUserName', gu.name);
-    renderHomeTopbar();   // already there — keep this
-    // Also update profile name if missing
+    if (document.getElementById('home-google-area')) renderHomeTopbar();
     const p = getProfile();
     if (!p.name && gu.name) {
       p.name = gu.name;
       localStorage.setItem('ts_profile', JSON.stringify(p));
     }
+    // Auto-sync every 5 minutes while signed in
+    clearInterval(window._cloudAutoSyncInterval);
+    window._cloudAutoSyncInterval = setInterval(() => {
+      cloudSave(user.uid, true);
+    }, 5 * 60 * 1000);
+  } else {
+    clearInterval(window._cloudAutoSyncInterval);
   }
 });
 /* ══════════════════════════════════════════
@@ -2503,6 +2763,11 @@ function syncHistory(){
   });
 }
 
+// Call this after any localStorage write that saves test data
+function onDataChanged() {
+  scheduleAutoCloudSync();
+}
+
 /* HELPERS */
 function rClr(p){return p>=75?'#10b981':p>=50?'#4f6ef7':p>=35?'#f59e0b':'#f43f5e';}
 function fd(iso){try{return new Date(iso).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});}catch(e){return'—';}}
@@ -2670,6 +2935,29 @@ function importData(file){
   };
   reader.readAsText(file);
 }
+
+function obImportBackup(file) {
+  const st = document.getElementById('ob-import-status');
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      const importable = Object.entries(data).filter(([k]) =>
+        k.startsWith('thunderstudy_') || k.startsWith('ts_') || k === 'cbtUserName'
+      );
+      if (!importable.length) throw new Error('No Thunderstudy data found');
+      importable.forEach(([k, v]) => localStorage.setItem(k, v));
+      if (data['ts_profile']) localStorage.setItem('ts_ob_done', '1');
+      if (st) st.innerHTML = `<span style="color:var(--green)">✅ Backup imported! Reloading…</span>`;
+      setTimeout(() => location.reload(), 1500);
+    } catch(err) {
+      if (st) st.innerHTML = `<span style="color:var(--red)">❌ ${err.message}</span>`;
+    }
+  };
+  reader.readAsText(file);
+}
+
 function handleDrop(e){
   e.preventDefault();document.getElementById('ie-drop').classList.remove('drag');
   const file=e.dataTransfer.files[0];
@@ -4366,7 +4654,50 @@ function renderSettings(){
   </div>
 
 <div id="storage-card-wrap">${renderStorageCard()}</div>
+`;
 
+H += `
+<!-- CLOUD SYNC CARD -->
+<div class="card card-p" style="margin-bottom:14px;background:linear-gradient(135deg,rgba(79,110,247,.06),rgba(124,58,237,.04));border:1.5px solid rgba(79,110,247,.2);">
+  <div class="sec-hdr">
+    <div class="sec-title">☁️ Cloud Sync — Google Account</div>
+    <div class="cloud-status-dot" style="width:10px;height:10px;border-radius:50%;background:var(--border);flex-shrink:0;display:inline-block;" title="Cloud status"></div>
+  </div>
+  ${fbAuth.currentUser ? `
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;background:rgba(16,185,129,.08);border:1.5px solid rgba(16,185,129,.25);border-radius:13px;padding:10px 14px;">
+    <img src="${getGoogleUser()?.picture||''}" width="34" height="34" style="border-radius:50%;" onerror="this.style.display='none'">
+    <div style="flex:1;">
+      <div style="font-size:13px;font-weight:800;">${escH(getGoogleUser()?.name||'Signed In')}</div>
+      <div style="font-size:10px;color:var(--text3);">${escH(getGoogleUser()?.email||'')} · UID: ${fbAuth.currentUser.uid.substring(0,8)}…</div>
+    </div>
+    <div style="font-size:10px;color:var(--green);font-weight:700;">✅ Connected</div>
+  </div>
+  <div style="font-size:12px;color:var(--text3);margin-bottom:12px;">
+    Last cloud save: <strong id="cloud-last-save-label">${localStorage.getItem('ts_cloud_last_save') ? new Date(localStorage.getItem('ts_cloud_last_save')).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : 'Never'}</strong>
+    · Auto-syncs every 5 minutes and after each test.
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+    <button class="btn btn-prim" id="cloud-save-btn" onclick="cloudSaveFromSettings()" style="flex:1;justify-content:center;">
+      ☁️ Save All Data to Cloud
+    </button>
+    <button class="btn btn-ghost" id="cloud-fetch-btn" onclick="cloudFetchFromSettings()" style="flex:1;justify-content:center;">
+      ⬇️ Fetch Data from Cloud
+    </button>
+  </div>
+  <div id="cloud-settings-status" style="font-size:12px;font-weight:600;min-height:16px;text-align:center;"></div>
+  ` : `
+  <div style="font-size:12px;color:var(--text3);margin-bottom:12px;">Sign in with Google to sync your data across devices. All tests, scores, student ID and profile are saved securely to your Google account.</div>
+  <button onclick="firebaseGoogleLogin()" style="
+    width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
+    padding:12px 16px;border-radius:12px;border:1.5px solid #dadce0;
+    background:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fn);">
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18">
+    Sign in with Google to Enable Cloud Sync
+  </button>
+  `}
+</div>`;
+
+H += `
   <!-- SYNC -->
   <div class="card card-p" style="margin-bottom:14px;">
     <div class="sec-hdr"><div class="sec-title">🔗 Google Sheet Sync</div><span class="sync-dot" id="sync-dot-settings" title="Sync status" style="width:10px;height:10px;flex-shrink:0;"></span></div>
@@ -4376,8 +4707,9 @@ function renderSettings(){
       <button class="btn btn-ghost" onclick="testConnSettings()">🧪 Test Connection</button>
     </div>
     <div id="conn-status" style="margin-top:9px;font-size:12px;"></div>
-  </div>
+</div>`;
 
+H += `
 <!-- AUTO SYNC STATUS -->
   <div class="card card-p" style="margin-bottom:14px;">
     <div class="sec-hdr"><div class="sec-title">📡 Admin Sync</div></div>
@@ -4385,9 +4717,10 @@ function renderSettings(){
     <div style="background:rgba(16,185,129,.08);border:1.5px solid rgba(16,185,129,.25);border-radius:12px;padding:11px 14px;display:flex;align-items:center;gap:10px;">
       <div style="font-size:20px;">✅</div>
       <div><div style="font-size:13px;font-weight:800;color:var(--green);">Auto-Sync Active</div><div style="font-size:11px;color:var(--text3);margin-top:2px;">Admin updates appear instantly on your dashboard</div></div>
-    </div>
-  </div>
+</div>
+  </div>`;
 
+H += `
   <!-- IMPORT EXPORT -->
   <div class="card card-p" style="margin-bottom:14px;">
     <div class="sec-hdr"><div class="sec-title">📦 Import / Export Data</div></div>
@@ -4395,16 +4728,19 @@ function renderSettings(){
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
       <button class="btn btn-prim" onclick="exportData()">⬇️ Export Backup (.json)</button>
       <button class="btn btn-ghost" onclick="openModal('ie-modal')">📂 Import Backup</button>
-    </div>
-  </div>
+</div>
+  </div>`;
 
+H += `
   <!-- SUBJECTS -->
   <div class="card card-p" style="margin-bottom:14px;">
     <div class="sec-hdr"><div class="sec-title">📚 Active Subjects</div></div>
     ${sv.length?`<div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px;">${sv.map(sId=>{const s=SUBJECTS_MASTER.find(x=>x.id===sId);return s?`<div style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:30px;background:var(--card2);border:1.5px solid var(--border);font-size:12px;font-weight:600;">${s.icon} ${s.name}<span onclick="rmSubj('${sId}')" style="cursor:pointer;color:var(--red);font-size:15px;line-height:1;margin-left:2px;">×</span></div>`:''}).join('')}</div>`:`<div style="font-size:12px;color:var(--text3);margin-bottom:12px;">No subjects added yet.</div>`}
     <button class="btn btn-prim" onclick="openAddSubjModal()">+ Add Subject</button>
-  </div>
+</div>
+  </div>`;
 
+H += `
   <!-- HP -->
   <div class="card card-p" style="margin-bottom:14px;">
     <div class="sec-hdr">
@@ -5213,6 +5549,42 @@ function testConnSettings(){
   .then(()=>el.innerHTML=`<span style="color:var(--green)">✅ POST sent (no-cors mode). Check your sheet to confirm.</span>`)
   .catch(e=>el.innerHTML=`<span style="color:var(--red)">❌ ${escH(e.message)}</span>`);
 }
+async function cloudSaveFromSettings() {
+  const user = fbAuth.currentUser;
+  const btn = document.getElementById('cloud-save-btn');
+  const st = document.getElementById('cloud-settings-status');
+  if (!user) { st.innerHTML = `<span style="color:var(--red)">❌ Not signed in to Google.</span>`; return; }
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Saving…'; }
+  updateCloudStatusUI('saving');
+  const r = await cloudSave(user.uid, true);
+  if (btn) { btn.disabled = false; btn.textContent = '☁️ Save All Data to Cloud'; }
+  if (r.ok) {
+    const ts = new Date().toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+    st.innerHTML = `<span style="color:var(--green)">✅ All data saved to cloud at ${ts}!</span>`;
+    updateCloudStatusUI('saved');
+  } else {
+    st.innerHTML = `<span style="color:var(--red)">❌ ${escH(r.msg)}</span>`;
+    updateCloudStatusUI('failed');
+  }
+}
+
+async function cloudFetchFromSettings() {
+  const user = fbAuth.currentUser;
+  const btn = document.getElementById('cloud-fetch-btn');
+  const st = document.getElementById('cloud-settings-status');
+  if (!user) { st.innerHTML = `<span style="color:var(--red)">❌ Not signed in to Google.</span>`; return; }
+  if (!confirm('⚠️ This will overwrite local data with cloud data. Download a backup first?')) return;
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Fetching…'; }
+  const r = await cloudFetch(user.uid);
+  if (btn) { btn.disabled = false; btn.textContent = '⬇️ Fetch Data from Cloud'; }
+  if (!r.ok) { st.innerHTML = `<span style="color:var(--red)">❌ ${escH(r.msg)}</span>`; return; }
+  if (!r.data) { st.innerHTML = `<span style="color:var(--yellow)">⚠️ No cloud data found for this account yet.</span>`; return; }
+  await applyCloudData(r.data);
+  st.innerHTML = `<span style="color:var(--green)">✅ Cloud data applied! Reloading in 2s…</span>`;
+  showToast('☁️ Cloud data restored!', 'success');
+  setTimeout(() => location.reload(), 2000);
+}
+
 async function syncFromSettings(btn){
   btn.disabled=true;btn.textContent='⏳ Syncing…';
   setSyncDot('syncing');
@@ -5596,6 +5968,7 @@ function obFinish(){
   setTimeout(()=>{
     if(!localStorage.getItem('ts_sync_asked')&&getAllAtt().length>0) openModal('sync-welcome-modal');
   },1000);
+  scheduleAutoCloudSync();
 }
 
 /* ══════════════════════════════════════════
@@ -5688,6 +6061,7 @@ document.querySelector('.main').addEventListener('scroll',function(){
   if(btn)btn.classList.toggle('visible',this.scrollTop>300);
 },{passive:true});
 syncHistory();
+scheduleAutoCloudSync();
 
 // Restore Google session
 // Restore Google session (Firebase handles this via onAuthStateChanged above)
@@ -5724,10 +6098,11 @@ setInterval(()=>{
 setTimeout(()=>{
   const sid = getStudentID();
   const prof = getProfile();
-  if(!sid && prof.name && localStorage.getItem('ts_ob_done')){
+  const obOpen = document.getElementById('ob-overlay')?.classList.contains('open');
+  if(!sid && prof.name && localStorage.getItem('ts_ob_done') && !obOpen){
     showStudentIDPopup();
   }
-}, 1200);
+}, 2000);
 
   // Auto-sync in background on every load
   const allAtt=getAllAtt();
@@ -6562,18 +6937,14 @@ function firebaseGoogleLogin() {
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Signing in…'; }
 
   fbAuth.signInWithPopup(fbProvider)
-    .then(function(result) {
+    .then(async function(result) {
       const user = result.user;
-      const googleUser = {
-        name: user.displayName,
-        email: user.email,
-        picture: user.photoURL,
-        googleId: user.uid
-      };
-      localStorage.setItem('ts_google_user', JSON.stringify(googleUser));
-      localStorage.setItem('cbtUserName', googleUser.name);
-      applyGoogleUserToUI(googleUser);
-      showToast('✅ Signed in as ' + googleUser.name, 'success');
+      showToast('✅ Signed in! Checking cloud data…', 'success', 2500);
+      await checkCloudConflictAndSignIn(user);
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20"> Sign in with Google';
+      }
     })
     .catch(function(e) {
       if (btn) {
