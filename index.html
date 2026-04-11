@@ -1639,6 +1639,47 @@ function buildCloudPayload() {
   return payload;
 }
 
+/* ── PHASE 1: FAST FETCH — critical keys only ── */
+const CLOUD_CRITICAL_KEYS = [
+  'ts_profile','ts_student_id','ts_hp','ts_rp_data',
+  'ts_bonus_xp','ts_subs','cbtUserName','ts_ob_done',
+  'ts_hp_sections','ts_hp_certs','ts_promos_used','ts_rp_processed'
+];
+
+async function cloudFetchCritical(uid) {
+  if (!uid) return { ok: false, data: null };
+  try {
+    const doc = await Promise.race([
+      fbDb.collection('users').doc(uid).get(),
+      new Promise((_,r) => setTimeout(() => r(new Error('timeout')), 4000))
+    ]);
+    if (!doc.exists) return { ok: true, data: null };
+    const full = doc.data();
+    const data = {};
+    // Pull only critical keys first
+    CLOUD_CRITICAL_KEYS.forEach(k => { if (full[k] !== undefined) data[k] = full[k]; });
+    data['_savedAt'] = full['_savedAt'];
+    data['_version'] = full['_version'];
+    // Store full data for phase 2
+    window._cloudFullData = full;
+    return { ok: true, data };
+  } catch(e) {
+    return { ok: false, msg: e.message, data: null };
+  }
+}
+
+async function applyCloudDataPhase2() {
+  const full = window._cloudFullData;
+  if (!full) return;
+  // Apply test results and history (heavy keys) in background
+  Object.entries(full).forEach(([k, v]) => {
+    if (k.startsWith('_')) return;
+    if (CLOUD_CRITICAL_KEYS.includes(k)) return; // already applied
+    if (v !== null && v !== undefined) localStorage.setItem(k, v);
+  });
+  delete window._cloudFullData;
+}
+
 async function cloudSave(uid, silent) {
   if (!uid) return { ok: false, msg: 'Not signed in' };
   try {
@@ -1672,13 +1713,19 @@ async function cloudFetch(uid) {
 
 async function applyCloudData(data) {
   if (!data) return;
-  Object.entries(data).forEach(([k, v]) => {
-    if (k.startsWith('_')) return;
-    if (v !== null && v !== undefined) {
-      localStorage.setItem(k, v);
-    }
+  // Phase 1: critical keys immediately
+  CLOUD_CRITICAL_KEYS.forEach(k => {
+    if (data[k] !== undefined && data[k] !== null) localStorage.setItem(k, data[k]);
   });
   localStorage.setItem('ts_ob_done', '1');
+  // Phase 2: test results in background after 500ms
+  setTimeout(() => {
+    Object.entries(data).forEach(([k, v]) => {
+      if (k.startsWith('_')) return;
+      if (CLOUD_CRITICAL_KEYS.includes(k)) return;
+      if (v !== null && v !== undefined) localStorage.setItem(k, v);
+    });
+  }, 500);
 }
 
 function scheduleAutoCloudSync() {
@@ -1701,7 +1748,7 @@ function updateCloudStatusUI(status) {
 
 /* ── CONFLICT DETECTION ── */
 async function checkCloudConflictAndSignIn(user) {
-  const cloudResult = await cloudFetch(user.uid);
+  const cloudResult = await cloudFetchCritical(user.uid);
   const localName = (getProfile().name || '').trim();
   const localSID = getStudentID() || '';
   const localTestCount = getAllAtt().length;
@@ -1873,7 +1920,6 @@ function conflictDownloadAndDecide() {
 
 
 // Auto-restore session when page loads
-// NEW
 fbAuth.onAuthStateChanged(function(user) {
   if (user) {
     const gu = buildGoogleUser(user);
@@ -1885,13 +1931,12 @@ fbAuth.onAuthStateChanged(function(user) {
       p.name = gu.name;
       localStorage.setItem('ts_profile', JSON.stringify(p));
     }
-    // NON-BLOCKING: auto-sync in background only, don't await
     clearInterval(window._cloudAutoSyncInterval);
     window._cloudAutoSyncInterval = setInterval(() => {
       cloudSave(user.uid, true);
     }, 5 * 60 * 1000);
-    // Background cloud save after 10s delay (non-blocking)
-    setTimeout(() => cloudSave(user.uid, true), 10000);
+    // Phase 2 background save — delayed 3s, non-blocking
+    setTimeout(() => cloudSave(user.uid, true), 3000);
   } else {
     clearInterval(window._cloudAutoSyncInterval);
   }
@@ -3079,7 +3124,7 @@ function renderHome(){
   document.getElementById('sb-av-disp').textContent=(uname[0]||'S').toUpperCase();
   document.getElementById('sb-name-disp').textContent=uname;
   document.getElementById('sb-role-disp').textContent=prof.college||'CUET Aspirant';
-  document.getElementById('home-greeting').textContent=`👋 Hello, ${uname}!`;
+  document.getElementById('home-greeting').textContent=`💕 Hello, ${uname}!`;
   document.getElementById('home-sub').textContent=`${new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'})} · ${rank.icon} ${rank.name} Rank`;
   const goals=prof.goals||{};let H='';
 const heroGrads={'Apex':'linear-gradient(135deg,#f97316,#ec4899)','Thunder':'linear-gradient(135deg,#ef4444,#b91c1c)','Gold':'linear-gradient(135deg,#a855f7,#7c3aed)','Elite':'linear-gradient(135deg,#10b981,#0891b2)','Silver':'linear-gradient(135deg,#3b82f6,#60a5fa)','Bronze':'linear-gradient(135deg,#f59e0b,#d97706)','Explorer':'linear-gradient(135deg,#64748b,#94a3b8)','Rookie':'linear-gradient(135deg,#4f6ef7,#7c3aed)'};
@@ -5580,12 +5625,25 @@ async function cloudFetchFromSettings() {
   if (!user) { st.innerHTML = `<span style="color:var(--red)">❌ Not signed in to Google.</span>`; return; }
   if (!confirm('⚠️ This will overwrite local data with cloud data. Download a backup first?')) return;
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Fetching…'; }
-  const r = await cloudFetch(user.uid);
-  if (btn) { btn.disabled = false; btn.textContent = '⬇️ Fetch Data from Cloud'; }
-  if (!r.ok) { st.innerHTML = `<span style="color:var(--red)">❌ ${escH(r.msg)}</span>`; return; }
-  if (!r.data) { st.innerHTML = `<span style="color:var(--yellow)">⚠️ No cloud data found for this account yet.</span>`; return; }
+ // Phase 1: fetch critical keys first (fast)
+  if (btn) btn.textContent = '⏳ Loading profile…';
+  const r = await cloudFetchCritical(user.uid);
+  if (!r.ok) { 
+    if (btn) { btn.disabled = false; btn.textContent = '⬇️ Fetch Data from Cloud'; }
+    st.innerHTML = `<span style="color:var(--red)">❌ ${escH(r.msg)}</span>`; return; 
+  }
+  if (!r.data) { 
+    if (btn) { btn.disabled = false; btn.textContent = '⬇️ Fetch Data from Cloud'; }
+    st.innerHTML = `<span style="color:var(--yellow)">⚠️ No cloud data found for this account yet.</span>`; return; 
+  }
+  // Apply critical immediately
   await applyCloudData(r.data);
-  st.innerHTML = `<span style="color:var(--green)">✅ Cloud data applied! Reloading in 2s…</span>`;
+  if (btn) btn.textContent = '⏳ Loading test results…';
+  st.innerHTML = `<span style="color:var(--green)">✅ Profile loaded! Loading test results in background…</span>`;
+  // Phase 2: load full data
+  await applyCloudDataPhase2();
+  if (btn) { btn.disabled = false; btn.textContent = '⬇️ Fetch Data from Cloud'; }
+  st.innerHTML = `<span style="color:var(--green)">✅ All data loaded! Reloading in 2s…</span>`;
   showToast('☁️ Cloud data restored!', 'success');
   setTimeout(() => location.reload(), 2000);
 }
@@ -5776,7 +5834,7 @@ function markSynced(keys){
     });
   });
   if(!results.length)return{success:true,ok:0,fail:0,total:0,upToDate:true};
-const CHUNK = 3;
+const CHUNK = 6;
 const good = [];
 for (let i = 0; i < results.length; i += CHUNK) {
   const chunk = results.slice(i, i + CHUNK);
@@ -5792,10 +5850,7 @@ for (let i = 0; i < results.length; i += CHUNK) {
   settled.filter(r => r.status==='fulfilled' && r.value?.ok)
     .forEach(r => good.push(r.value.key));
 }
-if (good.length) {
-  await new Promise(r => setTimeout(r, 300));
-  markSynced(good);
-}
+if (good.length) markSynced(good);
 const failCount = results.length - good.length;
 return {success: true, ok: good.length, fail: failCount, total: results.length};
 }
