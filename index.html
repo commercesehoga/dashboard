@@ -1628,6 +1628,7 @@ fbAuth.getRedirectResult().then(function(result) {
 
 
 // Auto-restore session when page loads
+// NEW
 fbAuth.onAuthStateChanged(function(user) {
   if (user) {
     const gu = {
@@ -1638,6 +1639,8 @@ fbAuth.onAuthStateChanged(function(user) {
     };
     localStorage.setItem('ts_google_user', JSON.stringify(gu));
     localStorage.setItem('cbtUserName', gu.name);
+    // Update topbar if home is already rendered
+    renderHomeTopbar();
   }
 });
 /* ══════════════════════════════════════════
@@ -5482,8 +5485,16 @@ function getStudentID(){
   return localStorage.getItem('ts_student_id') || null;
 }
 
+// NEW
 function startOnboarding(){
   _obSelSubjs=[];_obTargetMarks=850;
+
+  // Pre-fill Google user if already signed in
+  const existingGU = getGoogleUser();
+  if (existingGU) {
+    setTimeout(() => applyGoogleUserToUI(existingGU), 50);
+  }
+
   const grid=document.getElementById('ob-subj-grid');
   let html='';
   SUBJECTS_MASTER.forEach(s=>{
@@ -6572,7 +6583,9 @@ function firebaseGoogleLogin() {
 }
 
 function applyGoogleUserToUI(googleUser) {
-  // Auto-fill name field in onboarding
+  if (!googleUser) return;
+
+  // Auto-fill name field in onboarding (if it exists)
   const nameField = document.getElementById('ob-name');
   if (nameField) {
     nameField.value = googleUser.name;
@@ -6594,6 +6607,14 @@ function applyGoogleUserToUI(googleUser) {
   if (nameEl) nameEl.textContent = googleUser.name;
   if (emailEl) emailEl.textContent = googleUser.email;
 
+  // Save name to profile if missing
+  const p = getProfile();
+  if (!p.name && googleUser.name) {
+    p.name = googleUser.name;
+    localStorage.setItem('ts_profile', JSON.stringify(p));
+    localStorage.setItem('cbtUserName', googleUser.name);
+  }
+
   // Auto-generate Student ID if missing
   if (!getStudentID()) {
     const newId = 'TS' + String(Math.floor(Math.random() * 100000)).padStart(5, '0');
@@ -6602,9 +6623,8 @@ function applyGoogleUserToUI(googleUser) {
     if (sidField) { sidField.value = newId; sidField.style.color = 'var(--green)'; }
   }
 
-  obValidate1();
+  if (document.getElementById('ob-next-1')) obValidate1();
   renderHomeTopbar();
-  showToast('✅ Signed in as ' + googleUser.name, 'success', 3000);
 }
 
 function googleLogout() {
