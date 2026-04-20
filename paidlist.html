@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Thunderstudy Paid Access List</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<style>
+body{font-family:monospace;padding:20px;background:#f8f9fa;color:#212529;}
+h1{font-size:18px;margin-bottom:16px;}
+pre{background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:16px;overflow:auto;}
+.note{background:#fff3cd;border:1px solid #ffc107;border-radius:6px;padding:12px;margin-bottom:16px;font-family:sans-serif;font-size:13px;}
+</style>
+</head>
+<body>
+<h1>Thunderstudy — Paid Access List</h1>
+<div class="note">
+  <strong>Admin only.</strong> Add Student IDs (e.g. TS12345) to the subject arrays below to grant paid mock access (₹30/subject). Changes take effect immediately on next page load.
+</div>
+
+<!-- PAIDLIST_JSON_START
+{
+  "bst":  [],
+  "eco":  [],
+  "acc":  [],
+  "amat": [],
+  "eng":  [],
+  "gat":  [],
+  "phy":  [],
+  "che":  [],
+  "bio":  [],
+  "mat":  [],
+  "his":  [],
+  "geo":  [],
+  "pol":  [],
+  "psy":  [],
+  "pe":   [],
+  "ip":   [],
+  "cs":   []
+}
+PAIDLIST_JSON_END -->
+
+<pre id="display">Loading…</pre>
+
+<script>
+const raw = document.documentElement.innerHTML;
+const m = raw.match(/PAIDLIST_JSON_START\s*([\s\S]*?)\s*PAIDLIST_JSON_END/);
+let parsed = {};
+if (m) {
+  try {
+    parsed = JSON.parse(m[1].trim());
+  } catch(e) {
+    document.getElementById('display').textContent = 'JSON parse error: ' + e.message;
+  }
+}
+
+let totalPaid = 0;
+const lines = Object.entries(parsed).map(([subj, ids]) => {
+  totalPaid += ids.length;
+  return `  "${subj}": [${ids.map(id => `"${id}"`).join(', ')}]`;
+});
+
+document.getElementById('display').textContent =
+  '{\n' + lines.join(',\n') + '\n}\n\n' +
+  `Total subjects: ${Object.keys(parsed).length}\n` +
+  `Total paid students: ${totalPaid}`;
+</script>
+</body>
+</html>
