@@ -4946,7 +4946,26 @@ function renderWeeklyReport(container){
     weeks.push({label,start:wStart,end:wEnd,tests:wAtts.length,avgPct,correct:wAtts.reduce((s,d)=>s+d.correct,0),wrong:wAtts.reduce((s,d)=>s+d.incorrect,0),subjects:[...new Set(wAtts.map(d=>d.subjectId))].length});
   }
   const thisWeek=weeks[5],lastWeek=weeks[4];
-  const trendChange=thisWeek.tests>0&&lastWeek.tests>0?thisWeek.avgPct-lastWeek.avgPct:null;
+  // Debug: force recalc using local date strings
+  const todayLocal = new Date();
+  const weekStartLocal = new Date(todayLocal);
+  weekStartLocal.setHours(0,0,0,0);
+  weekStartLocal.setDate(weekStartLocal.getDate() - weekStartLocal.getDay());
+  const weekEndLocal = new Date(weekStartLocal);
+  weekEndLocal.setDate(weekEndLocal.getDate()+6);
+  weekEndLocal.setHours(23,59,59,999);
+  // Re-filter thisWeek using local dates
+  const thisWeekAtts = allAtt.filter(d=>{
+    if(!d.date) return false;
+    const dt = new Date(d.date);
+    return dt >= weekStartLocal && dt <= weekEndLocal;
+  });
+  thisWeek.tests = thisWeekAtts.length;
+  thisWeek.avgPct = thisWeekAtts.length ? thisWeekAtts.reduce((s,d)=>s+d.percentage,0)/thisWeekAtts.length : 0;
+  thisWeek.correct = thisWeekAtts.reduce((s,d)=>s+d.correct,0);
+  thisWeek.wrong = thisWeekAtts.reduce((s,d)=>s+d.incorrect,0);
+  thisWeek.subjects = [...new Set(thisWeekAtts.map(d=>d.subjectId))].length;
+  const trendChange=thisWeekAtts.length>0&&lastWeek.tests>0?thisWeek.avgPct-lastWeek.avgPct:null;
   let H=``;
   // This week summary
   H+=`<div class="card card-p" style="margin-bottom:16px;background:linear-gradient(135deg,rgba(79,110,247,.07),rgba(124,58,237,.04));border:1.5px solid rgba(79,110,247,.2);">
@@ -4968,12 +4987,12 @@ function renderWeeklyReport(container){
 
   // Subject breakdown this week
   H+=`<div class="card card-p" style="margin-bottom:16px;"><div class="sec-hdr"><div class="sec-title">📚 This Week by Subject</div></div>`;
-  const hasThisWeek=sv.some(sId=>{const subj=SUBJECTS_MASTER.find(s=>s.id===sId);if(!subj)return false;return subj.chapters.some(ch=>{const r=lR(sId,ch.id);if(!r||!r.date)return false;const dt=new Date(r.date);return dt>=thisWeek.start&&dt<=thisWeek.end;});});
+const hasThisWeek=thisWeekAtts.length>0;
   if(!hasThisWeek){H+=`<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;">No tests this week yet. Start studying! 💪</div>`;}
   else{
     sv.forEach(sId=>{
       const subj=SUBJECTS_MASTER.find(s=>s.id===sId);if(!subj)return;
-      const wAtts=allAtt.filter(d=>d.subjectId===sId&&d.date&&new Date(d.date)>=thisWeek.start&&new Date(d.date)<=thisWeek.end);
+      const wAtts=allAtt.filter(d=>d.subjectId===sId&&d.date&&new Date(d.date)>=weekStartLocal&&new Date(d.date)<=weekEndLocal);
       if(!wAtts.length)return;
       const avg=wAtts.reduce((s,d)=>s+d.percentage,0)/wAtts.length,clr=rClr(avg);
       H+=`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
