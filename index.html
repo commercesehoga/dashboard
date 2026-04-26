@@ -4816,37 +4816,9 @@ function renderScoreHistory(container){
 function renderRetakeComparison(container){
   const sv=getSS();
   const retakes=[];
-  // Add velocity summary
   const velocities = getImprovementVelocity();
   const avgVelocity = velocities.length > 0
     ? velocities.reduce((s, v) => s + v.rate, 0) / velocities.length : 0;
-  
-  if (velocities.length > 0) {
-    const velColor = avgVelocity > 5 ? '#10b981' 
-      : avgVelocity > 0 ? '#f59e0b' : '#f43f5e';
-    H = `
-    <div style="background:rgba(79,110,247,.06);
-      border:1.5px solid rgba(79,110,247,.2);
-      border-radius:16px;padding:16px 18px;margin-bottom:16px;
-      display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-      <div style="font-size:36px;">🚀</div>
-      <div style="flex:1;">
-        <div style="font-size:13px;font-weight:900;margin-bottom:3px;">
-          Improvement Velocity
-        </div>
-        <div style="font-size:12px;color:var(--text3);">
-          Average improvement per retake attempt
-        </div>
-      </div>
-      <div style="text-align:center;">
-        <div style="font-size:28px;font-weight:900;
-          font-family:var(--mono);color:${velColor};">
-          ${avgVelocity > 0 ? '+' : ''}${avgVelocity.toFixed(1)}%
-        </div>
-        <div style="font-size:10px;color:var(--text3);">per attempt</div>
-      </div>
-    </div>` + H;
-  }
   sv.forEach(sId=>{
     const subj=SUBJECTS_MASTER.find(s=>s.id===sId);if(!subj)return;
     subj.chapters.forEach(ch=>{
@@ -4868,6 +4840,10 @@ function renderRetakeComparison(container){
     <div class="stat-card"><div class="stat-icon bg-red">📉</div><div class="stat-val c-red">${declined}</div><div class="stat-lbl">Declined</div></div>
     <div class="stat-card"><div class="stat-icon bg-yellow">⭐</div><div class="stat-val c-yellow">${retakes.length>0?(retakes.reduce((s,r)=>s+r.improvement,0)/retakes.length).toFixed(1):'0'}%</div><div class="stat-lbl">Avg Change</div></div>
   </div>`;
+  if (velocities.length > 0) {
+    const velColor = avgVelocity > 5 ? '#10b981' : avgVelocity > 0 ? '#f59e0b' : '#f43f5e';
+    H+=`<div style="background:rgba(79,110,247,.06);border:1.5px solid rgba(79,110,247,.2);border-radius:16px;padding:16px 18px;margin-bottom:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;"><div style="font-size:36px;">🚀</div><div style="flex:1;"><div style="font-size:13px;font-weight:900;margin-bottom:3px;">Improvement Velocity</div><div style="font-size:12px;color:var(--text3);">Average improvement per retake attempt</div></div><div style="text-align:center;"><div style="font-size:28px;font-weight:900;font-family:var(--mono);color:${velColor};">${avgVelocity > 0 ? '+' : ''}${avgVelocity.toFixed(1)}%</div><div style="font-size:10px;color:var(--text3);">per attempt</div></div></div>`;
+  }
   H+=`<div style="font-size:13px;font-weight:800;margin-bottom:12px;">📊 All Retakes</div>`;
   retakes.forEach(r=>{
     const clr=r.improvement>0?'var(--green)':r.improvement<0?'var(--red)':'var(--text3)';
@@ -5010,28 +4986,8 @@ function renderWeeklyReport(container){
   }
   H+=`</div>`;
   
-  // Shareable card
-  H += `
-  <div class="card card-p" style="margin-top:16px;">
-    <div class="sec-hdr">
-      <div class="sec-title">
-        📸 Shareable Weekly Card
-      </div>
-      <button onclick="generateShareCard()" 
-        class="btn btn-prim" 
-        style="font-size:11px;padding:7px 14px;">
-        📸 Generate
-      </button>
-    </div>
-    <div id="share-card-preview" 
-      style="font-size:12px;color:var(--text3);">
-      Click Generate to create a shareable screenshot card 
-      of your weekly performance.
-    </div>
-  </div>`;
-
-  // 6-week trend
-  H+=`<div class="card card-p"><div class="sec-hdr"><div class="sec-title">📈 6-Week Score Trend</div></div><div style="height:180px;"><canvas id="weekly-chart"></canvas></div></div>`;
+H+=`<div class="card card-p" style="margin-top:16px;"><div class="sec-hdr"><div class="sec-title">📸 Shareable Weekly Card</div><button onclick="generateShareCard()" class="btn btn-prim" style="font-size:11px;padding:7px 14px;">📸 Generate</button></div><div id="share-card-preview" style="font-size:12px;color:var(--text3);">Click Generate to create a shareable screenshot card of your weekly performance.</div></div>`;
+  H+=`<div class="card card-p" style="margin-top:16px;"><div class="sec-hdr"><div class="sec-title">📈 6-Week Score Trend</div></div><div style="height:180px;"><canvas id="weekly-chart"></canvas></div></div>`;
   container.innerHTML=H;
   setTimeout(()=>{
     const wc=document.getElementById('weekly-chart');
