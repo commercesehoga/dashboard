@@ -3969,7 +3969,14 @@ function renderSubjects(){
   document.getElementById('subjects-content').innerHTML=H;
   renderSubjTab(currentSubjectTab);
 }
-function switchSubjTab(sId){currentSubjectTab=sId;document.querySelectorAll('.subj-tab').forEach(t=>{t.classList.toggle('active',t.getAttribute('onclick')===`switchSubjTab('${sId}')`);});renderSubjTab(sId);}
+
+function switchSubjTab(sId){
+  currentSubjectTab=sId;
+  document.querySelectorAll('.subj-tab').forEach(t=>{
+    t.classList.toggle('active',t.getAttribute('onclick')===`switchSubjTab('${sId}')`);
+  });
+  setTimeout(()=>renderSubjTab(sId),30);
+}
 
 function checkCertEligibility(sId){
   const subj=SUBJECTS_MASTER.find(s=>s.id===sId);if(!subj)return null;
@@ -3992,8 +3999,8 @@ function checkCertEligibility(sId){
 
 function renderSubjTab(sId){
   const subj=SUBJECTS_MASTER.find(s=>s.id===sId);if(!subj)return;
-  const wrap=document.getElementById('subj-tab-content');if(!wrap)return;
-  // Destroy all charts and also nuke any orphaned canvas instances
+  const wrap=document.getElementById('subj-tab-content');
+  if(!wrap){setTimeout(()=>renderSubjTab(sId),50);return;}
   destroyCharts();
   wrap.innerHTML='';
   const att=[];subj.chapters.forEach(ch=>{const r=lR(sId,ch.id);if(r)att.push({...r,ci:ch});});
