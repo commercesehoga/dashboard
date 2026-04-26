@@ -1285,6 +1285,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
 .mini-bar-track{flex:1;height:5px;background:#f0f3fa;border-radius:5px;overflow:hidden;border:0.5px solid rgba(0,0,0,.07);}
 .mini-bar-fill{height:100%;background:#4f6ef7;border-radius:5px;}
 .mini-bar-label{font-size:11px;color:#5a5f7a;font-weight:600;white-space:nowrap;}
+
+@keyframes retakePulse {
+  0%,100%{box-shadow:0 0 0 0 rgba(244,63,94,.3)}
+  50%{box-shadow:0 0 0 4px rgba(244,63,94,.1)}
+}
 </style>
 </head>
 <body>
@@ -2180,7 +2185,10 @@ fbAuth.onAuthStateChanged(function(user) {
 ══════════════════════════════════════════ */
 const GS_URL="https://script.google.com/macros/s/AKfycbyEsrvdSuRh06TIKPK0ozP-jQNjqHO8PaIeBcW5r45aGdr4H3ZVFHpKMm3xaDHrYmqX/exec";
 const NOTICES_URL = "https://script.google.com/macros/s/AKfycbz300__XPoTsb2hZ4EEMWRgA503M4v4BPAaLyVym8gRDrXQSXTNnxyTanKYgkrEqwV_Fw/exec";
+const QUOTES_URL = "https://script.google.com/macros/s/AKfycby3Okg1h4sfPnVPPUJxgptDwhml44VEPAfhZy4vFJxa7DxnV7B7Zd0QdPDiy4istHt65Q/exec";
 const SUBJECT_URLS={bst:"https://commercesehoga.github.io/commerce/bst/",eco:"https://commercesehoga.github.io/commerce/eco/",acc:"https://commercesehoga.github.io/commerce/acc/",amat:"https://commercesehoga.github.io/commerce/amat/",eng:"https://commercesehoga.github.io/english/",gat:"https://commercesehoga.github.io/gat/",phy:"https://commercesehoga.github.io/science/phy/",che:"https://commercesehoga.github.io/science/che/",bio:"https://commercesehoga.github.io/science/bio/",mat:"https://commercesehoga.github.io/science/mat/",his:"https://commercesehoga.github.io/humanities/his/",geo:"https://commercesehoga.github.io/humanities/geo/",pol:"https://commercesehoga.github.io/humanities/pol/",psy:"https://commercesehoga.github.io/humanities/psy/",pe:"https://commercesehoga.github.io/physical/",ip:"https://commercesehoga.github.io/computer/ip/",cs:"https://commercesehoga.github.io/computer/cs/"};
+
+
 
 const SUBJECTS_MASTER=[
   {id:"bst",name:"Business Studies",icon:"📊",color:"#4f6ef7",group:"Commerce",chapters:[{id:"bst1",name:"Ch 1 – Nature & Significance",type:"chapwise"},{id:"bst2",name:"Ch 2 – Principles",type:"chapwise"},{id:"bst3",name:"Ch 3 – Business Environment",type:"chapwise"},{id:"bst4",name:"Ch 4 – Planning",type:"chapwise"},{id:"bst5",name:"Ch 5 – Organising",type:"chapwise"},{id:"bst6",name:"Ch 6 – Staffing",type:"chapwise"},{id:"bst7",name:"Ch 7 – Directing",type:"chapwise"},{id:"bst8",name:"Ch 8 – Controlling",type:"chapwise"},{id:"bst9",name:"Ch 9 – Financial Management",type:"chapwise"},{id:"bst10",name:"Ch 10 – Financial Markets",type:"chapwise"},{id:"bst11",name:"Ch 11 – Marketing",type:"chapwise"},{id:"bst12",name:"Ch 12 – Consumer Protection",type:"chapwise"},{id:"bst-img1",name:"Image Based Mock 1",type:"imgbased"},{id:"bst-full1",name:"Full Mock 1",type:"fullmock"},{id:"bst-full2",name:"Full Mock 2",type:"fullmock"},{id:"bst-full3",name:"Full Mock 3",type:"fullmock"},{id:"bst-full4",name:"Full Mock 4",type:"fullmock"},{id:"bst-full5",name:"Full Mock 5",type:"fullmock"},{id:"bst-full6",name:"Full Mock 6",type:"fullmock"},{id:"bst-full7",name:"Full Mock 7",type:"fullmock"},{id:"bst-full8",name:"Full Mock 8",type:"fullmock"},{id:"bst-full9",name:"Full Mock 9",type:"fullmock"},{id:"bst-full10",name:"Full Mock 10",type:"fullmock"},{id:"bst-andr1",name:"A&R Chapterwise 1",type:"andr"},{id:"bst-andr2",name:"A&R Chapterwise 2",type:"andr"},{id:"bst-pyq23",name:"PYQ 2023",type:"pyq"},{id:"bst-pyq24",name:"PYQ 2024",type:"pyq"},{id:"bst-pyq25",name:"PYQ 2025",type:"pyq"},{id:"bst-sp1",name:"Special Mock 1",type:"special"}]},
@@ -3560,6 +3568,16 @@ H+=`<div class="badge-grid-wrap" style="margin-bottom:18px;">
     <div class="mini-bar-label">${rpCurrent} / ${rpThreshold} RP → ${RANK_TIERS[Math.min(rpData.rankIndex+1,RANK_TIERS.length-1)].name}</div>
   </div>
 </div>`;
+
+// Quote card (rendered async)
+H += `<div id="quote-card-wrap" style="margin-bottom:0;">
+  <div style="height:72px;background:var(--card2);border-radius:18px;
+    border:1px solid var(--border);margin-bottom:18px;
+    display:flex;align-items:center;justify-content:center;">
+    <span class="spin" style="margin-right:8px;"></span>
+    <span style="font-size:12px;color:var(--text3);">Loading quote…</span>
+  </div>
+</div>`;
   
   H+=`<div class="streak-card">
     <div class="streak-flame">${streak>=3?'🔥':'💤'}</div>
@@ -3785,6 +3803,7 @@ H+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin
   }
   H+=`<div class="sec-hdr"><div class="sec-title">📅 Study Activity</div></div><div class="card card-p" style="margin-bottom:20px;">${buildHeatmap(allAtt)}<div style="display:flex;align-items:center;gap:5px;margin-top:10px;font-size:10px;color:var(--text3);"><span>Less</span>${['var(--card2)','rgba(79,110,247,.25)','rgba(79,110,247,.5)','rgba(79,110,247,.75)','#4f6ef7'].map(c=>`<div style="width:10px;height:10px;border-radius:3px;background:${c}"></div>`).join('')}<span>More</span></div></div>`;
   H+=`<div class="sec-hdr"><div class="sec-title">🔮 Predicted CUET Score</div></div>${buildPredicted(sv)}`;
+  H += buildSubjectHealthMeters(sv);
   H+=`<div class="sec-hdr" style="margin-top:20px;"><div class="sec-title">📚 Your Subjects</div><div class="sec-link" onclick="openAddSubjModal()">+ Add →</div></div>`;
   sv.forEach(sId=>{
     const subj=SUBJECTS_MASTER.find(s=>s.id===sId);if(!subj)return;
@@ -3798,9 +3817,14 @@ H+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin
       <div style="font-size:11px;font-weight:700;color:var(--acc);">View →</div>
     </div>`;
   });
+  H += buildSubjectHistoryStats(sv);
   H+=`<div class="sec-hdr" style="margin-top:20px;"><div class="sec-title">🎯 Target Score Planner</div></div>${buildTargetSetter(sv)}`;
   setTimeout(()=>calcTarget(),150);
   document.getElementById('home-content').innerHTML=H;
+  fetchDailyQuote().then(q => {
+  const wrap = document.getElementById('quote-card-wrap');
+  if (wrap) wrap.innerHTML = buildQuoteCard(q);
+});
   // Fetch StudentID from leaderboard
 const localSID = getStudentID();
 const sidEl = document.getElementById('hero-sid');
@@ -3896,6 +3920,13 @@ function renderScoreboard(){
     H+=`<div style="padding:9px 20px;border-top:1px solid var(--border);"><div class="prog-row"><div class="prog-lbl">${subj.icon} ${subj.name}</div><div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:${clr}"></div></div><div class="prog-pct" style="color:${clr}">${pct.toFixed(1)}%</div></div><div style="font-size:10px;color:var(--text3);margin-top:-7px;margin-left:162px;">${att.length}/${subj.chapters.length} done · ${att.reduce((s,d)=>s+d.correct,0)}✓ ${att.reduce((s,d)=>s+d.incorrect,0)}✗</div></div>`;
   });
   H+=`</div>`;
+  // ADD AT END OF H before setting innerHTML:
+if(sv.length && allAtt.length) {
+  H += `<div class="grid-2" style="margin-bottom:18px;margin-top:18px;">
+    <div>${buildScoreVsTargetBar(sv, allAtt)}</div>
+    <div>${buildDayOfWeekPerf(allAtt)}</div>
+  </div>`;
+}
   const badges=[];
   if(allAtt.length>=1)badges.push({icon:'🎯',name:'First Step',on:true});
   if(allAtt.some(d=>d.percentage>=100))badges.push({icon:'💯',name:'Perfect',on:true});
@@ -4014,6 +4045,60 @@ function renderSubjTab(sId){
   H+=`<div class="stat-grid" style="grid-template-columns:repeat(auto-fit,minmax(110px,1fr));margin-bottom:18px;"><div class="stat-card"><div class="stat-icon bg-acc">✅</div><div class="stat-val" style="color:var(--acc)">${att.length}/${subj.chapters.length}</div><div class="stat-lbl">Done</div></div><div class="stat-card"><div class="stat-icon bg-yellow">⭐</div><div class="stat-val c-yellow">${op.toFixed(1)}%</div><div class="stat-lbl">Overall %</div></div><div class="stat-card"><div class="stat-icon bg-green">✅</div><div class="stat-val c-green">${tC}</div><div class="stat-lbl">Correct</div></div><div class="stat-card"><div class="stat-icon bg-red">❌</div><div class="stat-val c-red">${tW}</div><div class="stat-lbl">Wrong</div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(148,163,184,.1)">⏭️</div><div class="stat-val c-text3">${tU}</div><div class="stat-lbl">Skipped</div></div></div>`;
   H+=`<div class="grid-2" style="margin-bottom:18px;"><div class="card card-p" style="border:1.5px solid rgba(16,185,129,.2);background:rgba(16,185,129,.03);"><div style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--green);margin-bottom:5px;">⭐ Best Chapter</div><div style="font-size:13px;font-weight:700;margin-bottom:3px;">${best.ci?.name||best.chapterId}</div><div style="font-size:26px;font-weight:900;font-family:var(--mono);color:var(--green);">${best.percentage?.toFixed(1)}%</div><div style="font-size:10px;color:var(--text3);margin-top:2px;">${best.score}/${best.maxScore} · ${fd(best.date)}</div></div><div class="card card-p" style="border:1.5px solid rgba(244,63,94,.2);background:rgba(244,63,94,.03);"><div style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--red);margin-bottom:5px;">⚠️ Needs Work</div><div style="font-size:13px;font-weight:700;margin-bottom:3px;">${worst.ci?.name||worst.chapterId}</div><div style="font-size:26px;font-weight:900;font-family:var(--mono);color:var(--red);">${worst.percentage?.toFixed(1)}%</div><div style="font-size:10px;color:var(--text3);margin-top:2px;">${worst.score}/${worst.maxScore} · ${fd(worst.date)}</div></div></div>`;
   const chartId=`ct-${sId}-${Date.now()}`;
+// Time stats
+const totalTime = att.reduce((s, d) => s + (d.timeTaken || 0), 0);
+const avgTimePerQ = att.length > 0 && totalTime > 0
+  ? Math.round(totalTime / att.reduce((s, d) => s + (d.totalQ || 50), 0)) : null;
+const fastestTest = att.reduce((min, d) => 
+  d.timeTaken && d.timeTaken < min ? d.timeTaken : min, Infinity);
+
+if (totalTime > 0) {
+  const totalMins = Math.round(totalTime / 60);
+  H += `
+  <div style="background:var(--card2);border:1px solid var(--border);
+    border-radius:14px;padding:13px 16px;margin-bottom:14px;
+    display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:7px;">
+      <div style="font-size:20px;">⏱️</div>
+      <div>
+        <div style="font-size:10px;font-weight:700;
+          color:var(--text3);text-transform:uppercase;
+          letter-spacing:.5px;">Time Stats</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <div style="text-align:center;">
+        <div style="font-size:16px;font-weight:900;
+          font-family:var(--mono);color:var(--acc);">
+          ${totalMins}m
+        </div>
+        <div style="font-size:9px;color:var(--text3);">
+          Total Time
+        </div>
+      </div>
+      ${avgTimePerQ ? `
+      <div style="text-align:center;">
+        <div style="font-size:16px;font-weight:900;
+          font-family:var(--mono);color:var(--yellow);">
+          ${avgTimePerQ}s
+        </div>
+        <div style="font-size:9px;color:var(--text3);">
+          Per Question
+        </div>
+      </div>` : ''}
+      ${fastestTest !== Infinity ? `
+      <div style="text-align:center;">
+        <div style="font-size:16px;font-weight:900;
+          font-family:var(--mono);color:var(--green);">
+          ${Math.round(fastestTest / 60)}m
+        </div>
+        <div style="font-size:9px;color:var(--text3);">
+          Fastest Test
+        </div>
+      </div>` : ''}
+    </div>
+  </div>`;
+}
 H+=`<div class="grid-2" style="margin-bottom:18px;">
   <div class="card card-p" style="border-radius:18px;">
     <div class="sec-hdr"><div class="sec-title">📈 Score Trend</div><div style="font-size:10px;color:var(--text3);">${att.length} attempt${att.length!==1?'s':''}</div></div>
@@ -4035,7 +4120,79 @@ H+=`<div class="grid-2" style="margin-bottom:18px;">
 </div>`;
   H+=`<div class="ch-filter-bar"><input class="filter-inp" id="fs-${sId}" placeholder="🔍 Search chapter…" oninput="applySubjFilter('${sId}')"><select class="filter-sel" id="ft-${sId}" onchange="applySubjFilter('${sId}')"><option value="">All Types</option>${Object.entries(TL).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select><select class="filter-sel" id="fs2-${sId}" onchange="applySubjFilter('${sId}')"><option value="date">Latest First</option><option value="score_d">Score ↓</option><option value="score_a">Score ↑</option><option value="name">Name A-Z</option></select></div><div class="ch-grid" id="cg-${sId}"></div>`;
   const na=subj.chapters.filter(ch=>!att.find(a=>a.chapterId===ch.id));
-  if(na.length){H+=`<div class="sec-hdr" style="margin-top:20px;"><div class="sec-title">📋 Not Attempted (${na.length})</div></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;">${na.map(ch=>`<a class="na-item" href="${(SUBJECT_URLS[sId]||'')+ch.id+'.html'}" target="_blank"><div class="na-dot"></div><div><div style="font-size:13px;font-weight:600;">${ch.name}</div><div style="font-size:10px;color:var(--text3);margin-top:1px;">${TL[ch.type]||ch.type} → Attempt Now</div></div></a>`).join('')}</div>`;}
+if(na.length) {
+  // Priority scoring - full mocks and pyqs first
+  const priorityOrder = ['fullmock','pyq','special','andr','imgbased','chapwise',
+    'vocabulary','grammar','reading','rc'];
+  const sortedNa = [...na].sort((a, b) => {
+    const ai = priorityOrder.indexOf(a.type);
+    const bi = priorityOrder.indexOf(b.type);
+    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+  });
+  
+  H += `
+  <div class="sec-hdr" style="margin-top:20px;">
+    <div class="sec-title">
+      📋 Not Attempted (${na.length})
+    </div>
+    <div style="font-size:10px;color:var(--text3);">
+      Sorted by priority
+    </div>
+  </div>
+  <div style="display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+    gap:8px;">
+    ${sortedNa.map((ch, idx) => {
+      const isHighPriority = ['fullmock','pyq'].includes(ch.type);
+      const isMedPriority = ['special','andr'].includes(ch.type);
+      const priorityColor = isHighPriority ? '#f43f5e' 
+        : isMedPriority ? '#f59e0b' : 'var(--text3)';
+      const priorityLabel = isHighPriority ? '🔴 High Priority' 
+        : isMedPriority ? '🟡 Medium' : '';
+      
+      return `
+      <a class="na-item" 
+        href="${(SUBJECT_URLS[sId] || '') + ch.id + '.html'}" 
+        target="_blank"
+        style="position:relative;
+          ${isHighPriority ? 
+            'border-color:rgba(244,63,94,.3);' : ''}
+          ${isMedPriority ? 
+            'border-color:rgba(245,158,11,.25);' : ''}">
+        <div class="na-dot" style="background:${priorityColor};
+          ${isHighPriority ? 
+            'animation:syncPulse 1.5s ease-in-out infinite;' : ''}">
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:600;
+            overflow:hidden;text-overflow:ellipsis;
+            white-space:nowrap;">
+            ${ch.name}
+          </div>
+          <div style="display:flex;align-items:center;
+            gap:6px;margin-top:3px;flex-wrap:wrap;">
+            <div style="font-size:9px;font-weight:700;
+              padding:1px 7px;border-radius:20px;
+              background:${TC[ch.type]||TC.chapwise};
+              color:${TX[ch.type]||TX.chapwise};">
+              ${TL[ch.type] || ch.type}
+            </div>
+            ${priorityLabel ? `
+            <div style="font-size:9px;font-weight:700;
+              color:${priorityColor};">
+              ${priorityLabel}
+            </div>` : ''}
+          </div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path d="M5 12h14M12 5l7 7-7 7" 
+            stroke="var(--text3)" stroke-width="2" 
+            stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>`;
+    }).join('')}
+  </div>`;
+}
   wrap.innerHTML=H;wrap._att=att;wrap._sId=sId;
   setTimeout(()=>{
     applySubjFilter(sId);
@@ -4120,6 +4277,45 @@ function applySubjFilter(sId){
   else f.sort((a,b)=>new Date(b.date)-new Date(a.date));
   const grid=document.getElementById(`cg-${sId}`);if(!grid)return;
   grid.innerHTML=f.map(d=>buildChCard(d,sId)).join('');
+  // After: grid.innerHTML = f.map(d => buildChCard(d, sId)).join('');
+// ADD:
+setTimeout(() => {
+  grid.querySelectorAll('.ch-ring-circle').forEach((circle, i) => {
+    const svg = circle.closest('.ch-ring-svg');
+    const pct = parseFloat(svg?.dataset.pct || '0');
+    const circ = 2 * Math.PI * 20;
+    const targetOffset = circ - (pct / 100) * circ;
+    
+    setTimeout(() => {
+      circle.style.strokeDashoffset = targetOffset;
+      
+      // Counter animation
+      const cardEl = circle.closest('[id*="ring-counter"]') || 
+        circle.closest('div[style]');
+      const sIdLocal = sId;
+      const chId = svg?.closest('.ch-ring-svg')
+        ?.closest('[data-chid]')?.dataset.chid;
+      
+      // Find counter by nearby structure
+      const parent = circle.closest('div');
+      const counter = parent?.querySelector('[id^="ring-counter"]') ||
+        parent?.parentElement?.querySelector('[id^="ring-counter"]');
+      
+      if (counter) {
+        let current = 0;
+        const duration = 1000;
+        const steps = 40;
+        const increment = pct / steps;
+        const stepTime = duration / steps;
+        const timer = setInterval(() => {
+          current = Math.min(pct, current + increment);
+          counter.textContent = Math.round(current) + '%';
+          if (current >= pct) clearInterval(timer);
+        }, stepTime);
+      }
+    }, i * 60);
+  });
+}, 100);
   // Trigger ring entrance animations with staggered delay
   setTimeout(()=>{
     grid.querySelectorAll('svg').forEach((svg,i)=>{
@@ -4143,77 +4339,258 @@ function applySubjFilter(sId){
   },50);
 }
 
-function buildChCard(d,sId){
-  const p=d.percentage||0,clr=rClr(p),ttype=d.ci?.type||'chapwise';
-  const circ=2*Math.PI*20,dash=circ-(p/100)*circ;
-  // Grade label
-  const grade=p>=90?{l:'A+',bg:'rgba(16,185,129,.12)',bc:'rgba(16,185,129,.3)',c:'#10b981'}:p>=75?{l:'A',bg:'rgba(79,110,247,.1)',bc:'rgba(79,110,247,.25)',c:'#4f6ef7'}:p>=60?{l:'B',bg:'rgba(245,158,11,.1)',bc:'rgba(245,158,11,.25)',c:'#f59e0b'}:p>=40?{l:'C',bg:'rgba(249,115,22,.1)',bc:'rgba(249,115,22,.25)',c:'#f97316'}:{l:'D',bg:'rgba(244,63,94,.1)',bc:'rgba(244,63,94,.25)',c:'#f43f5e'};
-  return`<div style="background:var(--card);border:1.5px solid var(--border);border-radius:18px;overflow:hidden;transition:transform .2s,box-shadow .2s;position:relative;" onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 32px rgba(0,0,0,.1)';this.style.borderColor='${clr}40'" onmouseleave="this.style.transform='none';this.style.boxShadow='none';this.style.borderColor='var(--border)'">
-    <!-- Colored top bar -->
-    <div style="height:4px;background:linear-gradient(90deg,${clr},${clr}70);"></div>
-    <!-- Ambient glow -->
-    <div style="position:absolute;top:0;right:0;width:80px;height:80px;border-radius:50%;background:${clr}0a;pointer-events:none;"></div>
-
+function buildChCard(d, sId) {
+  const p = d.percentage || 0;
+  const clr = rClr(p);
+  const ttype = d.ci?.type || 'chapwise';
+  const circ = 2 * Math.PI * 20;
+  const dash = circ - (p / 100) * circ;
+  
+  // Grade
+  const grade = p >= 90 ? { l:'A+', bg:'rgba(16,185,129,.12)', 
+    bc:'rgba(16,185,129,.3)', c:'#10b981' }
+    : p >= 75 ? { l:'A', bg:'rgba(79,110,247,.1)', 
+      bc:'rgba(79,110,247,.25)', c:'#4f6ef7' }
+    : p >= 60 ? { l:'B', bg:'rgba(245,158,11,.1)', 
+      bc:'rgba(245,158,11,.25)', c:'#f59e0b' }
+    : p >= 40 ? { l:'C', bg:'rgba(249,115,22,.1)', 
+      bc:'rgba(249,115,22,.25)', c:'#f97316' }
+    : { l:'D', bg:'rgba(244,63,94,.1)', 
+      bc:'rgba(244,63,94,.25)', c:'#f43f5e' };
+  
+  // Sparkline from history
+  const hist = lH(sId, d.chapterId);
+  const spark = hist.slice(-3).reverse();
+  const sparkHTML = spark.length > 1 ? `
+  <div style="display:flex;align-items:flex-end;gap:3px;
+    height:20px;margin-left:4px;">
+    ${spark.map((h, i) => {
+      const bh = Math.max(3, Math.round(h.percentage * 0.18));
+      const bc = rClr(h.percentage);
+      const isLatest = i === spark.length - 1;
+      return `<div style="width:5px;height:${bh}px;
+        background:${bc};border-radius:2px;
+        opacity:${isLatest ? 1 : 0.5};"></div>`;
+    }).join('')}
+  </div>` : '';
+  
+  // Time stats
+  const avgTime = d.timeTaken 
+    ? Math.round(d.timeTaken / (d.totalQ || 50)) + 's/q' : null;
+  
+  // Retake badge
+  const showRetakeBadge = p < 50;
+  
+  return `
+  <div style="
+    background:var(--card);
+    border:1.5px solid ${p < 50 ? 'rgba(244,63,94,.2)' : 'var(--border)'};
+    border-radius:18px;overflow:hidden;
+    transition:transform .2s,box-shadow .2s;
+    position:relative;
+    ${p < 50 ? 'box-shadow:0 0 0 1px rgba(244,63,94,.1);' : ''}
+  "
+  onmouseenter="this.style.transform='translateY(-3px)';
+    this.style.boxShadow='0 10px 32px rgba(0,0,0,.1)';
+    this.style.borderColor='${clr}60'"
+  onmouseleave="this.style.transform='none';
+    this.style.boxShadow='none';
+    this.style.borderColor='${p < 50 ? 
+      'rgba(244,63,94,.2)' : 'var(--border)'}'">
+    
+    <!-- Top color bar -->
+    <div style="height:4px;background:linear-gradient(90deg,
+      ${clr},${clr}70);"></div>
+    
+    <!-- Retake badge (pulsing) -->
+    ${showRetakeBadge ? `
+    <div style="position:absolute;top:12px;left:12px;z-index:3;
+      display:flex;align-items:center;gap:4px;
+      background:rgba(244,63,94,.12);
+      border:1.5px solid rgba(244,63,94,.4);
+      border-radius:20px;padding:3px 8px;
+      animation:retakePulse 2s ease-in-out infinite;">
+      <div style="width:5px;height:5px;border-radius:50%;
+        background:#f43f5e;
+        animation:syncPulse 1.2s ease-in-out infinite;"></div>
+      <span style="font-size:9px;font-weight:800;
+        color:#f43f5e;">Retake</span>
+    </div>` : ''}
+    
     <div style="padding:14px 15px;">
-      <!-- Header row -->
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:11px;">
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:12.5px;font-weight:800;color:var(--text);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${d.ci?.name||d.chapterId}</div>
-          <div style="display:flex;align-items:center;gap:6px;margin-top:5px;flex-wrap:wrap;">
-            <div style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;background:${TC[ttype]||TC.chapwise};color:${TX[ttype]||TX.chapwise};white-space:nowrap;">${TL[ttype]||ttype}</div>
-            <div style="font-size:9px;font-weight:800;padding:2px 8px;border-radius:20px;background:${grade.bg};border:1px solid ${grade.bc};color:${grade.c};">Grade ${grade.l}</div>
+      <!-- Header -->
+      <div style="display:flex;align-items:flex-start;
+        justify-content:space-between;gap:8px;margin-bottom:11px;">
+        <div style="flex:1;min-width:0;
+          ${showRetakeBadge ? 'margin-top:22px;' : ''}">
+          <div style="font-size:12.5px;font-weight:800;
+            color:var(--text);line-height:1.4;overflow:hidden;
+            display:-webkit-box;-webkit-line-clamp:2;
+            -webkit-box-orient:vertical;">
+            ${d.ci?.name || d.chapterId}
+          </div>
+          <div style="display:flex;align-items:center;
+            gap:6px;margin-top:5px;flex-wrap:wrap;">
+            <div style="font-size:9px;font-weight:700;
+              padding:2px 8px;border-radius:20px;
+              background:${TC[ttype] || TC.chapwise};
+              color:${TX[ttype] || TX.chapwise};
+              white-space:nowrap;">
+              ${TL[ttype] || ttype}
+            </div>
+            <div style="font-size:9px;font-weight:800;
+              padding:2px 8px;border-radius:20px;
+              background:${grade.bg};
+              border:1px solid ${grade.bc};
+              color:${grade.c};">
+              Grade ${grade.l}
+            </div>
           </div>
         </div>
-        <!-- Ring -->
-        <div style="position:relative;width:50px;height:50px;flex-shrink:0;">
-          <svg width="50" height="50" viewBox="0 0 50 50" style="transform:rotate(-90deg)">
-            <circle fill="none" stroke="var(--border)" stroke-width="4" cx="25" cy="25" r="20"/>
-            <circle fill="none" stroke="${clr}" stroke-width="4" stroke-linecap="round" cx="25" cy="25" r="20"
-              stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${dash.toFixed(1)}"/>
+        
+        <!-- Animated Ring -->
+        <div style="position:relative;width:50px;
+          height:50px;flex-shrink:0;">
+          <svg width="50" height="50" viewBox="0 0 50 50"
+            style="transform:rotate(-90deg)"
+            class="ch-ring-svg"
+            data-pct="${p}">
+            <circle fill="none" stroke="var(--border)" 
+              stroke-width="4" cx="25" cy="25" r="20"/>
+            <circle fill="none" stroke="${clr}" 
+              stroke-width="4" stroke-linecap="round" 
+              cx="25" cy="25" r="20"
+              stroke-dasharray="${circ.toFixed(1)}" 
+              stroke-dashoffset="${circ.toFixed(1)}"
+              class="ch-ring-circle"
+              style="transition:stroke-dashoffset 1.2s 
+                cubic-bezier(.34,1.56,.64,1);"/>
           </svg>
-          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:${clr};font-family:var(--mono);">${Math.round(p)}%</div>
+          <div id="ring-counter-${sId}-${d.chapterId.replace(/[^a-z0-9]/gi,'')}"
+            style="position:absolute;inset:0;display:flex;
+            align-items:center;justify-content:center;
+            font-size:10px;font-weight:900;
+            color:${clr};font-family:var(--mono);">
+            0%
+          </div>
         </div>
       </div>
-
-      <!-- Score display -->
-      <div style="background:${clr}0d;border:1px solid ${clr}25;border-radius:12px;padding:9px 12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
+      
+      <!-- Score box -->
+      <div style="background:${clr}0d;
+        border:1px solid ${clr}25;border-radius:12px;
+        padding:9px 12px;margin-bottom:10px;
+        display:flex;align-items:center;
+        justify-content:space-between;">
         <div>
-          <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">Score</div>
-          <div style="font-size:22px;font-weight:900;font-family:var(--mono);color:${clr};line-height:1;">${d.score}<span style="font-size:12px;color:var(--text3);font-weight:600;">/${d.maxScore}</span></div>
+          <div style="font-size:9px;font-weight:700;
+            color:var(--text3);text-transform:uppercase;
+            letter-spacing:.5px;margin-bottom:2px;">Score</div>
+          <div style="font-size:22px;font-weight:900;
+            font-family:var(--mono);color:${clr};line-height:1;">
+            ${d.score}
+            <span style="font-size:12px;color:var(--text3);
+              font-weight:600;">/${d.maxScore}</span>
+          </div>
         </div>
         <div style="text-align:right;">
-          <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">Accuracy</div>
-          <div style="font-size:22px;font-weight:900;font-family:var(--mono);color:var(--acc);line-height:1;">${d.accuracy||0}<span style="font-size:12px;color:var(--text3);font-weight:600;">%</span></div>
+          <div style="font-size:9px;font-weight:700;
+            color:var(--text3);text-transform:uppercase;
+            letter-spacing:.5px;margin-bottom:2px;">Accuracy</div>
+          <div style="font-size:22px;font-weight:900;
+            font-family:var(--mono);color:var(--acc);
+            line-height:1;">
+            ${d.accuracy || 0}
+            <span style="font-size:12px;color:var(--text3);
+              font-weight:600;">%</span>
+          </div>
         </div>
       </div>
-
-      <!-- Stats row -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;">
-        <div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:10px;padding:7px 6px;text-align:center;">
-          <div style="font-size:14px;font-weight:900;font-family:var(--mono);color:#10b981;">${d.correct}</div>
-          <div style="font-size:8.5px;font-weight:700;color:#10b981;opacity:.7;margin-top:1px;">Correct</div>
+      
+      <!-- Stats -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;
+        gap:6px;margin-bottom:10px;">
+        <div style="background:rgba(16,185,129,.06);
+          border:1px solid rgba(16,185,129,.15);
+          border-radius:10px;padding:7px 6px;text-align:center;">
+          <div style="font-size:14px;font-weight:900;
+            font-family:var(--mono);color:#10b981;">
+            ${d.correct}
+          </div>
+          <div style="font-size:8.5px;font-weight:700;
+            color:#10b981;opacity:.7;margin-top:1px;">
+            Correct
+          </div>
         </div>
-        <div style="background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.15);border-radius:10px;padding:7px 6px;text-align:center;">
-          <div style="font-size:14px;font-weight:900;font-family:var(--mono);color:#f43f5e;">${d.incorrect}</div>
-          <div style="font-size:8.5px;font-weight:700;color:#f43f5e;opacity:.7;margin-top:1px;">Wrong</div>
+        <div style="background:rgba(244,63,94,.06);
+          border:1px solid rgba(244,63,94,.15);
+          border-radius:10px;padding:7px 6px;text-align:center;">
+          <div style="font-size:14px;font-weight:900;
+            font-family:var(--mono);color:#f43f5e;">
+            ${d.incorrect}
+          </div>
+          <div style="font-size:8.5px;font-weight:700;
+            color:#f43f5e;opacity:.7;margin-top:1px;">
+            Wrong
+          </div>
         </div>
-        <div style="background:rgba(148,163,184,.08);border:1px solid rgba(148,163,184,.2);border-radius:10px;padding:7px 6px;text-align:center;">
-          <div style="font-size:14px;font-weight:900;font-family:var(--mono);color:var(--text3);">${d.unanswered}</div>
-          <div style="font-size:8.5px;font-weight:700;color:var(--text3);opacity:.7;margin-top:1px;">Skipped</div>
+        <div style="background:rgba(148,163,184,.08);
+          border:1px solid rgba(148,163,184,.2);
+          border-radius:10px;padding:7px 6px;text-align:center;">
+          <div style="font-size:14px;font-weight:900;
+            font-family:var(--mono);color:var(--text3);">
+            ${d.unanswered}
+          </div>
+          <div style="font-size:8.5px;font-weight:700;
+            color:var(--text3);opacity:.7;margin-top:1px;">
+            Skip
+          </div>
         </div>
       </div>
-
+      
+      <!-- Sparkline + time -->
+      ${(sparkHTML || avgTime) ? `
+      <div style="display:flex;align-items:center;
+        justify-content:space-between;
+        background:var(--card2);border-radius:10px;
+        padding:7px 10px;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:10px;color:var(--text3);
+            font-weight:600;">Trend</span>
+          ${sparkHTML}
+        </div>
+        ${avgTime ? `
+        <div style="font-size:9px;color:var(--text3);
+          font-weight:600;">⏱ ${avgTime}</div>` : ''}
+      </div>` : ''}
+      
       <!-- Footer -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding-top:9px;border-top:1px solid var(--border);">
+      <div style="display:flex;align-items:center;
+        justify-content:space-between;
+        padding-top:9px;border-top:1px solid var(--border);">
         <div style="display:flex;align-items:center;gap:5px;">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="var(--text3)" stroke-width="2"/><path d="M16 2v4M8 2v4M3 10h18" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"/></svg>
-          <span style="font-size:10px;color:var(--text3);">${fd(d.date)}</span>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="4" width="18" height="18" rx="2" 
+              stroke="var(--text3)" stroke-width="2"/>
+            <path d="M16 2v4M8 2v4M3 10h18" 
+              stroke="var(--text3)" stroke-width="2" 
+              stroke-linecap="round"/>
+          </svg>
+          <span style="font-size:10px;color:var(--text3);">
+            ${fd(d.date)}
+          </span>
         </div>
-        <a href="${(SUBJECT_URLS[sId]||'')+d.chapterId+'.html'}" target="_blank"
-          style="display:inline-flex;align-items:center;gap:5px;background:rgba(79,110,247,.08);border:1.5px solid rgba(79,110,247,.2);border-radius:20px;padding:4px 11px;font-size:10px;font-weight:800;color:var(--acc);text-decoration:none;transition:all .2s;"
-          onmouseenter="this.style.background='rgba(79,110,247,.15)'" onmouseleave="this.style.background='rgba(79,110,247,.08)'">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M1 4v16l7-4 8 4 7-4V4l-7 4-8-4-7 4z" stroke="#4f6ef7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Retake
+        <a href="${(SUBJECT_URLS[sId] || '') + d.chapterId + '.html'}" 
+          target="_blank"
+          style="display:inline-flex;align-items:center;gap:5px;
+          background:rgba(79,110,247,.08);
+          border:1.5px solid rgba(79,110,247,.2);
+          border-radius:20px;padding:4px 11px;
+          font-size:10px;font-weight:800;color:var(--acc);
+          text-decoration:none;transition:all .2s;"
+          onmouseenter="this.style.background='rgba(79,110,247,.15)'"
+          onmouseleave="this.style.background='rgba(79,110,247,.08)'">
+          ↻ Retake
         </a>
       </div>
     </div>
@@ -4301,13 +4678,15 @@ function renderAnalytics(){
     document.getElementById('analytics-content').innerHTML=`<div class="empty"><div class="empty-icon">📈</div><div class="empty-title">No Data Yet</div><div class="empty-sub">Complete some tests to see your analytics here.</div><button class="btn btn-prim" style="margin-top:14px" onclick="goPage('mocks')">📝 Go to Mocks</button></div>`;
     return;
   }
-  const tabs=[
-    {id:'weak',label:'⚠️ Weak Chapters',hint:'1'},
-    {id:'history',label:'📊 Score History',hint:'2'},
-    {id:'retake',label:'🔁 Retake Comparison',hint:'3'},
-    {id:'tod',label:'🕐 Study Patterns',hint:'4'},
-    {id:'report',label:'📋 Weekly Report',hint:'5'},
-  ];
+ const tabs=[
+  {id:'weak',label:'⚠️ Weak',hint:'1'},
+  {id:'history',label:'📊 History',hint:'2'},
+  {id:'retake',label:'🔁 Retake',hint:'3'},
+  {id:'tod',label:'🕐 Patterns',hint:'4'},
+  {id:'report',label:'📋 Weekly',hint:'5'},
+  {id:'coverage',label:'📐 Coverage',hint:'6'},
+  {id:'insights',label:'🤖 Insights',hint:'7'},
+];
   let H=`<div class="analytics-tabs">${tabs.map(t=>`<div class="analytics-tab ${t.id===currentAnalyticsTab?'active':''}" onclick="showAnalyticsSection('${t.id}')">${t.label}<span class="kbd-hint">${t.hint}</span></div>`).join('')}</div><div id="analytics-section"></div>`;
   document.getElementById('analytics-content').innerHTML=H;
   showAnalyticsSection(currentAnalyticsTab);
@@ -4319,10 +4698,12 @@ function showAnalyticsSection(tab){
   const sec=document.getElementById('analytics-section');if(!sec)return;
   destroyCharts();
   if(tab==='weak')renderWeakChapters(sec);
-  else if(tab==='history')renderScoreHistory(sec);
-  else if(tab==='retake')renderRetakeComparison(sec);
-  else if(tab==='tod')renderTimeOfDay(sec);
-  else if(tab==='report')renderWeeklyReport(sec);
+else if(tab==='history')renderScoreHistory(sec);
+else if(tab==='retake')renderRetakeComparison(sec);
+else if(tab==='tod')renderTimeOfDay(sec);
+else if(tab==='report')renderWeeklyReport(sec);
+else if(tab==='coverage')renderCoverageAnalysis(sec);
+else if(tab==='insights')renderAIInsights(sec);
 }
 
 /* ── WEAK CHAPTERS ── */
@@ -4435,6 +4816,37 @@ function renderScoreHistory(container){
 function renderRetakeComparison(container){
   const sv=getSS();
   const retakes=[];
+  // Add velocity summary
+  const velocities = getImprovementVelocity();
+  const avgVelocity = velocities.length > 0
+    ? velocities.reduce((s, v) => s + v.rate, 0) / velocities.length : 0;
+  
+  if (velocities.length > 0) {
+    const velColor = avgVelocity > 5 ? '#10b981' 
+      : avgVelocity > 0 ? '#f59e0b' : '#f43f5e';
+    H = `
+    <div style="background:rgba(79,110,247,.06);
+      border:1.5px solid rgba(79,110,247,.2);
+      border-radius:16px;padding:16px 18px;margin-bottom:16px;
+      display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+      <div style="font-size:36px;">🚀</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:900;margin-bottom:3px;">
+          Improvement Velocity
+        </div>
+        <div style="font-size:12px;color:var(--text3);">
+          Average improvement per retake attempt
+        </div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:28px;font-weight:900;
+          font-family:var(--mono);color:${velColor};">
+          ${avgVelocity > 0 ? '+' : ''}${avgVelocity.toFixed(1)}%
+        </div>
+        <div style="font-size:10px;color:var(--text3);">per attempt</div>
+      </div>
+    </div>` + H;
+  }
   sv.forEach(sId=>{
     const subj=SUBJECTS_MASTER.find(s=>s.id===sId);if(!subj)return;
     subj.chapters.forEach(ch=>{
@@ -4597,6 +5009,26 @@ function renderWeeklyReport(container){
     });
   }
   H+=`</div>`;
+  
+  // Shareable card
+  H += `
+  <div class="card card-p" style="margin-top:16px;">
+    <div class="sec-hdr">
+      <div class="sec-title">
+        📸 Shareable Weekly Card
+      </div>
+      <button onclick="generateShareCard()" 
+        class="btn btn-prim" 
+        style="font-size:11px;padding:7px 14px;">
+        📸 Generate
+      </button>
+    </div>
+    <div id="share-card-preview" 
+      style="font-size:12px;color:var(--text3);">
+      Click Generate to create a shareable screenshot card 
+      of your weekly performance.
+    </div>
+  </div>`;
 
   // 6-week trend
   H+=`<div class="card card-p"><div class="sec-hdr"><div class="sec-title">📈 6-Week Score Trend</div></div><div style="height:180px;"><canvas id="weekly-chart"></canvas></div></div>`;
@@ -8503,6 +8935,1517 @@ async function sheetSyncFromHomeTopbar(btn) {
     btn.disabled = false;
   }
 }
+/* ══════════════════════════════════════════
+   MOTIVATIONAL QUOTE SYSTEM
+══════════════════════════════════════════ */
+let _cachedQuote = null;
+
+async function fetchDailyQuote() {
+  // Check cache first (cache for today only)
+  const today = new Date().toDateString();
+  const cached = localStorage.getItem('ts_quote_cache');
+  if (cached) {
+    try {
+      const obj = JSON.parse(cached);
+      if (obj.date === today && obj.quote) {
+        _cachedQuote = obj;
+        return obj;
+      }
+    } catch(e) {}
+  }
+  
+  // Fallback quotes if sheet fails
+  const fallbacks = [
+    { quote: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill", category: "motivation" },
+    { quote: "The secret of getting ahead is getting started.", author: "Mark Twain", category: "motivation" },
+    { quote: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson", category: "persistence" },
+    { quote: "Education is the most powerful weapon which you can use to change the world.", author: "Nelson Mandela", category: "education" },
+    { quote: "Your future is created by what you do today, not tomorrow.", author: "Robert Kiyosaki", category: "motivation" },
+    { quote: "The harder you work for something, the greater you'll feel when you achieve it.", author: "Anonymous", category: "motivation" },
+    { quote: "Dream bigger. Do bigger.", author: "Anonymous", category: "motivation" },
+    { quote: "Push yourself, because no one else is going to do it for you.", author: "Anonymous", category: "persistence" },
+    { quote: "Great things never come from comfort zones.", author: "Anonymous", category: "motivation" },
+    { quote: "It always seems impossible until it's done.", author: "Nelson Mandela", category: "motivation" }
+  ];
+  
+  try {
+    const res = await Promise.race([
+      fetch(QUOTES_URL, { method: 'GET' }),
+      new Promise((_, r) => setTimeout(() => r(new Error('timeout')), 4000))
+    ]);
+    const data = await res.json();
+    if (data && data.quote) {
+      const obj = { ...data, date: today };
+      localStorage.setItem('ts_quote_cache', JSON.stringify(obj));
+      _cachedQuote = obj;
+      return obj;
+    }
+  } catch(e) {
+    // Use fallback
+  }
+  
+  // Use day-based fallback
+  const dayIdx = Math.floor((new Date() - 
+    new Date(new Date().getFullYear(), 0, 0)) / 86400000) % fallbacks.length;
+  const fallback = { ...fallbacks[dayIdx], date: today };
+  localStorage.setItem('ts_quote_cache', JSON.stringify(fallback));
+  _cachedQuote = fallback;
+  return fallback;
+}
+
+function buildQuoteCard(quoteObj) {
+  if (!quoteObj) return '';
+  const categories = {
+    motivation: { color: '#4f6ef7', bg: 'rgba(79,110,247,.08)', border: 'rgba(79,110,247,.2)', icon: '⚡' },
+    persistence: { color: '#f59e0b', bg: 'rgba(245,158,11,.08)', border: 'rgba(245,158,11,.2)', icon: '🔥' },
+    education: { color: '#10b981', bg: 'rgba(16,185,129,.08)', border: 'rgba(16,185,129,.2)', icon: '📚' },
+    default: { color: '#7c3aed', bg: 'rgba(124,58,237,.08)', border: 'rgba(124,58,237,.2)', icon: '💫' }
+  };
+  const cat = categories[quoteObj.category] || categories.default;
+  const today = new Date().toLocaleDateString('en-IN', { 
+    weekday: 'long', day: 'numeric', month: 'long' 
+  });
+  
+  return `
+  <div style="
+    background:${cat.bg};
+    border:1.5px solid ${cat.border};
+    border-radius:18px;
+    padding:16px 20px;
+    margin-bottom:18px;
+    position:relative;
+    overflow:hidden;
+    animation:fadeUp .4s ease both;
+  ">
+    <!-- Decorative quote mark -->
+    <div style="
+      position:absolute;top:-10px;right:16px;
+      font-size:80px;color:${cat.color};
+      opacity:.08;font-family:Georgia,serif;
+      line-height:1;pointer-events:none;
+    ">"</div>
+    
+    <div style="display:flex;align-items:flex-start;gap:12px;position:relative;z-index:1;">
+      <!-- Icon -->
+      <div style="
+        width:36px;height:36px;border-radius:10px;
+        background:${cat.color}20;
+        border:1.5px solid ${cat.color}40;
+        display:flex;align-items:center;justify-content:center;
+        font-size:17px;flex-shrink:0;margin-top:2px;
+      ">${cat.icon}</div>
+      
+      <div style="flex:1;min-width:0;">
+        <!-- Date label -->
+        <div style="
+          font-size:9px;font-weight:800;
+          text-transform:uppercase;letter-spacing:1.2px;
+          color:${cat.color};opacity:.8;margin-bottom:6px;
+        ">💭 Quote of the Day · ${today}</div>
+        
+        <!-- Quote text -->
+        <div style="
+          font-size:13px;font-weight:600;
+          color:var(--text);line-height:1.7;
+          margin-bottom:8px;font-style:italic;
+        ">"${escH(quoteObj.quote)}"</div>
+        
+        <!-- Author -->
+        <div style="
+          display:flex;align-items:center;
+          justify-content:space-between;flex-wrap:wrap;gap:6px;
+        ">
+          <div style="
+            display:flex;align-items:center;gap:6px;
+          ">
+            <div style="
+              width:18px;height:1.5px;
+              background:${cat.color};opacity:.5;
+            "></div>
+            <div style="
+              font-size:11px;font-weight:800;
+              color:${cat.color};
+            ">${escH(quoteObj.author)}</div>
+          </div>
+          <div style="
+            font-size:9px;font-weight:700;
+            padding:2px 9px;border-radius:20px;
+            background:${cat.color}18;
+            color:${cat.color};
+            text-transform:uppercase;letter-spacing:.5px;
+          ">${quoteObj.category || 'motivation'}</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function buildSubjectHealthMeters(sv) {
+  if (!sv.length) return '';
+  
+  let H = `
+  <div style="margin-bottom:20px;">
+    <div class="sec-hdr" style="margin-bottom:12px;">
+      <div style="display:flex;align-items:center;gap:9px;">
+        <div style="width:30px;height:30px;border-radius:9px;
+          background:linear-gradient(135deg,#10b981,#059669);
+          display:flex;align-items:center;justify-content:center;
+          box-shadow:0 3px 10px rgba(16,185,129,.3);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2" 
+              stroke="white" stroke-width="2" 
+              stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:900;color:var(--text);">
+            Subject Health
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin-top:1px;">
+            Based on recent performance trend
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+      gap:10px;">`;
+  
+  sv.forEach(sId => {
+    const subj = SUBJECTS_MASTER.find(s => s.id === sId);
+    if (!subj) return;
+    
+    // Get all attempts sorted by date
+    const att = [];
+    subj.chapters.forEach(ch => {
+      const r = lR(sId, ch.id);
+      if (r) att.push({ ...r, ci: ch });
+    });
+    
+    if (!att.length) {
+      H += `
+      <div style="
+        background:var(--card);border:1.5px solid var(--border);
+        border-radius:16px;padding:14px 16px;
+        display:flex;align-items:center;gap:10px;
+      ">
+        <div style="font-size:22px;">${subj.icon}</div>
+        <div style="flex:1;">
+          <div style="font-size:12px;font-weight:800;">${subj.name}</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px;">
+            No attempts yet
+          </div>
+        </div>
+        <div style="
+          font-size:10px;font-weight:700;
+          padding:4px 10px;border-radius:20px;
+          background:var(--card2);
+          border:1.5px solid var(--border);
+          color:var(--text3);
+        ">⬜ No Data</div>
+      </div>`;
+      return;
+    }
+    
+    // Sort by date
+    att.sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    // Get recent 3 vs older average
+    const recent = att.slice(-3);
+    const older = att.slice(0, Math.max(1, att.length - 3));
+    const recentAvg = recent.reduce((s, d) => s + d.percentage, 0) / recent.length;
+    const olderAvg = older.reduce((s, d) => s + d.percentage, 0) / older.length;
+    const overallAvg = att.reduce((s, d) => s + d.percentage, 0) / att.length;
+    const trend = recentAvg - olderAvg;
+    
+    // Determine health
+    let health, healthColor, healthBg, healthBorder, healthIcon, trendIcon, trendColor;
+    
+    if (recentAvg >= 75) {
+      health = 'Excellent';
+      healthColor = '#10b981';
+      healthBg = 'rgba(16,185,129,.08)';
+      healthBorder = 'rgba(16,185,129,.3)';
+      healthIcon = '💚';
+    } else if (recentAvg >= 50) {
+      health = 'Good';
+      healthColor = '#4f6ef7';
+      healthBg = 'rgba(79,110,247,.08)';
+      healthBorder = 'rgba(79,110,247,.25)';
+      healthIcon = '💙';
+    } else if (recentAvg >= 35) {
+      health = 'Needs Work';
+      healthColor = '#f59e0b';
+      healthBg = 'rgba(245,158,11,.08)';
+      healthBorder = 'rgba(245,158,11,.3)';
+      healthIcon = '💛';
+    } else {
+      health = 'Critical';
+      healthColor = '#f43f5e';
+      healthBg = 'rgba(244,63,94,.08)';
+      healthBorder = 'rgba(244,63,94,.3)';
+      healthIcon = '❤️';
+    }
+    
+    if (att.length >= 2) {
+      if (trend > 5) { trendIcon = '↑'; trendColor = '#10b981'; }
+      else if (trend < -5) { trendIcon = '↓'; trendColor = '#f43f5e'; }
+      else { trendIcon = '→'; trendColor = '#9298b5'; }
+    } else {
+      trendIcon = '—'; trendColor = '#9298b5';
+    }
+    
+    // Mini sparkline bars (last 5 attempts)
+    const sparkData = att.slice(-5);
+    const sparkBars = sparkData.map(d => {
+      const h = Math.max(4, Math.round(d.percentage * 0.28));
+      const c = rClr(d.percentage);
+      return `<div style="
+        width:6px;height:${h}px;
+        background:${c};border-radius:2px;
+        opacity:.8;
+      "></div>`;
+    }).join('');
+    
+    H += `
+    <div style="
+      background:${healthBg};
+      border:1.5px solid ${healthBorder};
+      border-radius:16px;padding:14px 16px;
+      transition:transform .2s,box-shadow .2s;
+      cursor:default;
+    "
+    onmouseenter="this.style.transform='translateY(-2px)';
+      this.style.boxShadow='0 8px 24px rgba(0,0,0,.08)'"
+    onmouseleave="this.style.transform='none';
+      this.style.boxShadow='none'">
+      
+      <!-- Top row -->
+      <div style="display:flex;align-items:center;
+        justify-content:space-between;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="font-size:20px;">${subj.icon}</div>
+          <div style="font-size:12px;font-weight:800;
+            color:var(--text);">${subj.name}</div>
+        </div>
+        <div style="
+          font-size:10px;font-weight:800;
+          padding:3px 10px;border-radius:20px;
+          background:${healthColor}18;
+          border:1.5px solid ${healthColor}40;
+          color:${healthColor};white-space:nowrap;
+        ">${healthIcon} ${health}</div>
+      </div>
+      
+      <!-- Score row -->
+      <div style="display:flex;align-items:flex-end;
+        justify-content:space-between;margin-bottom:8px;">
+        <div>
+          <div style="font-size:22px;font-weight:900;
+            font-family:var(--mono);color:${healthColor};
+            line-height:1;">
+            ${recentAvg.toFixed(1)}%
+          </div>
+          <div style="font-size:9px;color:var(--text3);
+            margin-top:2px;">Recent avg (last ${recent.length})</div>
+        </div>
+        <!-- Trend -->
+        <div style="text-align:center;">
+          <div style="font-size:18px;font-weight:900;
+            color:${trendColor};font-family:var(--mono);">
+            ${trendIcon}${att.length >= 2 ? Math.abs(trend).toFixed(0)+'%' : ''}
+          </div>
+          <div style="font-size:9px;color:var(--text3);">trend</div>
+        </div>
+        <!-- Sparkline -->
+        <div style="display:flex;align-items:flex-end;
+          gap:3px;height:28px;">
+          ${sparkBars}
+        </div>
+      </div>
+      
+      <!-- Progress bar -->
+      <div style="height:4px;background:rgba(0,0,0,.08);
+        border-radius:4px;overflow:hidden;">
+        <div style="height:100%;
+          width:${Math.min(100, recentAvg).toFixed(1)}%;
+          background:${healthColor};border-radius:4px;
+          transition:width 1s ease;"></div>
+      </div>
+      
+      <!-- Footer -->
+      <div style="display:flex;justify-content:space-between;
+        margin-top:6px;font-size:9px;color:var(--text3);">
+        <span>${att.length} test${att.length !== 1 ? 's' : ''} done</span>
+        <span>Overall: ${overallAvg.toFixed(1)}%</span>
+      </div>
+    </div>`;
+  });
+  
+  H += `</div></div>`;
+  return H;
+}
+function buildSubjectHistoryStats(sv) {
+  if (!sv.length) return '';
+  
+  let H = `
+  <div style="margin-bottom:20px;">
+    <div class="sec-hdr" style="margin-bottom:12px;">
+      <div style="display:flex;align-items:center;gap:9px;">
+        <div style="width:30px;height:30px;border-radius:9px;
+          background:linear-gradient(135deg,#06b6d4,#0891b2);
+          display:flex;align-items:center;justify-content:center;
+          box-shadow:0 3px 10px rgba(6,182,212,.3);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="white" stroke-width="2"/>
+            <polyline points="12 6 12 12 16 14" stroke="white" 
+              stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:900;
+            color:var(--text);">Total History</div>
+          <div style="font-size:10px;color:var(--text3);
+            margin-top:1px;">Saved attempts per subject</div>
+        </div>
+      </div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);
+      border-radius:var(--r2);overflow:hidden;">`;
+  
+  sv.forEach((sId, idx) => {
+    const subj = SUBJECTS_MASTER.find(s => s.id === sId);
+    if (!subj) return;
+    
+    // Count total saved history entries
+    let totalHistory = 0;
+    let totalAttempts = 0;
+    let bestScore = 0;
+    let totalTimeSpent = 0;
+    let lastDate = null;
+    
+    subj.chapters.forEach(ch => {
+      const h = lH(sId, ch.id);
+      totalHistory += h.length;
+      const r = lR(sId, ch.id);
+      if (r) {
+        totalAttempts++;
+        if (r.percentage > bestScore) bestScore = r.percentage;
+        if (r.timeTaken) totalTimeSpent += r.timeTaken;
+        if (r.date) {
+          if (!lastDate || new Date(r.date) > new Date(lastDate)) {
+            lastDate = r.date;
+          }
+        }
+      }
+    });
+    
+    const totalChapters = subj.chapters.length;
+    const coveragePct = Math.round(totalAttempts / totalChapters * 100);
+    const avgTimeMin = totalAttempts > 0 && totalTimeSpent > 0 
+      ? Math.round(totalTimeSpent / totalAttempts / 60) : null;
+    
+    H += `
+    <div style="
+      display:flex;align-items:center;gap:12px;
+      padding:13px 18px;
+      border-bottom:${idx < sv.length - 1 ? '1px solid var(--border)' : 'none'};
+      transition:background .15s;
+    "
+    onmouseenter="this.style.background='var(--card2)'"
+    onmouseleave="this.style.background='transparent'">
+      
+      <!-- Subject icon -->
+      <div style="
+        width:38px;height:38px;border-radius:11px;
+        background:${subj.color}15;
+        border:1.5px solid ${subj.color}30;
+        display:flex;align-items:center;
+        justify-content:center;font-size:18px;
+        flex-shrink:0;
+      ">${subj.icon}</div>
+      
+      <!-- Name + last active -->
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;font-weight:800;
+          color:var(--text);">${subj.name}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:1px;">
+          Last active: ${lastDate ? fdS(lastDate) : 'Never'}
+          ${avgTimeMin ? ` · ~${avgTimeMin}m/test` : ''}
+        </div>
+      </div>
+      
+      <!-- Stats pills -->
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+        justify-content:flex-end;">
+        
+        <!-- History entries -->
+        <div style="text-align:center;
+          background:rgba(79,110,247,.08);
+          border:1px solid rgba(79,110,247,.2);
+          border-radius:10px;padding:5px 10px;">
+          <div style="font-size:14px;font-weight:900;
+            font-family:var(--mono);color:var(--acc);">
+            ${totalHistory}
+          </div>
+          <div style="font-size:8px;color:var(--text3);
+            text-transform:uppercase;letter-spacing:.4px;">
+            Saved
+          </div>
+        </div>
+        
+        <!-- Attempts -->
+        <div style="text-align:center;
+          background:rgba(16,185,129,.08);
+          border:1px solid rgba(16,185,129,.2);
+          border-radius:10px;padding:5px 10px;">
+          <div style="font-size:14px;font-weight:900;
+            font-family:var(--mono);color:var(--green);">
+            ${totalAttempts}/${totalChapters}
+          </div>
+          <div style="font-size:8px;color:var(--text3);
+            text-transform:uppercase;letter-spacing:.4px;">
+            Done
+          </div>
+        </div>
+        
+        <!-- Best score -->
+        <div style="text-align:center;
+          background:rgba(245,158,11,.08);
+          border:1px solid rgba(245,158,11,.2);
+          border-radius:10px;padding:5px 10px;">
+          <div style="font-size:14px;font-weight:900;
+            font-family:var(--mono);color:var(--yellow);">
+            ${bestScore > 0 ? bestScore.toFixed(0) + '%' : '—'}
+          </div>
+          <div style="font-size:8px;color:var(--text3);
+            text-transform:uppercase;letter-spacing:.4px;">
+            Best
+          </div>
+        </div>
+        
+        <!-- Coverage bar -->
+        <div style="min-width:60px;">
+          <div style="display:flex;justify-content:space-between;
+            font-size:9px;color:var(--text3);margin-bottom:3px;">
+            <span>Coverage</span>
+            <span style="font-weight:700;color:${subj.color};">
+              ${coveragePct}%
+            </span>
+          </div>
+          <div style="height:4px;background:var(--border);
+            border-radius:4px;overflow:hidden;">
+            <div style="height:100%;width:${coveragePct}%;
+              background:${subj.color};border-radius:4px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  });
+  
+  H += `</div></div>`;
+  return H;
+}
+function buildScoreVsTargetBar(sv, allAtt) {
+  const ct = getCuetTarget();
+  const total = ct.totalMarks || sv.length * 250;
+  const target = ct.targetMarks || Math.round(total * 0.85);
+  
+  let projected = 0;
+  sv.forEach(sId => {
+    const subj = SUBJECTS_MASTER.find(s => s.id === sId);
+    if (!subj) return;
+    const att = [];
+    subj.chapters.forEach(ch => {
+      const r = lR(sId, ch.id);
+      if (r) att.push(r);
+    });
+    const avgP = att.length > 0 
+      ? att.reduce((s, d) => s + d.percentage, 0) / att.length : 0;
+    projected += Math.round(avgP / 100 * 250);
+  });
+  
+  const projectedPct = total > 0 ? (projected / total * 100) : 0;
+  const targetPct = total > 0 ? (target / total * 100) : 0;
+  const gap = Math.max(0, target - projected);
+  const isOnTrack = projected >= target;
+  const statusColor = isOnTrack ? '#10b981' : gap <= 50 ? '#f59e0b' : '#f43f5e';
+  
+  return `
+  <div style="background:var(--card);border:1px solid var(--border);
+    border-radius:var(--r2);padding:20px 22px;">
+    
+    <div style="display:flex;align-items:center;
+      justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+      <div>
+        <div style="font-size:14px;font-weight:900;">
+          🎯 Score vs Target Gap
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px;">
+          ${isOnTrack ? '🎉 You are on track!' : 
+            `Need ${gap} more marks to hit target`}
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="text-align:center;">
+          <div style="font-size:20px;font-weight:900;
+            font-family:var(--mono);color:${statusColor};">
+            ${projected}
+          </div>
+          <div style="font-size:9px;color:var(--text3);">Projected</div>
+        </div>
+        <div style="font-size:18px;color:var(--text3);">→</div>
+        <div style="text-align:center;">
+          <div style="font-size:20px;font-weight:900;
+            font-family:var(--mono);color:var(--acc);">
+            ${target}
+          </div>
+          <div style="font-size:9px;color:var(--text3);">Target</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Main bar -->
+    <div style="position:relative;height:28px;
+      background:var(--card2);border-radius:14px;
+      overflow:visible;margin-bottom:8px;">
+      
+      <!-- Projected fill -->
+      <div style="position:absolute;top:0;left:0;
+        height:100%;width:${projectedPct.toFixed(1)}%;
+        background:linear-gradient(90deg,${statusColor},${statusColor}99);
+        border-radius:14px;
+        transition:width 1.5s cubic-bezier(.34,1.56,.64,1);
+        display:flex;align-items:center;justify-content:flex-end;
+        padding-right:8px;">
+        ${projectedPct > 15 ? `<span style="font-size:11px;
+          font-weight:800;color:#fff;font-family:var(--mono);">
+          ${projected}
+        </span>` : ''}
+      </div>
+      
+      <!-- Gap fill -->
+      ${!isOnTrack ? `
+      <div style="position:absolute;top:0;
+        left:${projectedPct.toFixed(1)}%;
+        height:100%;
+        width:${(targetPct - projectedPct).toFixed(1)}%;
+        background:repeating-linear-gradient(
+          45deg,
+          rgba(244,63,94,.15),
+          rgba(244,63,94,.15) 4px,
+          rgba(244,63,94,.05) 4px,
+          rgba(244,63,94,.05) 8px
+        );
+        border-radius:0 14px 14px 0;
+        border:1.5px dashed rgba(244,63,94,.4);
+        border-left:none;
+        display:flex;align-items:center;
+        justify-content:center;">
+        <span style="font-size:10px;font-weight:800;
+          color:#f43f5e;">-${gap}</span>
+      </div>` : ''}
+      
+      <!-- Target marker -->
+      <div style="position:absolute;top:-6px;bottom:-6px;
+        left:${targetPct.toFixed(1)}%;
+        width:3px;background:var(--acc);
+        border-radius:3px;transform:translateX(-50%);
+        z-index:2;">
+        <div style="position:absolute;bottom:100%;left:50%;
+          transform:translateX(-50%);margin-bottom:3px;
+          font-size:9px;font-weight:800;color:var(--acc);
+          background:var(--card);padding:1px 5px;
+          border-radius:4px;white-space:nowrap;
+          border:1px solid rgba(79,110,247,.2);">
+          TARGET ${target}
+        </div>
+      </div>
+    </div>
+    
+    <!-- Labels -->
+    <div style="display:flex;justify-content:space-between;
+      font-size:10px;color:var(--text3);
+      font-family:var(--mono);margin-bottom:14px;">
+      <span>0</span>
+      <span style="color:${statusColor};font-weight:700;">
+        You: ${projected} (${projectedPct.toFixed(0)}%)
+      </span>
+      <span>${total} max</span>
+    </div>
+    
+    <!-- Per-subject breakdown -->
+    <div style="display:flex;flex-direction:column;gap:7px;">
+      ${sv.map(sId => {
+        const subj = SUBJECTS_MASTER.find(s => s.id === sId);
+        if (!subj) return '';
+        const att = [];
+        subj.chapters.forEach(ch => {
+          const r = lR(sId, ch.id);
+          if (r) att.push(r);
+        });
+        const avgP = att.length > 0 
+          ? att.reduce((s, d) => s + d.percentage, 0) / att.length : 0;
+        const proj = Math.round(avgP / 100 * 250);
+        const subjTarget = Math.round(target / sv.length);
+        const clr = rClr(avgP);
+        const subjGap = Math.max(0, subjTarget - proj);
+        
+        return `
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-size:14px;flex-shrink:0;">${subj.icon}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;justify-content:space-between;
+              align-items:center;margin-bottom:3px;">
+              <span style="font-size:11px;font-weight:700;">
+                ${subj.name}
+              </span>
+              <span style="font-size:11px;font-weight:800;
+                font-family:var(--mono);color:${clr};">
+                ${proj}/250
+              </span>
+            </div>
+            <div style="height:5px;background:var(--card2);
+              border-radius:5px;overflow:hidden;position:relative;">
+              <div style="height:100%;width:${avgP.toFixed(1)}%;
+                background:${clr};border-radius:5px;"></div>
+              <div style="position:absolute;top:0;bottom:0;
+                left:${(subjTarget/250*100).toFixed(1)}%;
+                width:2px;background:var(--acc);opacity:.5;"></div>
+            </div>
+          </div>
+          <div style="font-size:10px;font-weight:700;
+            min-width:55px;text-align:right;
+            color:${subjGap === 0 ? 'var(--green)' : 'var(--red)'};">
+            ${subjGap === 0 ? '✅' : '-' + subjGap}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function buildDayOfWeekPerf(allAtt) {
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const dayData = dayNames.map((name, i) => {
+    const atts = allAtt.filter(d => {
+      if (!d.date) return false;
+      return new Date(d.date).getDay() === i;
+    });
+    const avgPct = atts.length 
+      ? atts.reduce((s, d) => s + d.percentage, 0) / atts.length : 0;
+    return { name, count: atts.length, avgPct };
+  });
+  
+  const peakDay = [...dayData].filter(d => d.count > 0)
+    .sort((a, b) => b.avgPct - a.avgPct)[0];
+  const maxCount = Math.max(...dayData.map(d => d.count), 1);
+  
+  return `
+  <div style="background:var(--card);border:1px solid var(--border);
+    border-radius:var(--r2);padding:20px 22px;">
+    
+    <div style="margin-bottom:14px;">
+      <div style="font-size:14px;font-weight:900;">
+        📅 Best Study Days
+      </div>
+      ${peakDay ? `
+      <div style="font-size:11px;color:var(--text3);margin-top:2px;">
+        You perform best on 
+        <strong style="color:var(--acc);">${peakDay.name}</strong>
+        with ${peakDay.avgPct.toFixed(0)}% avg
+      </div>` : ''}
+    </div>
+    
+    <!-- Bar chart -->
+    <div style="display:flex;align-items:flex-end;gap:6px;
+      height:100px;margin-bottom:10px;">
+      ${dayData.map(d => {
+        const barH = d.count > 0 
+          ? Math.max(8, Math.round(d.avgPct * 0.9)) : 0;
+        const clr = d.count === 0 ? 'var(--border)' : rClr(d.avgPct);
+        const isPeak = peakDay && d.name === peakDay.name;
+        
+        return `
+        <div style="flex:1;display:flex;flex-direction:column;
+          align-items:center;gap:4px;justify-content:flex-end;">
+          ${d.count > 0 ? `
+          <div style="font-size:9px;font-weight:800;
+            font-family:var(--mono);color:${clr};">
+            ${d.avgPct.toFixed(0)}%
+          </div>` : `<div style="font-size:8px;color:var(--text3);">—</div>`}
+          <div style="
+            width:100%;height:${barH}px;
+            background:${clr};
+            border-radius:5px 5px 0 0;
+            opacity:${d.count > 0 ? 1 : 0.3};
+            ${isPeak ? `box-shadow:0 0 10px ${clr}60;` : ''}
+            transition:height .8s ease;
+            position:relative;
+          ">
+            ${isPeak ? `
+            <div style="position:absolute;top:-18px;left:50%;
+              transform:translateX(-50%);font-size:10px;">⭐</div>
+            ` : ''}
+          </div>
+          <div style="font-size:9px;font-weight:700;
+            color:${isPeak ? 'var(--acc)' : 'var(--text3)'};
+            margin-top:3px;">
+            ${d.name}
+          </div>
+          ${d.count > 0 ? `
+          <div style="font-size:8px;color:var(--text3);">
+            ${d.count}t
+          </div>` : '<div style="font-size:8px;color:transparent;">0</div>'}
+        </div>`;
+      }).join('')}
+    </div>
+    
+    <!-- Activity dots -->
+    <div style="display:flex;gap:6px;margin-top:10px;">
+      ${dayData.map(d => {
+        const opacity = d.count === 0 ? 0.15 : Math.min(1, d.count / maxCount);
+        const clr = d.count === 0 ? 'var(--border)' : rClr(d.avgPct);
+        return `
+        <div style="flex:1;height:5px;border-radius:5px;
+          background:${clr};opacity:${opacity};"></div>`;
+      }).join('')}
+    </div>
+    <div style="display:flex;gap:6px;margin-top:3px;">
+      ${dayData.map(d => `
+      <div style="flex:1;font-size:8px;text-align:center;
+        color:var(--text3);">${d.name[0]}</div>`).join('')}
+    </div>
+  </div>`;
+}
+/* ── AI INSIGHTS (data-driven, no API needed) ── */
+function renderAIInsights(container) {
+  const sv = getSS(), allAtt = getAllAtt();
+  if (!allAtt.length) {
+    container.innerHTML = `<div class="empty">
+      <div class="empty-icon">🤖</div>
+      <div class="empty-title">No Data Yet</div>
+    </div>`;
+    return;
+  }
+  
+  // Generate insights from data
+  const insights = [];
+  
+  // Weak subjects
+  const subjStats = sv.map(sId => {
+    const subj = SUBJECTS_MASTER.find(s => s.id === sId);
+    if (!subj) return null;
+    const att = allAtt.filter(d => d.subjectId === sId);
+    const avg = att.length ? att.reduce((s, d) => s + d.percentage, 0) / att.length : 0;
+    return { sId, name: subj.name, icon: subj.icon, avg, count: att.length };
+  }).filter(Boolean).sort((a, b) => a.avg - b.avg);
+  
+  const weakest = subjStats[0];
+  const strongest = subjStats[subjStats.length - 1];
+  
+  if (weakest && weakest.avg < 60) {
+    insights.push({
+      type: 'warning',
+      icon: '⚠️',
+      title: `${weakest.icon} ${weakest.name} needs urgent attention`,
+      desc: `Your average in ${weakest.name} is ${weakest.avg.toFixed(1)}%. ` +
+        `Focus here first to maximize CUET score gain.`,
+      action: 'Go to Subjects',
+      actionFn: `goPage('subjects')`
+    });
+  }
+  
+  if (strongest && strongest.avg >= 75) {
+    insights.push({
+      type: 'success',
+      icon: '🌟',
+      title: `${strongest.icon} ${strongest.name} is your strongest subject`,
+      desc: `You're averaging ${strongest.avg.toFixed(1)}% in ${strongest.name}. ` +
+        `Maintain this and focus energy on weaker areas.`,
+      action: null
+    });
+  }
+  
+  // Consistency check
+  const streak = calcStreak(allAtt);
+  const bestStreak = getBestStreak(allAtt);
+  if (streak === 0 && allAtt.length > 5) {
+    insights.push({
+      type: 'warning',
+      icon: '🔥',
+      title: 'Study streak broken!',
+      desc: `You had a best streak of ${bestStreak} days but haven't studied recently. ` +
+        `Consistency is key for CUET preparation.`,
+      action: 'Start Now',
+      actionFn: `goPage('mocks')`
+    });
+  }
+  
+  // Retake potential
+  const lowScores = allAtt.filter(d => d.percentage < 40);
+  if (lowScores.length >= 3) {
+    insights.push({
+      type: 'info',
+      icon: '🔁',
+      title: `${lowScores.length} chapters need retaking`,
+      desc: `You have ${lowScores.length} chapters below 40%. ` +
+        `Retaking these could add significant marks to your predicted score.`,
+      action: 'See Retakes',
+      actionFn: `showAnalyticsSection('retake')`
+    });
+  }
+  
+  // Time of day insight
+  const slots = [
+    { label: 'Morning', hours: [8,9,10,11] },
+    { label: 'Evening', hours: [17,18,19,20] },
+    { label: 'Night', hours: [21,22,23] }
+  ];
+  let bestSlot = null, bestSlotScore = 0;
+  slots.forEach(slot => {
+    const slotAtts = allAtt.filter(d => {
+      if (!d.date) return false;
+      return slot.hours.includes(new Date(d.date).getHours());
+    });
+    if (slotAtts.length >= 2) {
+      const avg = slotAtts.reduce((s, d) => s + d.percentage, 0) / slotAtts.length;
+      if (avg > bestSlotScore) { bestSlotScore = avg; bestSlot = slot.label; }
+    }
+  });
+  if (bestSlot) {
+    insights.push({
+      type: 'tip',
+      icon: '💡',
+      title: `You perform best in the ${bestSlot}`,
+      desc: `Your ${bestSlot.toLowerCase()} scores average ${bestSlotScore.toFixed(0)}%. ` +
+        `Schedule your hardest subjects during this time for better results.`,
+      action: null
+    });
+  }
+  
+  // Coverage gap
+  let totalChapters = 0, totalAttempted = 0;
+  sv.forEach(sId => {
+    const subj = SUBJECTS_MASTER.find(s => s.id === sId);
+    if (!subj) return;
+    totalChapters += subj.chapters.length;
+    totalAttempted += allAtt.filter(d => d.subjectId === sId).length;
+  });
+  const coveragePct = totalChapters > 0 
+    ? Math.round(totalAttempted / totalChapters * 100) : 0;
+  
+  if (coveragePct < 50) {
+    insights.push({
+      type: 'info',
+      icon: '📐',
+      title: `Only ${coveragePct}% of chapters covered`,
+      desc: `You've attempted ${totalAttempted} of ${totalChapters} available chapters. ` +
+        `Cover more chapters to get a better predicted score.`,
+      action: 'View Coverage',
+      actionFn: `showAnalyticsSection('coverage')`
+    });
+  }
+  
+  // Improvement velocity
+  const retakes = allAtt.filter(d => {
+    const h = lH(d.subjectId, d.chapterId);
+    return h.length >= 2;
+  });
+  if (retakes.length >= 3) {
+    const velocities = retakes.map(d => {
+      const h = lH(d.subjectId, d.chapterId);
+      return h[0].percentage - h[h.length - 1].percentage;
+    });
+    const avgVel = velocities.reduce((s, v) => s + v, 0) / velocities.length;
+    if (avgVel > 5) {
+      insights.push({
+        type: 'success',
+        icon: '📈',
+        title: `You improve +${avgVel.toFixed(1)}% on retakes on average`,
+        desc: `Retaking chapters is working for you! Keep retaking weak chapters — ` +
+          `your improvement velocity is above average.`,
+        action: null
+      });
+    }
+  }
+  
+  // Study consistency score
+  const dates = [...new Set(allAtt.map(d => 
+    d.date ? d.date.substring(0, 10) : null).filter(Boolean))].sort();
+  let consistencyScore = 0;
+  if (dates.length >= 2) {
+    const gaps = [];
+    for (let i = 1; i < dates.length; i++) {
+      const diff = (new Date(dates[i]) - new Date(dates[i-1])) / 86400000;
+      gaps.push(diff);
+    }
+    const avgGap = gaps.reduce((s, g) => s + g, 0) / gaps.length;
+    const gapVariance = gaps.reduce((s, g) => s + Math.pow(g - avgGap, 2), 0) / gaps.length;
+    consistencyScore = Math.max(0, Math.min(100, 
+      Math.round(100 - (avgGap * 8) - (Math.sqrt(gapVariance) * 4))));
+  }
+  
+  // AI summary card
+  const overallAvg = allAtt.reduce((s, d) => s + d.percentage, 0) / allAtt.length;
+  const summaryColor = overallAvg >= 70 ? '#10b981' 
+    : overallAvg >= 50 ? '#4f6ef7' : '#f59e0b';
+  
+  let H = `
+  <!-- Summary Card -->
+  <div style="background:linear-gradient(135deg,rgba(79,110,247,.08),
+    rgba(124,58,237,.04));
+    border:1.5px solid rgba(79,110,247,.2);
+    border-radius:var(--r2);padding:20px 22px;margin-bottom:18px;">
+    
+    <div style="display:flex;align-items:flex-start;
+      gap:12px;margin-bottom:14px;">
+      <div style="width:42px;height:42px;border-radius:12px;
+        background:linear-gradient(135deg,#4f6ef7,#7c3aed);
+        display:flex;align-items:center;justify-content:center;
+        font-size:20px;flex-shrink:0;">🤖</div>
+      <div>
+        <div style="font-size:15px;font-weight:900;margin-bottom:4px;">
+          AI Performance Summary
+        </div>
+        <div style="font-size:12px;color:var(--text3);line-height:1.7;">
+          Based on your <strong>${allAtt.length} test attempts</strong> 
+          across <strong>${sv.length} subjects</strong>
+        </div>
+      </div>
+    </div>
+    
+    <div style="background:var(--card);border-radius:14px;
+      padding:14px 16px;font-size:13px;line-height:1.9;
+      color:var(--text2);">
+      📊 Your overall average is 
+      <strong style="color:${summaryColor};">
+        ${overallAvg.toFixed(1)}%
+      </strong>
+      ${overallAvg >= 70 ? '— excellent performance!' 
+        : overallAvg >= 50 ? '— good, room to improve.' 
+        : '— needs significant work.'}<br>
+      
+      ${weakest ? `⚠️ Focus on 
+        <strong style="color:#f43f5e;">${weakest.name}</strong> 
+        first (${weakest.avg.toFixed(0)}% avg).<br>` : ''}
+      
+      ${strongest && strongest.avg >= 60 ? `
+      🌟 Strongest subject: 
+      <strong style="color:#10b981;">${strongest.name}</strong> 
+      (${strongest.avg.toFixed(0)}% avg).<br>` : ''}
+      
+      📐 Chapter coverage: 
+      <strong style="color:var(--acc);">${coveragePct}%</strong> 
+      (${totalAttempted}/${totalChapters} chapters).<br>
+      
+      🎯 Consistency score: 
+      <strong style="color:${consistencyScore >= 60 ? 
+        'var(--green)' : 'var(--yellow)'};">
+        ${consistencyScore}/100
+      </strong>
+      ${consistencyScore >= 60 ? '— studying regularly!' 
+        : '— try to study every day.'}
+    </div>
+  </div>
+  
+  <!-- Insights Grid -->
+  <div style="font-size:13px;font-weight:900;
+    margin-bottom:12px;">
+    💡 Personalized Insights (${insights.length})
+  </div>`;
+  
+  const typeStyles = {
+    warning: { bg: 'rgba(244,63,94,.05)', border: 'rgba(244,63,94,.25)', 
+      color: '#f43f5e' },
+    success: { bg: 'rgba(16,185,129,.05)', border: 'rgba(16,185,129,.25)', 
+      color: '#10b981' },
+    info: { bg: 'rgba(79,110,247,.05)', border: 'rgba(79,110,247,.2)', 
+      color: '#4f6ef7' },
+    tip: { bg: 'rgba(245,158,11,.05)', border: 'rgba(245,158,11,.25)', 
+      color: '#f59e0b' }
+  };
+  
+  insights.forEach(ins => {
+    const st = typeStyles[ins.type] || typeStyles.info;
+    H += `
+    <div style="background:${st.bg};border:1.5px solid ${st.border};
+      border-radius:16px;padding:16px 18px;margin-bottom:10px;
+      display:flex;align-items:flex-start;gap:12px;">
+      <div style="font-size:26px;flex-shrink:0;
+        margin-top:2px;">${ins.icon}</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:800;
+          color:var(--text);margin-bottom:4px;">${ins.title}</div>
+        <div style="font-size:12px;color:var(--text2);
+          line-height:1.6;">${ins.desc}</div>
+        ${ins.action ? `
+        <button onclick="${ins.actionFn}" 
+          style="margin-top:8px;background:${st.color};color:#fff;
+          border:none;border-radius:20px;padding:5px 14px;
+          font-size:11px;font-weight:800;cursor:pointer;
+          font-family:var(--fn);">
+          ${ins.action} →
+        </button>` : ''}
+      </div>
+    </div>`;
+  });
+  
+  // Consistency gauge
+  H += `
+  <div class="card card-p" style="margin-top:16px;">
+    <div class="sec-hdr">
+      <div class="sec-title">📊 Study Consistency Score</div>
+      <div style="font-size:13px;font-weight:900;
+        font-family:var(--mono);
+        color:${consistencyScore >= 60 ? 'var(--green)' : 'var(--yellow)'};">
+        ${consistencyScore}/100
+      </div>
+    </div>
+    <div style="position:relative;height:12px;
+      background:var(--card2);border-radius:12px;
+      overflow:hidden;margin-bottom:8px;">
+      <div style="height:100%;
+        width:${consistencyScore}%;
+        background:linear-gradient(90deg,
+          ${consistencyScore >= 60 ? '#10b981,#059669' : 
+            '#f59e0b,#d97706'});
+        border-radius:12px;
+        transition:width 1.5s cubic-bezier(.34,1.56,.64,1);">
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;
+      font-size:10px;font-family:var(--mono);color:var(--text3);">
+      <span>0 — Inconsistent</span>
+      <span>100 — Perfect</span>
+    </div>
+    <div style="font-size:12px;color:var(--text3);
+      margin-top:8px;">
+      ${consistencyScore >= 80 ? '🏆 Excellent consistency — keep it up!' 
+        : consistencyScore >= 60 ? '👍 Good consistency — study daily to improve.' 
+        : consistencyScore >= 40 ? '⚠️ Moderate — try to study every 1-2 days.' 
+        : '❌ Low consistency — set daily study reminders.'}
+    </div>
+  </div>`;
+  
+  // Wrong questions pattern from bookmarks
+  const bms = getBMs();
+  const wrongPattern = {};
+  Object.values(bms).forEach(bm => {
+    (bm.wrongQs || []).forEach(q => {
+      wrongPattern[q] = (wrongPattern[q] || 0) + 1;
+    });
+  });
+  
+  const topWrong = Object.entries(wrongPattern)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10);
+  
+  if (topWrong.length >= 3) {
+    H += `
+    <div class="card card-p" style="margin-top:16px;">
+      <div class="sec-hdr">
+        <div class="sec-title">❓ Most Frequently Wrong Questions</div>
+      </div>
+      <div style="font-size:12px;color:var(--text3);
+        margin-bottom:12px;">
+        Across all bookmarked mocks, these question numbers 
+        appear wrong most often:
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        ${topWrong.map(([q, count]) => `
+        <div style="display:inline-flex;align-items:center;
+          gap:6px;padding:6px 12px;border-radius:20px;
+          background:rgba(244,63,94,.08);
+          border:1.5px solid rgba(244,63,94,.25);">
+          <span style="font-size:12px;font-weight:900;
+            font-family:var(--mono);color:#f43f5e;">
+            Q${q}
+          </span>
+          <span style="font-size:10px;color:var(--text3);">
+            ×${count}
+          </span>
+        </div>`).join('')}
+      </div>
+      <div style="font-size:11px;color:var(--text3);
+        margin-top:10px;">
+        💡 Focus extra attention on these question types 
+        in your preparation.
+      </div>
+    </div>`;
+  }
+  
+  container.innerHTML = H;
+}
+
+/* ── COVERAGE ANALYSIS ── */
+function renderCoverageAnalysis(container) {
+  const sv = getSS(), allAtt = getAllAtt();
+  
+  let totalChapters = 0, totalAttempted = 0;
+  
+  let H = `
+  <div style="font-size:13px;font-weight:800;
+    margin-bottom:14px;">
+    📐 Chapter Coverage Analysis
+  </div>`;
+  
+  sv.forEach(sId => {
+    const subj = SUBJECTS_MASTER.find(s => s.id === sId);
+    if (!subj) return;
+    
+    const attempted = subj.chapters.filter(ch => lR(sId, ch.id));
+    const notAttempted = subj.chapters.filter(ch => !lR(sId, ch.id));
+    const coveragePct = Math.round(attempted.length / subj.chapters.length * 100);
+    const avgScore = attempted.length > 0 
+      ? attempted.reduce((s, ch) => {
+          const r = lR(sId, ch.id);
+          return s + (r ? r.percentage : 0);
+        }, 0) / attempted.length : 0;
+    
+    totalChapters += subj.chapters.length;
+    totalAttempted += attempted.length;
+    
+    // Group by type
+    const typeBreakdown = {};
+    subj.chapters.forEach(ch => {
+      if (!typeBreakdown[ch.type]) {
+        typeBreakdown[ch.type] = { total: 0, done: 0 };
+      }
+      typeBreakdown[ch.type].total++;
+      if (lR(sId, ch.id)) typeBreakdown[ch.type].done++;
+    });
+    
+    H += `
+    <div style="background:var(--card);border:1px solid var(--border);
+      border-radius:var(--r2);padding:18px;margin-bottom:14px;">
+      
+      <!-- Header -->
+      <div style="display:flex;align-items:center;
+        justify-content:space-between;margin-bottom:14px;
+        flex-wrap:wrap;gap:8px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-size:24px;">${subj.icon}</div>
+          <div>
+            <div style="font-size:14px;font-weight:900;">
+              ${subj.name}
+            </div>
+            <div style="font-size:11px;color:var(--text3);">
+              ${attempted.length}/${subj.chapters.length} chapters attempted
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center;
+          background:${coveragePct >= 75 ? 'rgba(16,185,129,.08)' 
+            : coveragePct >= 50 ? 'rgba(79,110,247,.08)' 
+            : 'rgba(245,158,11,.08)'};
+          border:1.5px solid ${coveragePct >= 75 ? 'rgba(16,185,129,.3)' 
+            : coveragePct >= 50 ? 'rgba(79,110,247,.2)' 
+            : 'rgba(245,158,11,.3)'};
+          border-radius:16px;padding:10px 18px;">
+          <div style="font-size:28px;font-weight:900;
+            font-family:var(--mono);
+            color:${coveragePct >= 75 ? '#10b981' 
+              : coveragePct >= 50 ? '#4f6ef7' : '#f59e0b'};">
+            ${coveragePct}%
+          </div>
+          <div style="font-size:9px;color:var(--text3);">Coverage</div>
+        </div>
+      </div>
+      
+      <!-- Coverage bar -->
+      <div style="height:8px;background:var(--card2);
+        border-radius:8px;overflow:hidden;margin-bottom:10px;">
+        <div style="height:100%;width:${coveragePct}%;
+          background:${subj.color};border-radius:8px;
+          transition:width 1.2s ease;"></div>
+      </div>
+      
+      <!-- Type breakdown -->
+      <div style="display:grid;
+        grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
+        gap:7px;">
+        ${Object.entries(typeBreakdown).map(([type, data]) => {
+          const typePct = Math.round(data.done / data.total * 100);
+          const tc = TX[type] || '#4f6ef7';
+          const tb = TC[type] || 'rgba(79,110,247,.08)';
+          return `
+          <div style="background:${tb};
+            border:1px solid ${tc}30;
+            border-radius:11px;padding:9px 10px;
+            text-align:center;">
+            <div style="font-size:15px;font-weight:900;
+              font-family:var(--mono);color:${tc};">
+              ${data.done}/${data.total}
+            </div>
+            <div style="font-size:9px;color:var(--text3);
+              margin-top:2px;text-transform:uppercase;
+              letter-spacing:.4px;">
+              ${TL[type] || type}
+            </div>
+            <div style="height:3px;background:rgba(0,0,0,.08);
+              border-radius:3px;overflow:hidden;margin-top:5px;">
+              <div style="height:100%;width:${typePct}%;
+                background:${tc};border-radius:3px;"></div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  });
+  
+  // Overall summary
+  const overallCoverage = totalChapters > 0 
+    ? Math.round(totalAttempted / totalChapters * 100) : 0;
+  
+  H = `
+  <div style="background:linear-gradient(135deg,
+    rgba(79,110,247,.08),rgba(124,58,237,.04));
+    border:1.5px solid rgba(79,110,247,.2);
+    border-radius:var(--r2);padding:18px 20px;
+    margin-bottom:18px;
+    display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+    <div style="flex:1;">
+      <div style="font-size:12px;font-weight:700;
+        text-transform:uppercase;letter-spacing:.8px;
+        color:var(--text3);margin-bottom:6px;">
+        Overall Coverage
+      </div>
+      <div style="font-size:32px;font-weight:900;
+        font-family:var(--mono);color:var(--acc);">
+        ${overallCoverage}%
+      </div>
+      <div style="font-size:12px;color:var(--text3);margin-top:3px;">
+        ${totalAttempted} of ${totalChapters} chapters attempted
+      </div>
+    </div>
+    <div style="width:120px;">
+      <div style="height:10px;background:var(--border);
+        border-radius:10px;overflow:hidden;margin-bottom:5px;">
+        <div style="height:100%;width:${overallCoverage}%;
+          background:linear-gradient(90deg,#4f6ef7,#7c3aed);
+          border-radius:10px;transition:width 1.5s ease;">
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--text3);
+        text-align:center;">
+        ${totalChapters - totalAttempted} chapters remaining
+      </div>
+    </div>
+  </div>` + H;
+  
+  container.innerHTML = H;
+}
+
+/* ── IMPROVEMENT VELOCITY in Retake Comparison ── */
+// Add this at end of renderRetakeComparison, before container.innerHTML=H
+function getImprovementVelocity() {
+  const sv = getSS();
+  const velocities = [];
+  sv.forEach(sId => {
+    const subj = SUBJECTS_MASTER.find(s => s.id === sId);
+    if (!subj) return;
+    subj.chapters.forEach(ch => {
+      const h = lH(sId, ch.id);
+      if (h.length >= 2) {
+        const improvement = h[0].percentage - h[h.length - 1].percentage;
+        const rate = improvement / (h.length - 1);
+        velocities.push({ rate, improvement, attempts: h.length,
+          name: ch.name, sId, type: ch.type });
+      }
+    });
+  });
+  return velocities;
+}
+function generateShareCard() {
+  const allAtt = getAllAtt();
+  const sv = getSS();
+  const prof = getProfile();
+  const now = new Date();
+  const weekStart = new Date(now);
+  weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+  weekStart.setHours(0,0,0,0);
+  
+  const weekAtts = allAtt.filter(d => {
+    if (!d.date) return false;
+    return new Date(d.date) >= weekStart;
+  });
+  
+  const weekAvg = weekAtts.length 
+    ? weekAtts.reduce((s, d) => s + d.percentage, 0) / weekAtts.length : 0;
+  const streak = calcStreak(allAtt);
+  const rpData = getRPData();
+  const tier = RANK_TIERS[rpData.rankIndex];
+  const uname = prof.name || 'Student';
+  
+  const preview = document.getElementById('share-card-preview');
+  
+  preview.innerHTML = `
+  <div id="actual-share-card" style="
+    background:linear-gradient(135deg,#0f172a,#1e1b4b);
+    border-radius:20px;padding:24px;color:#fff;
+    font-family:'Plus Jakarta Sans',sans-serif;
+    max-width:400px;margin:0 auto;
+    position:relative;overflow:hidden;">
+    
+    <!-- Background decorations -->
+    <div style="position:absolute;top:-40px;right:-40px;
+      width:180px;height:180px;border-radius:50%;
+      background:rgba(79,110,247,.15);"></div>
+    <div style="position:absolute;bottom:-30px;left:-20px;
+      width:140px;height:140px;border-radius:50%;
+      background:rgba(124,58,237,.1);"></div>
+    
+    <!-- Logo -->
+    <div style="display:flex;align-items:center;gap:8px;
+      margin-bottom:18px;position:relative;z-index:1;">
+      <div style="width:32px;height:32px;
+        background:linear-gradient(135deg,#4f6ef7,#7c3aed);
+        border-radius:9px;display:flex;align-items:center;
+        justify-content:center;font-size:16px;">⚡</div>
+      <div>
+        <div style="font-size:14px;font-weight:900;
+          letter-spacing:-.3px;">
+          <span style="color:#60a5fa;">Thunder</span>Study
+        </div>
+        <div style="font-size:9px;color:rgba(255,255,255,.5);
+          letter-spacing:1px;text-transform:uppercase;">
+          Weekly Report
+        </div>
+      </div>
+      <div style="margin-left:auto;font-size:9px;
+        color:rgba(255,255,255,.4);">
+        ${now.toLocaleDateString('en-IN', { 
+          day:'2-digit', month:'short', year:'numeric' 
+        })}
+      </div>
+    </div>
+    
+    <!-- Student name -->
+    <div style="font-size:22px;font-weight:900;
+      letter-spacing:-.4px;margin-bottom:4px;
+      position:relative;z-index:1;">
+      ${escH(uname)}
+    </div>
+    <div style="font-size:11px;color:rgba(255,255,255,.5);
+      margin-bottom:18px;position:relative;z-index:1;">
+      ${tier.icon} ${tier.name} Rank
+    </div>
+    
+    <!-- Big score -->
+    <div style="text-align:center;margin-bottom:20px;
+      position:relative;z-index:1;">
+      <div style="font-size:56px;font-weight:900;
+        font-family:'DM Mono',monospace;
+        background:linear-gradient(135deg,#60a5fa,#a78bfa);
+        -webkit-background-clip:text;
+        -webkit-text-fill-color:transparent;
+        background-clip:text;line-height:1;">
+        ${weekAvg.toFixed(1)}%
+      </div>
+      <div style="font-size:12px;color:rgba(255,255,255,.5);
+        margin-top:4px;">
+        This week's average
+      </div>
+    </div>
+    
+    <!-- Stats row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;
+      gap:8px;margin-bottom:18px;position:relative;z-index:1;">
+      <div style="background:rgba(255,255,255,.06);
+        border:1px solid rgba(255,255,255,.1);
+        border-radius:13px;padding:12px 8px;text-align:center;">
+        <div style="font-size:22px;font-weight:900;
+          font-family:'DM Mono',monospace;color:#60a5fa;">
+          ${weekAtts.length}
+        </div>
+        <div style="font-size:9px;color:rgba(255,255,255,.4);
+          text-transform:uppercase;letter-spacing:.5px;">Tests</div>
+      </div>
+      <div style="background:rgba(255,255,255,.06);
+        border:1px solid rgba(255,255,255,.1);
+        border-radius:13px;padding:12px 8px;text-align:center;">
+        <div style="font-size:22px;font-weight:900;
+          font-family:'DM Mono',monospace;color:#f59e0b;">
+          ${streak}🔥
+        </div>
+        <div style="font-size:9px;color:rgba(255,255,255,.4);
+          text-transform:uppercase;letter-spacing:.5px;">Streak</div>
+      </div>
+      <div style="background:rgba(255,255,255,.06);
+        border:1px solid rgba(255,255,255,.1);
+        border-radius:13px;padding:12px 8px;text-align:center;">
+        <div style="font-size:22px;font-weight:900;
+          font-family:'DM Mono',monospace;color:#10b981;">
+          ${weekAtts.reduce((s, d) => s + d.correct, 0)}
+        </div>
+        <div style="font-size:9px;color:rgba(255,255,255,.4);
+          text-transform:uppercase;letter-spacing:.5px;">Correct</div>
+      </div>
+    </div>
+    
+    <!-- Subject bars -->
+    ${sv.slice(0, 3).map(sId => {
+      const subj = SUBJECTS_MASTER.find(s => s.id === sId);
+      if (!subj) return '';
+      const satts = weekAtts.filter(d => d.subjectId === sId);
+      const savg = satts.length 
+        ? satts.reduce((s, d) => s + d.percentage, 0) / satts.length : 0;
+      if (!satts.length) return '';
+      return `
+      <div style="margin-bottom:8px;position:relative;z-index:1;">
+        <div style="display:flex;justify-content:space-between;
+          margin-bottom:4px;">
+          <span style="font-size:11px;font-weight:700;">
+            ${subj.icon} ${subj.name}
+          </span>
+          <span style="font-size:11px;font-weight:900;
+            font-family:'DM Mono',monospace;
+            color:${savg >= 70 ? '#10b981' : 
+              savg >= 50 ? '#60a5fa' : '#f59e0b'};">
+            ${savg.toFixed(0)}%
+          </span>
+        </div>
+        <div style="height:4px;background:rgba(255,255,255,.1);
+          border-radius:4px;overflow:hidden;">
+          <div style="height:100%;width:${savg.toFixed(1)}%;
+            background:${subj.color};border-radius:4px;"></div>
+        </div>
+      </div>`;
+    }).join('')}
+    
+    <!-- Footer -->
+    <div style="border-top:1px solid rgba(255,255,255,.08);
+      padding-top:12px;margin-top:6px;
+      display:flex;align-items:center;justify-content:space-between;
+      position:relative;z-index:1;">
+      <div style="font-size:10px;color:rgba(255,255,255,.3);">
+        commercesehoga.github.io/dashboard
+      </div>
+      <div style="font-size:10px;color:rgba(255,255,255,.3);">
+        #CUET2025
+      </div>
+    </div>
+  </div>
+  
+  <div style="text-align:center;margin-top:12px;">
+    <button onclick="screenshotShareCard()" 
+      class="btn btn-prim" 
+      style="width:100%;justify-content:center;padding:12px;">
+      📸 Screenshot This Card
+    </button>
+    <div style="font-size:11px;color:var(--text3);margin-top:8px;">
+      Take a screenshot of the card above and share on Instagram/WhatsApp!
+    </div>
+  </div>`;
+}
+
+function screenshotShareCard() {
+  showToast(
+    '📸 Take a screenshot now! The card is ready to share.', 
+    'success', 3500
+  );
+}
+
 </script>
 </body>
 </html>
