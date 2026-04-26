@@ -2796,6 +2796,7 @@ function applyBroadcastCode(code){
 }
 
 function buildAdminNoticesHTML(){
+  let H='';
   const notices=getAdminNotices().filter(n=>{
     if(!n.active)return false;
     if(n.expiry&&new Date(n.expiry)<new Date())return false;
@@ -7038,14 +7039,15 @@ if (_gu) {
   }
 }
 
-  fetchLiveNoticesAndExams().then(()=>{
-    if(shouldShowOnboarding()){
-    renderHome();
-    // Don't auto-start onboarding — user clicks Get Started button instead
-    return;
-  }
+ // Render home immediately — don't block on network
   renderHome();
-  });
+
+  // Fetch notices in background; refresh silently if home is still active
+  fetchLiveNoticesAndExams().then(()=>{
+    if(document.getElementById('page-home')?.classList.contains('active')){
+      renderHome();
+    }
+  }).catch(()=>{});
   
   // Auto-refresh notices every 60 seconds
 setInterval(()=>{
