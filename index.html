@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
     
@@ -1486,45 +1487,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
   <!-- Full-screen white flash on impact -->
   <div class="ts-flash" id="tsFlash"></div>
   
-<div class="browser-support">
-  <div class="bs-label">Best Experience On</div>
-  <div class="bs-icons">
-    <div class="bs-icon">
-      <div class="bs-icon-wrap">
-        <img src="chrome.svg" alt="Chrome">
-      </div>
-      <span class="bs-icon-name">Chrome</span>
-    </div>
-    <div class="bs-divider"></div>
-    <div class="bs-icon">
-      <div class="bs-icon-wrap">
-        <img src="brave.svg" alt="Brave">
-      </div>
-      <span class="bs-icon-name">Brave</span>
-    </div>
-    <div class="bs-divider"></div>
-    <div class="bs-icon">
-      <div class="bs-icon-wrap">
-        <img src="edge.svg" alt="Edge">
-      </div>
-      <span class="bs-icon-name">Edge</span>
-    </div>
-    <div class="bs-divider"></div>
-    <div class="bs-icon">
-      <div class="bs-icon-wrap">
-        <img src="safari.svg" alt="Safari">
-      </div>
-      <span class="bs-icon-name">Safari</span>
-    </div>
-    <div class="bs-divider"></div>
-    <div class="bs-icon">
-      <div class="bs-icon-wrap">
-        <img src="firefox.svg" alt="Firefox">
-      </div>
-      <span class="bs-icon-name">Firefox</span>
-    </div>
-  </div>
-</div>
+
  
 </div><!-- /ts-boot -->
 
@@ -2282,26 +2245,46 @@ window.addEventListener('appinstalled', function () {
   showToast('✅ Thunderstudy installed successfully!', 'success', 3000);
 });
 
+// Replace your pwaInstall function:
 function pwaInstall() {
-  if (!_pwaPrompt) {
-    showToast('ℹ️ Use browser menu → Add to Home Screen', 'success', 3500);
-    return;
+  if (_pwaPrompt) {
+    _pwaPrompt.prompt();
+    _pwaPrompt.userChoice.then(function (result) {
+      if (result.outcome === 'accepted') {
+        showToast('✅ Installing Thunderstudy!', 'success');
+      }
+      _pwaPrompt = null;
+      const bar = document.getElementById('pwa-install-bar');
+      if (bar) bar.classList.remove('visible');
+    });
+  } else {
+    // _pwaPrompt is gone — tell user to use browser menu directly
+    showToast('ℹ️ Tap browser menu (⋮) → "Install App" or "Add to Home Screen"', 'success', 5000);
   }
-  _pwaPrompt.prompt();
-  _pwaPrompt.userChoice.then(function (result) {
-    if (result.outcome === 'accepted') {
-      showToast('✅ Installing Thunderstudy!', 'success');
-    }
-    _pwaPrompt = null;
-    const bar = document.getElementById('pwa-install-bar');
-    if (bar) bar.classList.remove('visible');
-  });
 }
 
+// Replace triggerPWAInstall:
+function triggerPWAInstall() {
+  if (_pwaPrompt) {
+    _pwaPrompt.prompt();
+    _pwaPrompt.userChoice.then(function(result) {
+      if (result.outcome === 'accepted') {
+        showToast('✅ Installing Thunderstudy!', 'success');
+        renderHome(); // refresh to remove install card
+      }
+      _pwaPrompt = null;
+    });
+  } else {
+    showToast('ℹ️ Tap browser ⋮ menu → "Install App" or "Add to Home Screen"', 'success', 5000);
+  }
+}
+
+// Replace pwaDismiss:
 function pwaDismiss() {
   localStorage.setItem('ts_pwa_dismissed', '1');
   const bar = document.getElementById('pwa-install-bar');
   if (bar) bar.classList.remove('visible');
+  // DO NOT set _pwaPrompt = null here — keep it for later use
 }
 
 // Wire up buttons after DOM loads
@@ -2311,85 +2294,6 @@ document.addEventListener('DOMContentLoaded', function () {
   if (installBtn) installBtn.addEventListener('click', pwaInstall);
   if (closeBtn) closeBtn.addEventListener('click', pwaDismiss);
 });
-
-
-function pwaInstallFromBanner(btn) {
-  if (_pwaPrompt) {
-    btn.textContent = '⏳ Installing…';
-    btn.disabled = true;
-    _pwaPrompt.prompt();
-    _pwaPrompt.userChoice.then(result => {
-      if (result.outcome === 'accepted') {
-        showToast('✅ Thunderstudy installed!', 'success', 3000);
-        document.getElementById('pwa-home-banner')?.remove();
-        localStorage.setItem('ts_pwa_banner_dismissed', '1');
-      } else {
-        btn.disabled = false;
-        btn.innerHTML = '📲<br><strong style="font-size:12px">Install App</strong><br><span style="font-size:10px;opacity:.8">One tap</span>';
-      }
-      _pwaPrompt = null;
-    });
-  } else {
-    // No prompt available — show manual instructions
-    pwaShowInstructions();
-  }
-}
-
-function pwaShowInstructions() {
-  const isIOS = /iPhone|iPad/i.test(navigator.userAgent);
-  const isAndroid = /Android/i.test(navigator.userAgent);
-  const existing = document.getElementById('pwa-instructions-modal');
-  if (existing) existing.remove();
-
-  const steps = isIOS
-    ? [
-        { icon: '🌐', text: 'Open this page in <strong>Safari</strong> (not Chrome)' },
-        { icon: '⬆️', text: 'Tap the <strong>Share button</strong> at the bottom' },
-        { icon: '➕', text: 'Scroll down and tap <strong>"Add to Home Screen"</strong>' },
-        { icon: '✅', text: 'Tap <strong>Add</strong> — done!' },
-      ]
-    : [
-        { icon: '🌐', text: 'Open in <strong>Chrome or Brave browser</strong>' },
-        { icon: '⋮', text: 'Tap the <strong>3-dot menu</strong> (top right)' },
-        { icon: '📲', text: 'Tap <strong>"Add to Home Screen"</strong> or <strong>"Install App"</strong>' },
-        { icon: '✅', text: 'Tap <strong>Add</strong> — done!' },
-      ];
-
-  const modal = document.createElement('div');
-  modal.id = 'pwa-instructions-modal';
-  modal.style.cssText = `position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:16px;`;
-  modal.innerHTML = `
-  <div style="background:var(--card);border-radius:26px;padding:26px;max-width:380px;width:100%;border:1px solid var(--border);animation:mIn .35s cubic-bezier(.34,1.56,.64,1);text-align:center;">
-    <div style="font-size:42px;margin-bottom:10px;">📲</div>
-    <div style="font-size:17px;font-weight:900;margin-bottom:5px;">Install Thunderstudy</div>
-    <div style="font-size:12px;color:var(--text3);margin-bottom:18px;line-height:1.6;">
-      Follow these steps on your <strong>${isIOS?'iPhone/iPad':'Android'}</strong>:
-    </div>
-    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;text-align:left;">
-      ${steps.map((s,i) => `
-      <div style="display:flex;align-items:flex-start;gap:12px;background:var(--card2);border-radius:13px;padding:12px 14px;">
-        <div style="width:28px;height:28px;border-radius:50%;
-          background:linear-gradient(135deg,#4f6ef7,#7c3aed);
-          color:#fff;font-size:11px;font-weight:800;
-          display:flex;align-items:center;justify-content:center;
-          flex-shrink:0;">${i+1}</div>
-        <div style="font-size:13px;font-weight:600;color:var(--text);padding-top:4px;line-height:1.5;">
-          ${s.text}
-        </div>
-      </div>`).join('')}
-    </div>
-    <div style="background:rgba(16,185,129,.07);border:1.5px solid rgba(16,185,129,.25);border-radius:13px;padding:11px 14px;margin-bottom:16px;">
-      <div style="font-size:12px;color:var(--green);font-weight:700;">
-        ✅ Works offline · Loads instantly · No app store needed
-      </div>
-    </div>
-    <button onclick="document.getElementById('pwa-instructions-modal').remove()" class="btn btn-prim" style="width:100%;justify-content:center;padding:12px;font-size:13px;">
-      Got it!
-    </button>
-  </div>`;
-  document.body.appendChild(modal);
-  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
-}
 
 function parseNoticeMessage(text) {
   if (!text) return '';
@@ -3051,6 +2955,15 @@ function applyBroadcastCode(code){
   }catch(e){showToast('❌ Invalid broadcast code','error');return false;}
 }
 
+function openNoticePopup(encodedNotice) {
+  try {
+    const notice = JSON.parse(decodeURIComponent(encodedNotice));
+    showAdminPopup([notice]);
+  } catch(e) {
+    console.log('Notice popup error:', e);
+  }
+}
+
 function buildAdminNoticesHTML(){
   const notices=getAdminNotices().filter(n=>{
     if(!n.active)return false;
@@ -3166,17 +3079,56 @@ function buildAdminNoticesHTML(){
       </div>
     </div>`;
   }
+  
+  // ── ADD THIS BLOCK before the closing H+=`</div>` in buildAdminNoticesHTML() ──
+
+const allActiveNotices = notices.filter(n => {
+  if (!n.active) return false;
+  if (n.expiry && new Date(n.expiry) < new Date()) return false;
+  return true;
+});
+
+H += `
+<div style="display:flex;align-items:center;justify-content:center;margin-top:14px;">
+  <button onclick="showAllNoticesModal()" style="
+    display:inline-flex;align-items:center;gap:8px;
+    padding:10px 24px;border-radius:30px;
+    background:linear-gradient(135deg,rgba(79,110,247,.1),rgba(124,58,237,.07));
+    border:1.5px solid rgba(79,110,247,.25);
+    font-size:12px;font-weight:800;color:var(--acc);
+    cursor:pointer;font-family:var(--fn);
+    transition:all .2s;
+  "
+  onmouseenter="this.style.background='linear-gradient(135deg,rgba(79,110,247,.18),rgba(124,58,237,.12))';this.style.transform='translateY(-1px)'"
+  onmouseleave="this.style.background='linear-gradient(135deg,rgba(79,110,247,.1),rgba(124,58,237,.07))';this.style.transform='none'">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+      <path d="M15 17H20L18.6 15.6C18.2 15.2 18 14.7 18 14.2V11C18 8.4 16.4 6.2 14 5.3V5C14 3.9 13.1 3 12 3C10.9 3 10 3.9 10 5V5.3C7.6 6.2 6 8.4 6 11V14.2C6 14.7 5.8 15.2 5.4 15.6L4 17H9M15 17V18C15 19.7 13.7 21 12 21C10.3 21 9 19.7 9 18V17H15Z" stroke="var(--acc)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    View All ${allActiveNotices.length} Active Notices
+    <div style="background:var(--acc);color:#fff;font-size:9px;font-weight:900;padding:2px 7px;border-radius:20px;">${allActiveNotices.length}</div>
+  </button>
+</div>`;
 
   H+=`</div>`;
 
   // Popup trigger
-  setTimeout(()=>{
-    const popupNotice=notices.find(n=>n.popup&&!sessionStorage.getItem('ts_popup_shown_'+n.id));
-    if(popupNotice){
-      sessionStorage.setItem('ts_popup_shown_'+popupNotice.id,'1');
-      showAdminPopup(popupNotice);
-    }
-  },600);
+// Popup trigger — shows ALL popup notices that haven't been "Read it"-ed
+  setTimeout(() => {
+    try {
+      const readPopups = JSON.parse(
+        localStorage.getItem('ts_read_popups') || '[]'
+      );
+      // Get all notices marked as popup=true that user hasn't clicked "Read it" on
+      const popupNotices = notices.filter(n =>
+        n.popup &&
+        !readPopups.includes(String(n.id || '')) &&
+        !readPopups.includes(String(n.title || ''))
+      );
+      if (popupNotices.length > 0) {
+        showAdminPopup(popupNotices);
+      }
+    } catch(e) {}
+  }, 600);
 
   return H;
 }
@@ -3217,7 +3169,10 @@ function buildNewspaperCol(label, borderColor, bgColor, dividerColor, titleColor
     <div style="padding:11px 13px;">
     ${hasNotices
       ? noticeList.map((n,i)=>`
-        <div style="${i<noticeList.length-1?`padding-bottom:9px;margin-bottom:9px;border-bottom:1px solid ${borderColor}20;`:''}display:flex;align-items:flex-start;gap:8px;">
+        <div onclick="openNoticePopup('${encodeURIComponent(JSON.stringify(n))}')"
+          style="${i<noticeList.length-1?`padding-bottom:9px;margin-bottom:9px;border-bottom:1px solid ${borderColor}20;`:''}display:flex;align-items:flex-start;gap:8px;cursor:pointer;border-radius:8px;padding:6px 4px;transition:background .15s;"
+          onmouseenter="this.style.background='rgba(0,0,0,.04)'"
+          onmouseleave="this.style.background='transparent'">
           <div style="width:5px;height:5px;border-radius:50%;background:${borderColor};margin-top:5px;flex-shrink:0;"></div>
           <div style="flex:1;min-width:0;">
             <div style="font-size:12px;font-weight:800;color:${titleColor};margin-bottom:3px;line-height:1.35;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${escH(n.title)}</div>
@@ -3225,6 +3180,7 @@ function buildNewspaperCol(label, borderColor, bgColor, dividerColor, titleColor
   ${parseNoticeMessage(n.message)}
 </div>
             ${n.expiry?`<div style="display:inline-flex;align-items:center;gap:4px;margin-top:5px;background:${borderColor}18;border-radius:20px;padding:2px 8px;font-size:9px;font-weight:700;color:${subtitleColor};"><span>⏱</span>${new Date(n.expiry).toLocaleDateString('en-IN')}</div>`:''}
+            <div style="display:inline-flex;align-items:center;gap:4px;margin-top:6px;background:${borderColor}18;border-radius:20px;padding:2px 9px;font-size:9px;font-weight:700;color:${subtitleColor};">👆 Tap to view</div>
           </div>
         </div>`).join('')
       : `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 0;gap:6px;">
@@ -3247,160 +3203,292 @@ function renderAdminNotices(){
 
 function showAdminPopup(notices) {
   if (!notices || !notices.length) return;
-  const t = THEMES[currentTheme] || THEMES.dark;
 
-  // Remove any existing popup
-  const old = document.getElementById('adminPopupOverlay');
-  if (old) old.remove();
+  // ── CONFIG: change to 'dark' for Design B ──
+  const THEME = 'light';
+
+  const existing = document.getElementById('adminPopupOverlay');
+  if (existing) existing.remove();
 
   let current = 0;
-  const total = notices.length;
 
-  const parseMessage = parseNoticeMessage;
+  const gradients = {
+    light: [
+      'linear-gradient(135deg,rgba(80,160,255,0.62),rgba(60,120,240,0.52))',
+      'linear-gradient(135deg,rgba(80,220,180,0.62),rgba(60,180,200,0.52))',
+      'linear-gradient(135deg,rgba(220,130,255,0.62),rgba(180,100,240,0.52))',
+      'linear-gradient(135deg,rgba(255,170,80,0.62),rgba(240,130,60,0.52))',
+      'linear-gradient(135deg,rgba(255,100,140,0.62),rgba(220,60,100,0.52))',
+    ]
+  };
 
-  function buildCard(notice) {
-    const iconMap = { EVENT:'🗓️', ALERT:'🚨', INFO:'ℹ️', UPDATE:'🔄' };
-    const icon = iconMap[notice.type] || '📢';
-    const colorMap = { EVENT:'#22c55e', ALERT:'#ef4444', INFO:'#3b82f6', UPDATE:'#f59e0b' };
-    const tagColor = colorMap[notice.type] || '#888';
-    const expiryHtml = notice.expiry
-      ? `<div style="font-size:11px;color:#aaa;margin-bottom:10px;">Expires: ${notice.expiry}</div>`
-      : '';
-    const counterHtml = total > 1
-      ? `<div style="font-size:11px;color:#aaa;text-align:center;margin-bottom:8px;">${current+1} of ${total}</div>`
-      : '';
-    return `
-      <div style="font-size:32px;margin-bottom:8px;text-align:center;">${icon}</div>
-      <div style="display:inline-block;background:${tagColor}22;color:${tagColor};
-        border-radius:20px;padding:3px 12px;font-size:11px;font-weight:800;
-        letter-spacing:.5px;margin-bottom:12px;">${notice.type||'NOTICE'}</div>
-      <div style="font-size:15px;font-weight:800;color:${t.text};
-        line-height:1.5;margin-bottom:10px;">${escH(notice.title||'')}</div>
-      <div style="font-size:13px;color:${t.subtext||'#666'};line-height:1.8;
-        margin-bottom:${notice.expiry ? '8px' : '16px'};">${parseMessage(notice.message)}</div>
-      ${expiryHtml}
-      ${counterHtml}
-    `;
+  const sceneBg = THEME === 'dark'
+    ? 'linear-gradient(135deg,#0f172a,#1e1b4b)'
+    : 'rgba(0,0,0,0.45)';
+
+  const grads = gradients[THEME];
+
+  function getGrad(i) {
+    return grads[i % grads.length];
+  }
+
+  function extractLink(notice) {
+    if (notice.link && notice.link.startsWith('http')) return notice.link;
+    const match = (notice.message || '').match(/https?:\/\/[^\s<>"']+/);
+    return match ? match[0] : null;
+  }
+
+  function getLinkLabel(url) {
+    if (!url) return '🔗 Open Link';
+    if (/t\.me|telegram/i.test(url)) return '📱 Open Telegram';
+    if (/instagram\.com/i.test(url)) return '📸 Instagram';
+    if (/youtube\.com|youtu\.be/i.test(url)) return '▶ YouTube';
+    if (/wa\.me|whatsapp/i.test(url)) return '💬 WhatsApp';
+    if (/drive\.google\.com/i.test(url)) return '📁 Google Drive';
+    if (/forms\.gle|docs\.google\.com\/forms/i.test(url)) return '📝 Open Form';
+    return '🔗 Open Link';
   }
 
   const overlay = document.createElement('div');
   overlay.id = 'adminPopupOverlay';
   overlay.style.cssText = `
     position:fixed;inset:0;z-index:9999;
-    background:rgba(0,0,0,.55);backdrop-filter:blur(4px);
+    background:${sceneBg};
+    backdrop-filter:blur(${THEME === 'dark' ? '12px' : '5px'});
     display:flex;align-items:center;justify-content:center;
     padding:20px;
   `;
 
-  const box = document.createElement('div');
-  box.style.cssText = `
-    background:${t.card||'#fff'};border-radius:20px;
-    padding:28px 24px 20px;max-width:360px;width:100%;
-    text-align:center;position:relative;
-    font-family:var(--fn);
-    transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s;
-  `;
-
-  const contentDiv = document.createElement('div');
-  contentDiv.innerHTML = buildCard(notices[0]);
-  box.appendChild(contentDiv);
-
-  // Got it / Next button
-  const btn = document.createElement('button');
-  btn.style.cssText = `
-    width:100%;padding:14px;border-radius:14px;border:none;cursor:pointer;
-    background:#22c55e;color:#fff;font-size:15px;font-weight:800;
-    font-family:var(--fn);margin-top:4px;
-    transition:transform .1s,box-shadow .1s;
-    box-shadow:0 4px 16px #22c55e55;
-  `;
-  btn.onmouseenter = () => { btn.style.transform='translateY(-2px)'; btn.style.boxShadow='0 8px 24px #22c55e66'; };
-  btn.onmouseleave = () => { btn.style.transform='none'; btn.style.boxShadow='0 4px 16px #22c55e55'; };
-
-  function updateBtn() {
-    btn.textContent = current < total - 1 ? 'Next →' : 'Got It! ✓';
+  // Build stacked back cards HTML
+  function buildBackCards() {
+    let html = '';
+    const backCount = Math.min(2, notices.length - 1);
+    for (let i = backCount; i >= 1; i--) {
+      const idx = (current + i) % notices.length;
+      const angle = i * 5;
+      const tx = i * 14;
+      const ty = i * 9;
+      html += `<div style="
+        position:absolute;inset:0;border-radius:22px;
+        background:${getGrad(idx)};
+        border:1px solid rgba(255,255,255,${THEME === 'dark' ? '0.12' : '0.38'});
+        transform:rotate(${angle}deg) translate(${tx}px,${ty}px);
+        transition:transform 0.35s ease;
+      "></div>`;
+    }
+    return html;
   }
-  updateBtn();
 
-  // Stack shadow cards behind (visual depth)
-  const stack1 = document.createElement('div');
-  stack1.style.cssText = `
-    position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
-    width:92%;height:100%;background:${t.card||'#fff'};
-    border-radius:20px;opacity:.5;z-index:-1;
-  `;
-  const stack2 = document.createElement('div');
-  stack2.style.cssText = `
-    position:absolute;bottom:-15px;left:50%;transform:translateX(-50%);
-    width:85%;height:100%;background:${t.card||'#fff'};
-    border-radius:20px;opacity:.25;z-index:-2;
-  `;
+  function buildDots() {
+    return notices.map((_, i) => `
+      <div id="apop-dot-${i}" style="
+        width:${i === current ? '18px' : '6px'};height:6px;
+        border-radius:6px;
+        background:${i === current ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.3)'};
+        transition:all 0.3s ease;
+      "></div>`).join('');
+  }
 
-  function animateNext() {
-    // Slide out current card to left
-    box.style.transform = 'translateX(-120%) rotate(-8deg)';
-    box.style.opacity = '0';
+  function renderNotice() {
+    const notice = notices[current];
+    const linkUrl = extractLink(notice);
+    const linkLabel = getLinkLabel(linkUrl);
+    const typeIconMap = {
+      event: '📅', alert: '🚨', info: 'ℹ️',
+      update: '🔄', exam: '📝', warning: '⚠️', default: '📢'
+    };
+    const icon = typeIconMap[(notice.type || '').toLowerCase()] || typeIconMap.default;
+
+    overlay.innerHTML = `
+    <div style="position:relative;width:300px;height:380px;cursor:pointer;" id="apop-stack">
+
+      ${buildBackCards()}
+
+      <div id="apop-front" style="
+        position:absolute;inset:0;border-radius:22px;
+        background:${getGrad(current)};
+        border:1px solid rgba(255,255,255,${THEME === 'dark' ? '0.2' : '0.5'});
+        backdrop-filter:blur(18px);
+        display:flex;flex-direction:column;
+        padding:24px;
+        transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1),opacity 0.25s;
+        box-shadow:0 16px 48px rgba(0,0,0,${THEME === 'dark' ? '0.4' : '0.15'});
+      ">
+        <!-- Close X -->
+        <button onclick="popupGotIt()" style="
+          position:absolute;top:14px;right:16px;
+          background:rgba(255,255,255,0.15);
+          border:1px solid rgba(255,255,255,0.25);
+          border-radius:50%;width:28px;height:28px;
+          font-size:16px;font-weight:700;color:rgba(255,255,255,0.85);
+          cursor:pointer;display:flex;align-items:center;
+          justify-content:center;font-family:var(--fn);
+          transition:background 0.2s;
+        " onmouseenter="this.style.background='rgba(255,255,255,0.28)'"
+           onmouseleave="this.style.background='rgba(255,255,255,0.15)'">×</button>
+
+        <!-- Eyebrow -->
+        <div style="
+          font-size:10px;font-weight:800;
+          color:rgba(255,255,255,0.65);
+          text-transform:uppercase;letter-spacing:1.5px;
+          margin-bottom:14px;
+        ">${(notice.type || 'notice').toUpperCase()}</div>
+
+        <!-- Icon circle -->
+        <div style="
+          width:44px;height:44px;border-radius:50%;
+          background:rgba(255,255,255,0.18);
+          border:1.5px solid rgba(255,255,255,0.38);
+          display:flex;align-items:center;justify-content:center;
+          font-size:20px;margin-bottom:14px;flex-shrink:0;
+        ">${icon}</div>
+
+        <!-- Title -->
+        <div style="
+          font-size:18px;font-weight:900;color:#fff;
+          line-height:1.35;margin-bottom:10px;
+        ">${escH(notice.title || '')}</div>
+
+        <!-- Message -->
+        <div style="
+          font-size:12px;color:rgba(255,255,255,0.78);
+          line-height:1.7;flex:1;overflow:hidden;
+          display:-webkit-box;-webkit-line-clamp:3;
+          -webkit-box-orient:vertical;
+        ">${parseNoticeMessage(notice.message)}</div>
+
+        <!-- Link button -->
+        ${linkUrl ? `
+        <a href="${linkUrl}" target="_blank" rel="noopener" style="
+          display:flex;align-items:center;justify-content:center;gap:7px;
+          margin-top:14px;padding:10px;border-radius:30px;
+          background:rgba(255,255,255,0.18);
+          border:1.5px solid rgba(255,255,255,0.4);
+          font-size:12px;font-weight:800;color:#fff;
+          text-decoration:none;font-family:var(--fn);
+          backdrop-filter:blur(8px);
+          transition:background 0.2s;
+        " onmouseenter="this.style.background='rgba(255,255,255,0.3)'"
+           onmouseleave="this.style.background='rgba(255,255,255,0.18)'">${linkLabel}</a>` : ''}
+
+        <!-- Footer: dots + Got it / Read it -->
+        <div style="margin-top:14px;display:flex;flex-direction:column;gap:9px;">
+
+          <!-- Progress dots -->
+          ${notices.length > 1 ? `<div style="display:flex;justify-content:center;gap:5px;">${buildDots()}</div>` : ''}
+
+          <!-- Buttons row -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
+            <button onclick="popupGotIt()" style="
+              padding:9px 8px;border-radius:14px;
+              border:1.5px solid rgba(255,255,255,0.3);
+              background:rgba(255,255,255,0.1);
+              color:rgba(255,255,255,0.85);
+              font-size:11px;font-weight:800;
+              cursor:pointer;font-family:var(--fn);
+              transition:background 0.2s;
+            " onmouseenter="this.style.background='rgba(255,255,255,0.22)'"
+               onmouseleave="this.style.background='rgba(255,255,255,0.1)'">
+              👋 Got it
+            </button>
+            <button onclick="popupReadIt('${notice.id || notice.title}')" style="
+              padding:9px 8px;border-radius:14px;border:none;
+              background:rgba(255,255,255,0.22);
+              color:#fff;font-size:11px;font-weight:800;
+              cursor:pointer;font-family:var(--fn);
+              transition:background 0.2s;
+            " onmouseenter="this.style.background='rgba(255,255,255,0.35)'"
+               onmouseleave="this.style.background='rgba(255,255,255,0.22)'">
+              ✅ Read it
+            </button>
+          </div>
+
+          ${notices.length > 1 ? `
+          <div style="text-align:center;font-size:9px;
+            color:rgba(255,255,255,0.4);margin-top:2px;">
+            ${current + 1} / ${notices.length} — tap card to continue
+          </div>` : ''}
+        </div>
+      </div>
+    </div>`;
+
+    // Click stack to flip to next
     setTimeout(() => {
-      current++;
-      if (current >= total) {
-        overlay.remove();
-        return;
-      }
-      // Snap to right, update content
-      box.style.transition = 'none';
-      box.style.transform = 'translateX(120%) rotate(8deg)';
-      box.style.opacity = '0';
-      contentDiv.innerHTML = buildCard(notices[current]);
-      updateBtn();
-      // Hide stack cards if last
-      if (current === total - 1) {
-        stack1.style.opacity = '0';
-        stack2.style.opacity = '0';
-      }
-      // Slide in from right
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          box.style.transition = 'transform .35s cubic-bezier(.4,0,.2,1),opacity .35s';
-          box.style.transform = 'none';
-          box.style.opacity = '1';
-        });
+      const stack = document.getElementById('apop-stack');
+      if (stack) stack.addEventListener('click', (e) => {
+        if (e.target.closest('button') || e.target.closest('a')) return;
+        if (notices.length > 1) flipToNext();
       });
-    }, 350);
+    }, 50);
   }
 
-  btn.onclick = animateNext;
-
-  // Close X
-  const closeBtn = document.createElement('button');
-  closeBtn.innerHTML = '&times;';
-  closeBtn.style.cssText = `
-    position:absolute;top:12px;right:14px;background:none;border:none;
-    font-size:22px;cursor:pointer;color:${t.subtext||'#888'};line-height:1;
-    font-family:var(--fn);
-  `;
-  closeBtn.onclick = () => overlay.remove();
-
-  box.style.position = 'relative';
-  box.appendChild(btn);
-  box.appendChild(closeBtn);
-
-  // Only show stack shadows if multiple notices
-  if (total > 1) {
-    box.appendChild(stack1);
-    box.appendChild(stack2);
+  function flipToNext() {
+    const front = document.getElementById('apop-front');
+    if (!front) return;
+    front.style.transition = 'transform 0.3s cubic-bezier(0.4,0,0.2,1),opacity 0.18s';
+    front.style.transform = 'rotate(-10deg) translateX(-40px) scale(0.9)';
+    front.style.opacity = '0';
+    setTimeout(() => {
+      current = (current + 1) % notices.length;
+      renderNotice();
+      const newFront = document.getElementById('apop-front');
+      if (!newFront) return;
+      newFront.style.transition = 'none';
+      newFront.style.transform = 'rotate(8deg) translateX(30px) scale(0.93)';
+      newFront.style.opacity = '0';
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        newFront.style.transition = 'transform 0.42s cubic-bezier(0.34,1.56,0.64,1),opacity 0.28s';
+        newFront.style.transform = 'rotate(0) translateX(0) scale(1)';
+        newFront.style.opacity = '1';
+      }));
+    }, 220);
   }
 
-  overlay.appendChild(box);
+  // Got it — close, don't mark read
+  window.popupGotIt = function() {
+    if (overlay && overlay.parentNode) overlay.remove();
+  };
+
+  // Read it — mark permanently done, move to next or close
+  window.popupReadIt = function(noticeId) {
+    try {
+      const read = JSON.parse(localStorage.getItem('ts_read_popups') || '[]');
+      const key = String(noticeId || '');
+      if (key && !read.includes(key)) {
+        read.push(key);
+        localStorage.setItem('ts_read_popups', JSON.stringify(read));
+      }
+    } catch(e) {}
+
+    // Remove this notice from the stack
+    notices = notices.filter((_, i) => i !== current);
+    if (!notices.length) {
+      if (overlay && overlay.parentNode) overlay.remove();
+      return;
+    }
+    current = current % notices.length;
+    flipToNext();
+  };
+
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) popupGotIt();
+  });
+
   document.body.appendChild(overlay);
+  renderNotice();
 
   // Entrance animation
-  box.style.transform = 'translateY(40px) scale(.95)';
-  box.style.opacity = '0';
-  box.style.transition = 'transform .4s cubic-bezier(.34,1.56,.64,1),opacity .3s';
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    box.style.transform = 'none';
-    box.style.opacity = '1';
-  }));
+  const front = document.getElementById('apop-front');
+  if (front) {
+    front.style.opacity = '0';
+    front.style.transform = 'scale(0.88) translateY(20px)';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      front.style.transition = 'transform 0.45s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s';
+      front.style.opacity = '1';
+      front.style.transform = 'scale(1) translateY(0)';
+    }));
+  }
 }
 
 function renderExamCountdown(){
@@ -4220,95 +4308,8 @@ H += `<div id="quote-card-wrap" style="margin-bottom:0;">
   <div class="xp-track"><div class="xp-fill" id="xp-fill-bar" style="width:0%"></div></div>
   <div class="xp-nums"><span>${xpInfo.xp} XP</span><span>${xpInfo.progress.toFixed(0)}% to next level</span></div></div>`;
   H+=buildAdminNoticesHTML();
-  
-  // PWA Install Banner (two options)
-const isPWAInstalled = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
-if (!isPWAInstalled && !localStorage.getItem('ts_pwa_banner_dismissed')) {
-  H += `
-  <div id="pwa-home-banner" style="
-    background:linear-gradient(135deg,rgba(79,110,247,.09),rgba(124,58,237,.06));
-    border:1.5px solid rgba(79,110,247,.25);
-    border-radius:20px;
-    padding:16px 18px;
-    margin-bottom:20px;
-    position:relative;
-    overflow:hidden;
-    animation:fadeUp .4s ease both;
-  ">
-    <!-- decorative blob -->
-    <div style="position:absolute;top:-30px;right:-20px;width:130px;height:130px;border-radius:50%;background:rgba(124,58,237,.07);pointer-events:none;"></div>
-    
-    <!-- close button -->
-    <button onclick="
-      document.getElementById('pwa-home-banner').style.display='none';
-      localStorage.setItem('ts_pwa_banner_dismissed','1');
-    " style="
-      position:absolute;top:10px;right:12px;
-      background:none;border:none;cursor:pointer;
-      font-size:18px;color:var(--text3);line-height:1;
-      font-family:var(--fn);padding:0;z-index:2;
-    ">×</button>
-    
-    <!-- header row -->
-    <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px;position:relative;z-index:1;">
-      <div style="width:40px;height:40px;border-radius:12px;
-        background:linear-gradient(135deg,#4f6ef7,#7c3aed);
-        display:flex;align-items:center;justify-content:center;
-        font-size:20px;flex-shrink:0;
-        box-shadow:0 4px 12px rgba(79,110,247,.3);">⚡</div>
-      <div>
-        <div style="font-size:13px;font-weight:900;color:var(--text);margin-bottom:1px;">
-          Install Thunderstudy App
-        </div>
-        <div style="font-size:11px;color:var(--text3);">
-          Works offline · Faster · Feels native
-        </div>
-      </div>
-    </div>
-    
-    <!-- two option buttons -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;position:relative;z-index:1;">
-      
-      <!-- Option 1: Direct install via browser prompt -->
-      <button onclick="pwaInstallFromBanner(this)" style="
-        display:flex;flex-direction:column;align-items:flex-start;gap:4px;
-        background:linear-gradient(135deg,#4f6ef7,#7c3aed);
-        color:#fff;border:none;border-radius:14px;
-        padding:12px 14px;cursor:pointer;
-        font-family:var(--fn);
-        transition:all .2s cubic-bezier(.34,1.56,.64,1);
-        text-align:left;
-      "
-      onmouseenter="this.style.transform='translateY(-2px)';this.style.filter='brightness(1.1)'"
-      onmouseleave="this.style.transform='none';this.style.filter='none'">
-        <div style="font-size:18px;line-height:1;">📲</div>
-        <div style="font-size:12px;font-weight:800;margin-top:2px;">Install App</div>
-        <div style="font-size:10px;opacity:.8;line-height:1.4;">One tap · Auto-install via browser</div>
-      </button>
-      
-      <!-- Option 2: Manual instructions -->
-      <button onclick="pwaShowInstructions()" style="
-        display:flex;flex-direction:column;align-items:flex-start;gap:4px;
-        background:rgba(79,110,247,.08);
-        color:var(--acc);
-        border:1.5px solid rgba(79,110,247,.3);
-        border-radius:14px;
-        padding:12px 14px;cursor:pointer;
-        font-family:var(--fn);
-        transition:all .2s cubic-bezier(.34,1.56,.64,1);
-        text-align:left;
-      "
-      onmouseenter="this.style.background='rgba(79,110,247,.14)'"
-      onmouseleave="this.style.background='rgba(79,110,247,.08)'">
-        <div style="font-size:18px;line-height:1;">📖</div>
-        <div style="font-size:12px;font-weight:800;margin-top:2px;">How to Install</div>
-        <div style="font-size:10px;color:var(--text3);line-height:1.4;">Step-by-step guide</div>
-      </button>
-    </div>
-  </div>`;
-}
-  
-  H+=`<div class="sec-hdr"><div class="sec-title">⚡ Quick Actions</div></div>
+H+=buildPWAInstallCard();
+H+=`<div class="sec-hdr"><div class="sec-title">⚡ Quick Actions</div></div>
   <div class="quick-links" style="margin-bottom:20px;">
     <div class="ql-item" onclick="goPage('scoreboard')"><div class="ql-icon">📊</div><div class="ql-name">Scoreboard</div><div class="ql-desc">Stats & charts</div></div>
     <div class="ql-item" onclick="goPage('analytics')"><div class="ql-icon">📈</div><div class="ql-name">Analytics</div><div class="ql-desc">Weak chapters & insights</div></div>
@@ -7258,7 +7259,7 @@ function openCurrencyGuide(type){
       <div style="font-size:20px;font-weight:900;">${cfg.title}</div>
       <span onclick="document.getElementById('currency-guide-modal').remove()" style="cursor:pointer;color:var(--text3);font-size:28px;line-height:1;">×</span>
     </div>
-    <div style="background:${cfg.bg};border:1.5px solid ${cfg.border};border-radius:14px;padding:12px 16px;margin-bottom:18px;display:flex;align-items:center;gap:12px;">
+    <div data-ntype="${type}" style="background:${cfg.bg};border:1.5px solid ${cfg.border};border-radius:14px;padding:12px 16px;margin-bottom:18px;display:flex;align-items:center;gap:12px;">
       <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);">Your Current</div>
       <div style="font-size:22px;font-weight:900;font-family:var(--mono);color:${cfg.color};margin-left:auto;">${cfg.current} ${type==='rp'?'':cfg.unit}</div>
     </div>
@@ -11123,6 +11124,407 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
+
+/* ══════════════════════════════════════════
+   SHOW ALL NOTICES MODAL
+══════════════════════════════════════════ */
+function showAllNoticesModal() {
+  const existing = document.getElementById('all-notices-modal-ov');
+  if (existing) existing.remove();
+
+  const notices = getAdminNotices().filter(n => {
+    if (!n.active) return false;
+    if (n.expiry && new Date(n.expiry) < new Date()) return false;
+    return true;
+  });
+  const exams = getAdminExams().filter(e => e.active && new Date(e.date) > new Date())
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  const typeConfig = {
+    info:    { label: 'Info',    color: '#185FA5', bg: '#EEF5FD', border: '#B5D4F4', icon: 'ℹ️' },
+    alert:   { label: 'Alert',   color: '#A32D2D', bg: '#FDF2F2', border: '#F7C1C1', icon: '🚨' },
+    warning: { label: 'Warning', color: '#854F0B', bg: '#FDF6EA', border: '#FAC775', icon: '⚠️' },
+    event:   { label: 'Event',   color: '#2E7A14', bg: '#EEF7EA', border: '#B8DDA8', icon: '📅' },
+    exam:    { label: 'Exam',    color: '#534AB7', bg: '#EDE9FE', border: '#CECBF6', icon: '📝' },
+    update:  { label: 'Update',  color: '#854F0B', bg: '#FDF6EA', border: '#FAC775', icon: '🔄' },
+  };
+
+  const ov = document.createElement('div');
+  ov.id = 'all-notices-modal-ov';
+  ov.style.cssText = `position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;
+    display:flex;align-items:flex-start;justify-content:center;
+    backdrop-filter:blur(8px);padding:16px;overflow-y:auto;`;
+
+  // Group notices by type
+  const grouped = {};
+  notices.forEach(n => {
+    const t = (n.type || 'info').toLowerCase();
+    if (!grouped[t]) grouped[t] = [];
+    grouped[t].push(n);
+  });
+
+  // Build notice cards HTML
+  let noticeCardsHTML = '';
+  if (!notices.length) {
+    noticeCardsHTML = `<div style="text-align:center;padding:32px;color:var(--text3);">
+      <div style="font-size:40px;margin-bottom:10px;">🔔</div>
+      <div style="font-size:15px;font-weight:700;">No active notices right now</div>
+    </div>`;
+  } else {
+    Object.entries(grouped).forEach(([type, list]) => {
+      const cfg = typeConfig[type] || typeConfig.info;
+      list.forEach(n => {
+        const expStr = n.expiry
+          ? new Date(n.expiry).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})
+          : null;
+        const linkMatch = (n.message || '').match(/https?:\/\/[^\s<>"']+/);
+        const link = n.link || (linkMatch ? linkMatch[0] : null);
+        let btnLabel = '🔗 Open Link';
+        if (link) {
+          if (/t\.me|telegram/i.test(link)) btnLabel = '📱 Open Telegram';
+          else if (/instagram\.com/i.test(link)) btnLabel = '📸 Instagram';
+          else if (/youtube\.com|youtu\.be/i.test(link)) btnLabel = '▶ YouTube';
+          else if (/wa\.me|whatsapp/i.test(link)) btnLabel = '💬 WhatsApp';
+          else if (/drive\.google\.com/i.test(link)) btnLabel = '📁 Google Drive';
+          else if (/forms\.gle|docs\.google/i.test(link)) btnLabel = '📝 Open Form';
+        }
+        noticeCardsHTML += `
+        <div style="
+          background:${cfg.bg};
+          border:1.5px solid ${cfg.border};
+          border-radius:18px;padding:16px 18px;
+          transition:transform .2s,box-shadow .2s;
+        "
+        onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.08)'"
+        onmouseleave="this.style.transform='none';this.style.boxShadow='none'">
+
+          <!-- Type badge -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <div style="display:inline-flex;align-items:center;gap:6px;
+              background:rgba(255,255,255,.7);border:1px solid ${cfg.border};
+              border-radius:20px;padding:4px 11px;
+              font-size:11px;font-weight:800;color:${cfg.color};">
+              ${cfg.icon} ${cfg.label}
+            </div>
+            ${expStr ? `<div style="font-size:10px;color:${cfg.color};opacity:.7;">⏱ ${expStr}</div>` : ''}
+          </div>
+
+          <!-- Title -->
+          <div style="font-size:14px;font-weight:900;color:#1a1d2e;
+            margin-bottom:7px;line-height:1.4;">
+            ${escH(n.title || '')}
+          </div>
+
+          <!-- Message -->
+          <div style="font-size:12px;color:#5a5f7a;line-height:1.75;margin-bottom:${link ? '12px' : '0'};">
+            ${parseNoticeMessage(n.message)}
+          </div>
+
+          <!-- Link button -->
+          ${link ? `<a href="${link}" target="_blank" rel="noopener" style="
+            display:inline-flex;align-items:center;gap:7px;
+            background:${cfg.color};color:#fff;
+            border-radius:22px;padding:8px 16px;
+            font-size:12px;font-weight:800;
+            text-decoration:none;font-family:var(--fn);
+            transition:all .2s;
+          " onmouseenter="this.style.filter='brightness(1.12)'"
+             onmouseleave="this.style.filter='none'">${btnLabel}</a>` : ''}
+        </div>`;
+      });
+    });
+  }
+
+  // Build exam cards HTML
+  let examHTML = '';
+  if (exams.length) {
+    const now = new Date();
+    examHTML = `
+    <div style="font-size:14px;font-weight:900;margin:20px 0 12px;
+      display:flex;align-items:center;gap:8px;">
+      <div style="width:28px;height:28px;border-radius:8px;
+        background:#534AB7;display:flex;align-items:center;
+        justify-content:center;font-size:14px;">📝</div>
+      Upcoming Exams (${exams.length})
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      ${exams.map(e => {
+        const diff = new Date(e.date) - now;
+        const d = Math.floor(diff/86400000);
+        const h = Math.floor((diff%86400000)/3600000);
+        const urgent = diff < 86400000;
+        const cdLabel = d > 0 ? `${d}d ${h}h` : `${Math.floor(diff/3600000)}h ${Math.floor((diff%3600000)/60000)}m`;
+        return `
+        <div style="background:${urgent?'#FDF2F2':'#EDE9FE'};
+          border:1.5px solid ${urgent?'#F7C1C1':'#CECBF6'};
+          border-radius:14px;padding:13px 16px;
+          display:flex;align-items:center;gap:13px;flex-wrap:wrap;">
+          <div style="width:38px;height:38px;border-radius:11px;
+            background:${urgent?'#A32D2D':'#534AB7'};
+            display:flex;align-items:center;justify-content:center;
+            font-size:18px;flex-shrink:0;">📅</div>
+          <div style="flex:1;min-width:130px;">
+            <div style="font-size:13px;font-weight:800;color:#1a1d2e;">${escH(e.title)}</div>
+            <div style="font-size:11px;color:#5a5f7a;margin-top:2px;">
+              ${new Date(e.date).toLocaleString('en-IN',{weekday:'short',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})} · ${e.duration} min
+            </div>
+          </div>
+          <div style="text-align:center;background:${urgent?'#A32D2D':'#534AB7'};
+            border-radius:12px;padding:8px 16px;color:#fff;">
+            <div style="font-size:20px;font-weight:900;font-family:var(--mono);">${cdLabel}</div>
+            <div style="font-size:9px;opacity:.75;text-transform:uppercase;letter-spacing:.5px;">
+              ${d > 0 ? 'Days Left' : 'Hours Left'}
+            </div>
+          </div>
+          ${e.link ? `<a href="${e.link}" target="_blank" style="
+            display:inline-flex;align-items:center;gap:6px;
+            background:${urgent?'#A32D2D':'#534AB7'};color:#fff;
+            border-radius:22px;padding:8px 14px;font-size:11px;
+            font-weight:800;text-decoration:none;font-family:var(--fn);">
+            🔗 Open
+          </a>` : ''}
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  ov.innerHTML = `
+  <div style="background:var(--card);border-radius:26px;
+    max-width:600px;width:100%;border:1px solid var(--border);
+    box-shadow:0 24px 80px rgba(79,110,247,.18);
+    animation:mIn .35s cubic-bezier(.34,1.56,.64,1);
+    margin:auto;overflow:hidden;">
+
+    <!-- Sticky header -->
+    <div style="position:sticky;top:0;background:var(--card);z-index:2;
+      padding:20px 22px 14px;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:11px;">
+          <div style="width:38px;height:38px;border-radius:12px;
+            background:linear-gradient(135deg,#4f6ef7,#7c3aed);
+            display:flex;align-items:center;justify-content:center;
+            box-shadow:0 4px 12px rgba(79,110,247,.35);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M15 17H20L18.6 15.6C18.2 15.2 18 14.7 18 14.2V11C18 8.4 16.4 6.2 14 5.3V5C14 3.9 13.1 3 12 3C10.9 3 10 3.9 10 5V5.3C7.6 6.2 6 8.4 6 11V14.2C6 14.7 5.8 15.2 5.4 15.6L4 17H9M15 17V18C15 19.7 13.7 21 12 21C10.3 21 9 19.7 9 18V17H15Z" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div style="font-size:16px;font-weight:900;color:var(--text);">All Active Notices</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:1px;">
+              ${notices.length} notice${notices.length !== 1 ? 's' : ''} · ${exams.length} exam${exams.length !== 1 ? 's' : ''} upcoming
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="display:flex;align-items:center;gap:5px;
+            background:rgba(79,110,247,.08);border:1.5px solid rgba(79,110,247,.2);
+            border-radius:30px;padding:4px 12px;">
+            <div style="width:7px;height:7px;border-radius:50%;background:#4f6ef7;
+              animation:syncPulse 1.5s ease-in-out infinite;"></div>
+            <span style="font-size:10px;font-weight:800;color:var(--acc);">LIVE</span>
+          </div>
+          <button onclick="document.getElementById('all-notices-modal-ov').remove()"
+            style="width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border);
+            background:var(--card2);cursor:pointer;font-size:18px;font-weight:700;
+            color:var(--text3);font-family:var(--fn);display:flex;align-items:center;
+            justify-content:center;transition:all .2s;"
+            onmouseenter="this.style.background='var(--border)';this.style.color='var(--text)'"
+            onmouseleave="this.style.background='var(--card2)';this.style.color='var(--text3)'">×</button>
+        </div>
+      </div>
+
+      <!-- Type filter tabs -->
+      ${notices.length > 0 ? `
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;" id="anm-tabs">
+        <div onclick="anmFilter('all')" id="anm-tab-all" style="
+          padding:5px 13px;border-radius:20px;font-size:11px;font-weight:800;
+          cursor:pointer;background:var(--acc);color:#fff;border:1.5px solid var(--acc);
+          transition:all .2s;">All (${notices.length})</div>
+        ${Object.entries(grouped).map(([type, list]) => {
+          const cfg = typeConfig[type] || typeConfig.info;
+          return `<div onclick="anmFilter('${type}')" id="anm-tab-${type}" style="
+            padding:5px 13px;border-radius:20px;font-size:11px;font-weight:800;
+            cursor:pointer;background:var(--card2);color:var(--text2);
+            border:1.5px solid var(--border);transition:all .2s;">
+            ${cfg.icon} ${cfg.label} (${list.length})
+          </div>`;
+        }).join('')}
+      </div>` : ''}
+    </div>
+
+    <!-- Body -->
+    <div style="padding:18px 22px 22px;max-height:60vh;overflow-y:auto;" id="anm-body">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+        gap:10px;" id="anm-grid">
+        ${noticeCardsHTML}
+      </div>
+      ${examHTML}
+    </div>
+
+    <!-- Footer -->
+    <div style="padding:14px 22px;border-top:1px solid var(--border);
+      background:var(--card2);display:flex;align-items:center;
+      justify-content:space-between;flex-wrap:wrap;gap:8px;">
+      <div style="font-size:11px;color:var(--text3);">
+        Notices refresh every 60 seconds
+      </div>
+      <button onclick="showAdminPopup(getAdminNotices().filter(n=>{
+        if(!n.active)return false;
+        if(!n.popup)return false;
+        if(n.expiry&&new Date(n.expiry)<new Date())return false;
+        return true;
+      }))" style="
+        display:inline-flex;align-items:center;gap:6px;
+        padding:8px 16px;border-radius:20px;border:none;
+        background:linear-gradient(135deg,#4f6ef7,#7c3aed);color:#fff;
+        font-size:12px;font-weight:800;cursor:pointer;
+        font-family:var(--fn);">
+        🃏 View as Cards
+      </button>
+    </div>
+  </div>`;
+
+  ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
+  document.body.appendChild(ov);
+
+  // Filter function
+  window.anmFilter = function(type) {
+    document.querySelectorAll('[id^="anm-tab-"]').forEach(el => {
+      el.style.background = 'var(--card2)';
+      el.style.color = 'var(--text2)';
+      el.style.borderColor = 'var(--border)';
+    });
+    const active = document.getElementById('anm-tab-' + type);
+    if (active) {
+      active.style.background = 'var(--acc)';
+      active.style.color = '#fff';
+      active.style.borderColor = 'var(--acc)';
+    }
+    const grid = document.getElementById('anm-grid');
+    if (!grid) return;
+    grid.querySelectorAll('[data-ntype]').forEach(card => {
+      card.style.display = (type === 'all' || card.dataset.ntype === type) ? 'block' : 'none';
+    });
+  };
+}
+
+function buildPWAInstallCard(){
+  const isInstalled = window.matchMedia('(display-mode: standalone)').matches 
+    || window.navigator.standalone === true;
+  if(isInstalled) return '';
+  
+  return `<div style="
+    background:linear-gradient(135deg,#4f6ef7,#7c3aed);
+    border-radius:20px;padding:18px 20px;margin-bottom:20px;
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    position:relative;overflow:hidden;cursor:pointer;"
+    onclick="triggerPWAInstall()">
+    <div style="position:absolute;top:-30px;right:-30px;
+      width:140px;height:140px;border-radius:50%;
+      background:rgba(255,255,255,.08);pointer-events:none;"></div>
+    <div style="width:46px;height:46px;border-radius:14px;
+      background:rgba(255,255,255,.15);
+      border:1.5px solid rgba(255,255,255,.3);
+      display:flex;align-items:center;justify-content:center;
+      font-size:22px;flex-shrink:0;">📲</div>
+    <div style="flex:1;min-width:160px;">
+      <div style="font-size:15px;font-weight:900;color:#fff;
+        margin-bottom:3px;">Install Thunderstudy App</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.75);
+        line-height:1.6;">Works offline · Faster · No browser bar · 
+        Home screen icon</div>
+    </div>
+    <button onclick="triggerPWAInstall()" style="
+      background:rgba(255,255,255,.2);
+      border:1.5px solid rgba(255,255,255,.4);
+      border-radius:22px;padding:10px 20px;
+      font-size:13px;font-weight:800;color:#fff;
+      cursor:pointer;font-family:var(--fn);
+      white-space:nowrap;
+      transition:background .2s;"
+      onmouseenter="this.style.background='rgba(255,255,255,.35)'"
+      onmouseleave="this.style.background='rgba(255,255,255,.2)'">
+      Install App
+    </button>
+  </div>`;
+}
+
+function triggerPWAInstall(){
+  if(_pwaPrompt){
+    _pwaPrompt.prompt();
+    _pwaPrompt.userChoice.then(result=>{
+      if(result.outcome==='accepted'){
+        showToast('✅ Installing Thunderstudy!','success');
+      }
+      _pwaPrompt=null;
+    });
+  } else {
+    // Show manual instructions popup
+    const modal=document.createElement('div');
+    modal.style.cssText=`position:fixed;inset:0;background:rgba(0,0,0,.5);
+      z-index:9999;display:flex;align-items:center;justify-content:center;
+      backdrop-filter:blur(8px);padding:16px;`;
+    const isIOS=/iPhone|iPad/i.test(navigator.userAgent);
+    const isAndroid=/Android/i.test(navigator.userAgent);
+    modal.innerHTML=`
+    <div style="background:var(--card);border-radius:24px;
+      padding:28px;max-width:380px;width:100%;
+      border:1px solid var(--border);
+      animation:mIn .35s cubic-bezier(.34,1.56,.64,1);
+      text-align:center;">
+      <div style="font-size:44px;margin-bottom:10px;">📲</div>
+      <div style="font-size:18px;font-weight:900;margin-bottom:8px;">
+        Install Thunderstudy
+      </div>
+      <div style="font-size:13px;color:var(--text3);
+        line-height:1.8;margin-bottom:18px;">
+        ${isIOS 
+          ? `Tap the <strong>Share button</strong> (□↑) at the bottom of Safari, then tap <strong>"Add to Home Screen"</strong>`
+          : isAndroid
+          ? `Tap the <strong>⋮ Menu</strong> in Chrome, then tap <strong>"Add to Home Screen"</strong> or <strong>"Install App"</strong>`
+          : `Click the <strong>install icon (⊕)</strong> in your browser's address bar, or go to browser menu → <strong>"Install Thunderstudy"</strong>`
+        }
+      </div>
+      <div style="background:var(--card2);border-radius:14px;
+        padding:14px;margin-bottom:18px;
+        display:flex;flex-direction:column;gap:8px;text-align:left;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:26px;height:26px;border-radius:50%;
+            background:var(--acc);display:flex;align-items:center;
+            justify-content:center;font-size:12px;color:#fff;
+            font-weight:800;flex-shrink:0;">1</div>
+          <div style="font-size:12px;">${isIOS 
+            ? 'Tap Share (□↑) at bottom of Safari'
+            : 'Tap ⋮ menu in top-right of Chrome'}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:26px;height:26px;border-radius:50%;
+            background:var(--acc);display:flex;align-items:center;
+            justify-content:center;font-size:12px;color:#fff;
+            font-weight:800;flex-shrink:0;">2</div>
+          <div style="font-size:12px;">${isIOS
+            ? 'Scroll down → tap "Add to Home Screen"'
+            : 'Tap "Add to Home Screen" or "Install App"'}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:26px;height:26px;border-radius:50%;
+            background:var(--acc);display:flex;align-items:center;
+            justify-content:center;font-size:12px;color:#fff;
+            font-weight:800;flex-shrink:0;">3</div>
+          <div style="font-size:12px;">Tap <strong>Add</strong> — done! 🎉</div>
+        </div>
+      </div>
+      <button onclick="this.closest('[style*=fixed]').remove()"
+        class="btn btn-prim" style="width:100%;justify-content:center;
+        padding:12px;font-size:13px;">
+        Got it!
+      </button>
+    </div>`;
+    document.body.appendChild(modal);
+    modal.addEventListener('click',e=>{if(e.target===modal)modal.remove();});
+  }
+}
 </script>
+
 </body>
 </html>
