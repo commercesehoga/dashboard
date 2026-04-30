@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#eef4ff"/>
+      <stop offset="100%" stop-color="#f3eeff"/>
+    </linearGradient>
+    <linearGradient id="ring1g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#93c5fd"/>
+      <stop offset="50%" stop-color="#c4b5fd"/>
+      <stop offset="100%" stop-color="#93c5fd"/>
+    </linearGradient>
+    <linearGradient id="ring2g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#bfdbfe"/>
+      <stop offset="100%" stop-color="#ddd6fe"/>
+    </linearGradient>
+    <linearGradient id="discBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f0ebff"/>
+    </linearGradient>
+    <linearGradient id="boltGold" x1="0%" y1="0%" x2="20%" y2="100%">
+      <stop offset="0%" stop-color="#fde68a"/>
+      <stop offset="45%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="boltHighlight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff9e6" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="softGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#c4b5fd" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#93c5fd" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="outerBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#93c5fd"/>
+      <stop offset="50%" stop-color="#c4b5fd"/>
+      <stop offset="100%" stop-color="#93c5fd"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="512" height="512" rx="110" fill="url(#bg)"/>
+  <rect x="0" y="0" width="512" height="512" rx="110" fill="none" stroke="url(#outerBorder)" stroke-width="1.5"/>
+
+  <circle cx="256" cy="256" r="200" fill="url(#softGlow)"/>
+
+  <circle cx="256" cy="256" r="168" fill="none" stroke="url(#ring1g)" stroke-width="1.5"/>
+  <circle cx="256" cy="256" r="168" fill="none" stroke="#c4b5fd" stroke-width="0.7" stroke-dasharray="5 9" stroke-opacity="0.5"/>
+  <circle cx="256" cy="256" r="138" fill="none" stroke="url(#ring2g)" stroke-width="1"/>
+  <circle cx="256" cy="256" r="118" fill="url(#discBg)" stroke="#e9d5ff" stroke-width="1"/>
+  <circle cx="256" cy="256" r="108" fill="none" stroke="#fde68a" stroke-width="0.8" stroke-opacity="0.4"/>
+
+  <circle cx="256" cy="88" r="4" fill="#93c5fd"/>
+  <circle cx="424" cy="256" r="4" fill="#c4b5fd"/>
+  <circle cx="256" cy="424" r="3" fill="#93c5fd" fill-opacity="0.5"/>
+  <circle cx="88" cy="256" r="3" fill="#c4b5fd" fill-opacity="0.5"/>
+
+  <line x1="256" y1="82" x2="256" y2="94" stroke="#93c5fd" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="430" y1="256" x2="418" y2="256" stroke="#c4b5fd" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="256" y1="430" x2="256" y2="418" stroke="#93c5fd" stroke-width="1" stroke-linecap="round" stroke-opacity="0.5"/>
+  <line x1="82" y1="256" x2="94" y2="256" stroke="#c4b5fd" stroke-width="1" stroke-linecap="round" stroke-opacity="0.5"/>
+
+  <path d="M284 126 L216 254 L252 254 L228 386 L306 244 L268 244 L298 126 Z"
+        fill="url(#boltGold)"
+        stroke="rgba(253,230,138,0.4)"
+        stroke-width="1.5"
+        stroke-linejoin="round"/>
+
+  <path d="M286 141 L232 246 L262 246 L244 346 L294 254 L264 254 L284 141 Z"
+        fill="url(#boltHighlight)"/>
+
+  <rect x="0" y="0" width="512" height="512" rx="110" fill="none" stroke="url(#outerBorder)" stroke-width="1"/>
+</svg>
