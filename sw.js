@@ -1,4 +1,4 @@
-const CACHE_NAME = 'thunderstudy-v2';
+const CACHE_NAME = 'thunderstudy-v3';
 const CACHE_FIRST = [
   './',
   './index.html',
