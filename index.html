@@ -1365,6 +1365,41 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
 @media(max-width:768px) {
   #ts-update-bar { bottom:88px !important; font-size:12px !important; }
 }
+/* ── BIRTHDAY THEME (May 6 midnight → May 7 midnight) ── */
+@keyframes balloonFloat {
+  0%,100%{transform:translateX(0) rotate(-3deg);}
+  50%{transform:translateX(12px) rotate(3deg);}
+}
+@keyframes balloonRise {
+  0%{bottom:-120px;opacity:0;}
+  15%{opacity:1;}
+  100%{bottom:110vh;opacity:0;}
+}
+@keyframes confettiDrop {
+  0%{transform:translateY(-20px) rotate(0deg);opacity:1;}
+  100%{transform:translateY(110vh) rotate(720deg);opacity:0;}
+}
+@keyframes bdayGlow {
+  0%,100%{box-shadow:0 0 20px rgba(236,72,153,.4),0 0 40px rgba(79,110,247,.2);}
+  50%{box-shadow:0 0 30px rgba(236,72,153,.7),0 0 60px rgba(79,110,247,.4);}
+}
+@keyframes sparkle {
+  0%,100%{opacity:0;transform:scale(0);}
+  50%{opacity:1;transform:scale(1);}
+}
+.ts-balloon {
+  position:fixed;width:44px;pointer-events:none;z-index:50;
+  animation:balloonRise var(--rise-dur,18s) var(--rise-delay,0s) linear both,
+             balloonFloat 3s ease-in-out infinite;
+}
+.ts-confetti-piece {
+  position:fixed;width:var(--cw,8px);height:var(--ch,10px);
+  background:var(--cc,#ec4899);border-radius:2px;
+  pointer-events:none;z-index:49;
+  animation:confettiDrop var(--cd,4s) var(--cdl,0s) linear forwards;
+  top:-20px;left:var(--cx,50%);
+}
+
 </style>
 </head>
 <body>
@@ -3118,13 +3153,41 @@ H += `
   H+=`</div>`;
 
   // Popup trigger
-// Popup trigger — shows ALL popup notices that haven't been "Read it"-ed
-  setTimeout(() => {
+setTimeout(() => {
     try {
-      const readPopups = JSON.parse(
-        localStorage.getItem('ts_read_popups') || '[]'
-      );
-      // Get all notices marked as popup=true that user hasn't clicked "Read it" on
+      // Priority queue: update popup → daily update popup → admin notices
+      if (window._pendingUpdatePopup) {
+        _showUpdatePopupNow();
+        const t1 = setInterval(() => {
+          if (!document.getElementById('ts-update-popup')) {
+            clearInterval(t1);
+            _checkDailyThenAdmin(notices);
+          }
+        }, 500);
+        return;
+      }
+      _checkDailyThenAdmin(notices);
+    } catch(e) {}
+  }, 600);
+
+  function _checkDailyThenAdmin(notices) {
+    if (window._pendingDailyUpdatePopup) {
+      window._pendingDailyUpdatePopup = false;
+      _showDailyUpdatePopup(false);
+      const t2 = setInterval(() => {
+        if (!document.getElementById('ts-daily-update-popup')) {
+          clearInterval(t2);
+          _showAdminNoticePopup(notices);
+        }
+      }, 500);
+      return;
+    }
+    _showAdminNoticePopup(notices);
+  }
+
+  function _showAdminNoticePopup(notices) {
+    try {
+      const readPopups = JSON.parse(localStorage.getItem('ts_read_popups') || '[]');
       const popupNotices = notices.filter(n =>
         n.popup &&
         !readPopups.includes(String(n.id || '')) &&
@@ -3134,7 +3197,7 @@ H += `
         showAdminPopup(popupNotices);
       }
     } catch(e) {}
-  }, 600);
+  }
 
   return H;
 }
@@ -8463,6 +8526,66 @@ setTimeout(()=>{
     }
   }
 });
+
+/* ══════════════════════════════════════════
+   DAILY MIDNIGHT AUTO-UPDATE
+══════════════════════════════════════════ */
+(function initDailyUpdate() {
+  const DAILY_KEY = 'ts_last_daily_update';
+  const today = new Date().toLocaleDateString('en-IN');
+  const lastUpdate = localStorage.getItem(DAILY_KEY);
+
+  // Check if we need to show "Daily Update" popup (opened after midnight, not yet shown today)
+  if (lastUpdate !== today) {
+    window._pendingDailyUpdatePopup = true;
+    localStorage.setItem(DAILY_KEY, today);
+  }
+
+  // Schedule midnight reload if app stays open
+  function scheduleNextMidnightReload() {
+    const now = new Date();
+    const midnight = new Date(now);
+    midnight.setDate(midnight.getDate() + 1);
+    midnight.setHours(0, 0, 10, 0); // 12:00:10 AM next day
+    const msUntilMidnight = midnight - now;
+    setTimeout(function() {
+      // Auto-reload at midnight
+      localStorage.setItem(DAILY_KEY, new Date().toLocaleDateString('en-IN'));
+      window.location.reload();
+    }, msUntilMidnight);
+  }
+  scheduleNextMidnightReload();
+
+  // Ctrl+Shift+R → show daily update popup
+  document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.shiftKey && (e.key === 'R' || e.key === 'r')) {
+      e.preventDefault();
+      _showDailyUpdatePopup(true);
+    }
+  });
+})();
+
+function _showDailyUpdatePopup(manualTrigger) {
+  if (document.getElementById('ts-daily-update-popup')) return;
+  const ov = document.createElement('div');
+  ov.id = 'ts-daily-update-popup';
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:20px;';
+  ov.innerHTML = `
+  <div style="background:var(--card);border-radius:28px;padding:30px 26px;max-width:390px;width:100%;border:1.5px solid rgba(16,185,129,.3);box-shadow:0 24px 80px rgba(16,185,129,.2);animation:mIn .4s cubic-bezier(.34,1.56,.64,1);text-align:center;position:relative;overflow:hidden;">
+    <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(16,185,129,.05),rgba(79,110,247,.04));pointer-events:none;border-radius:28px;"></div>
+    <div style="font-size:50px;margin-bottom:10px;">🌅</div>
+    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--green);margin-bottom:8px;">Daily Update</div>
+    <div style="font-size:20px;font-weight:900;color:var(--text);margin-bottom:10px;letter-spacing:-.3px;">Good ${new Date().getHours()<12?'Morning':'Afternoon'}! Ready to study?</div>
+    <div style="font-size:13px;color:var(--text3);line-height:1.7;margin-bottom:22px;">A fresh daily sync is recommended to get the latest notices, exam schedules, and leaderboard updates.</div>
+    <div style="display:flex;flex-direction:column;gap:9px;">
+      <button onclick="localStorage.setItem('ts_last_daily_update',new Date().toLocaleDateString('en-IN'));document.getElementById('ts-daily-update-popup').remove();window.location.reload();" style="width:100%;padding:13px;border-radius:15px;border:none;cursor:pointer;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:14px;font-weight:800;font-family:var(--fn);box-shadow:0 6px 20px rgba(16,185,129,.3);">🔄 Refresh Now</button>
+      <button onclick="document.getElementById('ts-daily-update-popup').remove()" style="width:100%;padding:11px;border-radius:15px;border:1.5px solid var(--border);cursor:pointer;background:var(--card2);color:var(--text2);font-size:12px;font-weight:700;font-family:var(--fn);">Not Now</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
+}
+
 /* HP → XP CONVERSION */
 function convertHPtoXP(){
   const inp=document.getElementById('hp-convert-amt');
@@ -11151,37 +11274,34 @@ if ('serviceWorker' in navigator) {
 }
 
 function showUpdateBar() {
-  if (document.getElementById('ts-update-bar')) return;
-  const bar = document.createElement('div');
-  bar.id = 'ts-update-bar';
-  bar.innerHTML = `
-    <span style="font-size:18px;">⚡</span>
-    <span style="flex:1;">New version of Thunderstudy is ready!</span>
-    <button onclick="applyUpdate()" style="
-      background:rgba(255,255,255,0.2);
-      border:1.5px solid rgba(255,255,255,0.4);
-      border-radius:20px;padding:6px 16px;
-      font-size:12px;font-weight:800;color:#fff;
-      cursor:pointer;font-family:var(--fn);
-      white-space:nowrap;">Update Now</button>
-    <button onclick="this.parentElement.remove()" style="
-      background:none;border:none;
-      color:rgba(255,255,255,0.6);font-size:20px;
-      cursor:pointer;font-family:var(--fn);
-      line-height:1;padding:0 0 0 6px;">×</button>
-  `;
-  bar.style.cssText = `
-    position:fixed;bottom:80px;left:50%;
-    transform:translateX(-50%);z-index:9001;
-    background:linear-gradient(135deg,#4f6ef7,#7c3aed);
-    color:#fff;border-radius:30px;padding:12px 20px;
-    display:flex;align-items:center;gap:10px;
-    font-size:13px;font-weight:700;font-family:var(--fn);
-    box-shadow:0 8px 28px rgba(79,110,247,.45);
-    max-width:calc(100vw - 32px);
-    animation:tsUpdateIn .4s cubic-bezier(.34,1.56,.64,1);
-  `;
-  document.body.appendChild(bar);
+  if (document.getElementById('ts-update-popup')) return;
+  // Queue the update popup — to be shown before admin notice
+  window._pendingUpdatePopup = true;
+  _showUpdatePopupNow();
+}
+
+function _showUpdatePopupNow() {
+  if (!window._pendingUpdatePopup) return;
+  // Don't show if admin popup is already visible
+  if (document.getElementById('adminPopupOverlay')) return;
+  window._pendingUpdatePopup = false;
+  const ov = document.createElement('div');
+  ov.id = 'ts-update-popup';
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:20px;';
+  ov.innerHTML = `
+  <div style="background:var(--card);border-radius:28px;padding:32px 28px;max-width:400px;width:100%;border:1.5px solid rgba(79,110,247,.35);box-shadow:0 24px 80px rgba(79,110,247,.25);animation:mIn .4s cubic-bezier(.34,1.56,.64,1);text-align:center;position:relative;overflow:hidden;">
+    <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(79,110,247,.05),rgba(124,58,237,.04));pointer-events:none;border-radius:28px;"></div>
+    <div style="font-size:52px;margin-bottom:10px;">⚡</div>
+    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--acc);margin-bottom:8px;">App Update Ready</div>
+    <div style="font-size:20px;font-weight:900;color:var(--text);margin-bottom:10px;letter-spacing:-.3px;">Thunderstudy just got better!</div>
+    <div style="font-size:13px;color:var(--text3);line-height:1.7;margin-bottom:22px;">A new version of Thunderstudy is available with improvements and bug fixes. Update now to get the latest experience.</div>
+    <div style="display:flex;flex-direction:column;gap:9px;">
+      <button onclick="applyUpdate()" style="width:100%;padding:13px;border-radius:15px;border:none;cursor:pointer;background:linear-gradient(135deg,#4f6ef7,#7c3aed);color:#fff;font-size:14px;font-weight:800;font-family:var(--fn);box-shadow:0 6px 20px rgba(79,110,247,.3);">⚡ Update Now</button>
+      <button onclick="document.getElementById('ts-update-popup').remove()" style="width:100%;padding:11px;border-radius:15px;border:1.5px solid var(--border);cursor:pointer;background:var(--card2);color:var(--text2);font-size:12px;font-weight:700;font-family:var(--fn);">Close App</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
 }
 
 function applyUpdate() {
@@ -11516,6 +11636,169 @@ function buildPWAInstallCard(){
     </button>
   </div>`;
 }
+
+/* ══════════════════════════════════════════
+   🎂 BIRTHDAY THEME — May 6 12AM → May 7 12AM
+══════════════════════════════════════════ */
+(function initBirthdayTheme() {
+  function isBirthdayTime() {
+    const now = new Date();
+    const m = now.getMonth(); // 0-indexed, so 4 = May
+    const d = now.getDate();
+    const h = now.getHours();
+    // May 6 00:00 → May 7 00:00 (exclusive)
+    return (m === 4 && d === 6) || (m === 4 && d === 7 && h === 0 && now.getMinutes() === 0);
+    // More precise: May 6 anytime or May 7 exactly midnight counts as last moment
+  }
+
+  function isBirthdayWindow() {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 4, 6, 0, 0, 0);   // May 6 midnight
+    const end   = new Date(now.getFullYear(), 4, 7, 0, 0, 0);   // May 7 midnight
+    return now >= start && now < end;
+  }
+
+  if (!isBirthdayWindow()) return;
+
+  // ── 1. Apply birthday theme to :root ──
+  const style = document.createElement('style');
+  style.id = 'ts-bday-theme';
+  style.textContent = `
+    :root {
+      --bg:#fdf2ff;--card:#ffffff;--card2:#fdf0ff;--border:#f0d4fa;
+      --acc:#c026d3;--acc2:#7c3aed;
+      --sh:0 2px 20px rgba(192,38,211,.1);--sh2:0 8px 40px rgba(192,38,211,.2);
+    }
+    body { background: linear-gradient(135deg,#fdf2ff,#f0f3ff) !important; }
+    .sidebar { border-right:1px solid #f0d4fa !important; }
+    .btn-prim { background:linear-gradient(135deg,#c026d3,#7c3aed) !important; }
+    .nav-item.active { background:linear-gradient(135deg,rgba(192,38,211,.12),rgba(124,58,237,.08)) !important; color:#c026d3 !important; }
+    .nav-item.active::before { background:linear-gradient(180deg,#c026d3,#7c3aed) !important; }
+    .sb-logo-icon,.welcome-logo { background:linear-gradient(135deg,#c026d3,#7c3aed) !important; }
+    .stat-val,.lb-pct,.rh-val,.mock-score { color:#c026d3 !important; }
+    .prog-fill { background:linear-gradient(90deg,#c026d3,#7c3aed) !important; }
+    .rank-hero { background:linear-gradient(135deg,#c026d3,#7c3aed) !important; }
+  `;
+  document.head.appendChild(style);
+
+  // ── 2. Spawn balloons on sides ──
+  const colors = ['#ec4899','#f472b6','#a855f7','#818cf8','#fb923c','#facc15','#34d399'];
+  function makeBalloon() {
+    const b = document.createElement('div');
+    b.className = 'ts-balloon';
+    const isLeft = Math.random() < 0.5;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const size = 36 + Math.random() * 20;
+    b.style.setProperty('--rise-dur', (14 + Math.random() * 10) + 's');
+    b.style.setProperty('--rise-delay', (Math.random() * 6) + 's');
+    b.style.left = isLeft ? (Math.random() * 120) + 'px' : 'auto';
+    b.style.right = isLeft ? 'auto' : (Math.random() * 120) + 'px';
+    b.style.bottom = '-120px';
+    b.innerHTML = `<svg width="${size}" height="${size * 1.3}" viewBox="0 0 50 65" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="25" cy="22" rx="18" ry="22" fill="${color}" opacity=".92"/>
+      <path d="M25 44 Q27 50 25 55 Q23 50 25 44" stroke="${color}" stroke-width="1.5" fill="none"/>
+      <path d="M22 44 L28 44" stroke="${color}" stroke-width="1.5"/>
+      <text x="25" y="27" text-anchor="middle" font-size="12" fill="white" opacity=".7">🎈</text>
+    </svg>`;
+    document.body.appendChild(b);
+    const dur = parseFloat(b.style.getPropertyValue('--rise-dur') || '18') * 1000
+              + parseFloat(b.style.getPropertyValue('--rise-delay') || '0') * 1000;
+    setTimeout(() => b.remove(), dur + 1000);
+  }
+
+  // Spawn initial 8 balloons, then every 5s
+  for (let i = 0; i < 8; i++) setTimeout(makeBalloon, i * 700);
+  const balloonInterval = setInterval(makeBalloon, 5000);
+
+  // ── 3. Confetti rain ──
+  const confettiColors = ['#ec4899','#f472b6','#a855f7','#818cf8','#fbbf24','#34d399','#fb923c','#f43f5e'];
+  function makeConfetti() {
+    const c = document.createElement('div');
+    c.className = 'ts-confetti-piece';
+    c.style.setProperty('--cx', (Math.random() * 100) + 'vw');
+    c.style.setProperty('--cc', confettiColors[Math.floor(Math.random() * confettiColors.length)]);
+    c.style.setProperty('--cw', (6 + Math.random() * 8) + 'px');
+    c.style.setProperty('--ch', (8 + Math.random() * 6) + 'px');
+    c.style.setProperty('--cd', (3 + Math.random() * 4) + 's');
+    c.style.setProperty('--cdl', (Math.random() * 2) + 's');
+    if (Math.random() > 0.5) c.style.borderRadius = '50%';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 7000);
+  }
+  for (let i = 0; i < 20; i++) setTimeout(makeConfetti, i * 200);
+  const confettiInterval = setInterval(() => {
+    for (let i = 0; i < 3; i++) setTimeout(makeConfetti, i * 150);
+  }, 3000);
+
+  // ── 4. Birthday popup (once per day) ──
+  const bdayKey = 'ts_bday_popup_' + new Date().toLocaleDateString('en-IN').replace(/\//g,'-');
+  if (!localStorage.getItem(bdayKey)) {
+    localStorage.setItem(bdayKey, '1');
+    setTimeout(() => {
+      const ov = document.createElement('div');
+      ov.id = 'ts-bday-popup';
+      ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10001;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);padding:20px;';
+      ov.innerHTML = `
+      <div style="background:linear-gradient(135deg,#1a0730,#2d0a5c);border-radius:32px;padding:34px 28px;max-width:420px;width:100%;border:2px solid rgba(192,38,211,.5);box-shadow:0 0 60px rgba(192,38,211,.4),0 24px 80px rgba(0,0,0,.5);animation:mIn .5s cubic-bezier(.34,1.56,.64,1);text-align:center;position:relative;overflow:hidden;" id="ts-bday-inner">
+        <div style="position:absolute;inset:0;background:radial-gradient(circle at 30% 20%,rgba(192,38,211,.25),transparent 60%),radial-gradient(circle at 70% 80%,rgba(124,58,237,.2),transparent 60%);pointer-events:none;"></div>
+
+        <div style="font-size:58px;margin-bottom:6px;animation:balloonFloat 2s ease-in-out infinite;">🎂</div>
+
+        <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#f472b6;margin-bottom:8px;">🎉 Special Day 🎉</div>
+
+        <div style="font-size:26px;font-weight:900;color:#fff;letter-spacing:-.4px;margin-bottom:6px;line-height:1.25;">Happy Birthday,<br><span style="color:#f0abfc;">Mayank! 🥳</span></div>
+
+        <div style="font-size:13px;color:rgba(255,255,255,.7);line-height:1.75;margin-bottom:20px;position:relative;z-index:1;">
+          Thank you for building <strong style="color:#f472b6;">Thunderstudy</strong> for all of us. 🙏<br>
+          Wishing you an amazing birthday filled with joy, success, and all your dreams coming true! 🚀✨
+        </div>
+
+        <div style="background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:20px;padding:16px 18px;margin-bottom:20px;position:relative;z-index:1;">
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.5);margin-bottom:10px;">🎁 Claim Your Birthday Gift</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.75);line-height:1.7;margin-bottom:12px;">Send a birthday message to Mayank on Telegram to claim a special surprise gift from the owner! 🎈</div>
+          <a href="https://t.me/wondermayank_official" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 20px;border-radius:30px;background:linear-gradient(135deg,#0088cc,#006aa3);color:#fff;font-size:13px;font-weight:800;text-decoration:none;font-family:var(--fn);box-shadow:0 6px 20px rgba(0,136,204,.45);transition:all .2s;" onmouseenter="this.style.transform='translateY(-2px)';this.style.filter='brightness(1.12)'" onmouseleave="this.style.transform='none';this.style.filter='none'">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.68 7.92c-.12.56-.44.7-.88.44l-2.44-1.8-1.18 1.14c-.13.13-.24.24-.48.24l.17-2.4 4.38-3.96c.19-.17-.04-.26-.29-.09l-5.41 3.41-2.33-.73c-.51-.16-.52-.51.1-.75l9.08-3.5c.42-.16.79.1.66.08z"/></svg>
+            📱 Wish on Telegram → @wondermayank_official
+          </a>
+        </div>
+
+        <div style="display:flex;gap:9px;position:relative;z-index:1;">
+          <button onclick="document.getElementById('ts-bday-popup').remove()" style="flex:1;padding:12px;border-radius:15px;border:1.5px solid rgba(255,255,255,.2);cursor:pointer;background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);font-size:13px;font-weight:800;font-family:var(--fn);">🎉 Celebrate!</button>
+        </div>
+      </div>`;
+      document.body.appendChild(ov);
+      ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
+    }, 1500); // show 1.5s after page load, before admin notice
+  }
+
+  // ── 5. Add birthday badge to sidebar logo ──
+  setTimeout(() => {
+    const sbLogo = document.querySelector('.sb-logo');
+    if (sbLogo && !document.getElementById('ts-bday-badge')) {
+      const badge = document.createElement('span');
+      badge.id = 'ts-bday-badge';
+      badge.textContent = '🎂';
+      badge.title = "Happy Birthday Mayank! 🎉";
+      badge.style.cssText = 'font-size:20px;cursor:pointer;animation:balloonFloat 2s ease-in-out infinite;';
+      badge.onclick = () => {
+        localStorage.removeItem('ts_bday_popup_' + new Date().toLocaleDateString('en-IN').replace(/\//g,'-'));
+        location.reload();
+      };
+      sbLogo.appendChild(badge);
+    }
+  }, 500);
+
+  // Cleanup on birthday end (shouldn't happen but safety)
+  const msUntilEnd = new Date(new Date().getFullYear(), 4, 7, 0, 0, 0) - new Date();
+  if (msUntilEnd > 0) {
+    setTimeout(() => {
+      clearInterval(balloonInterval);
+      clearInterval(confettiInterval);
+      document.getElementById('ts-bday-theme')?.remove();
+      document.querySelectorAll('.ts-balloon,.ts-confetti-piece,#ts-bday-badge').forEach(e => e.remove());
+    }, msUntilEnd);
+  }
+})();
 
 function triggerPWAInstall(){
   if(_pwaPrompt){
