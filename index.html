@@ -1,11 +1,8 @@
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
     
 <head>
+  
     <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-11GVYLFSCP"></script>
 <script>
@@ -19,6 +16,15 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>⚡ Thunderstudy | CBT </title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4f6ef7">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Thunderstudy">
+<link rel="apple-touch-icon" href="favicon.svg">
+<meta name="application-name" content="Thunderstudy">
+<meta name="msapplication-TileColor" content="#4f6ef7">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -491,6 +497,66 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
 /* ── IMPORT EXPORT ── */
 .ie-dropzone{border:2px dashed var(--border);border-radius:var(--r);padding:26px;text-align:center;transition:all .2s;cursor:pointer;display:block;}
 .ie-dropzone:hover,.ie-dropzone.drag{border-color:var(--acc);background:rgba(79,110,247,.04);}
+
+/* ── PWA INSTALL ── */
+.pwa-install-bar{
+  position:fixed;bottom:80px;left:50%;
+  transform:translateX(-50%) translateY(100px);
+  z-index:9000;
+  background:linear-gradient(135deg,#4f6ef7,#7c3aed);
+  color:#fff;
+  border-radius:30px;
+  padding:12px 22px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:13px;
+  font-weight:800;
+  font-family:var(--fn);
+  box-shadow:0 8px 28px rgba(79,110,247,.45);
+  opacity:0;
+  transition:all .4s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;
+  white-space:nowrap;
+  max-width:calc(100vw - 32px);
+}
+.pwa-install-bar.visible{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+  pointer-events:auto;
+}
+.pwa-install-bar button{
+  background:rgba(255,255,255,.2);
+  border:1.5px solid rgba(255,255,255,.4);
+  color:#fff;
+  border-radius:20px;
+  padding:5px 13px;
+  font-size:12px;
+  font-weight:800;
+  cursor:pointer;
+  font-family:var(--fn);
+  transition:background .2s;
+}
+.pwa-install-bar button:hover{
+  background:rgba(255,255,255,.35);
+}
+.pwa-install-bar .pwa-close{
+  background:none;
+  border:none;
+  color:rgba(255,255,255,.6);
+  font-size:18px;
+  cursor:pointer;
+  padding:0 0 0 6px;
+  font-family:var(--fn);
+  line-height:1;
+}
+@media(max-width:768px){
+  .pwa-install-bar{
+    bottom:88px;
+    font-size:12px;
+    padding:10px 16px;
+  }
+}
 
 /* ── BACK TO TOP ── */
 .btt-btn{position:fixed;bottom:24px;right:24px;width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#4f6ef7,#7c3aed);color:#fff;font-size:16px;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(79,110,247,.35);display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;z-index:90;font-family:var(--fn);}
@@ -1739,6 +1805,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
   </div>
 </div>
 
+<div class="pwa-install-bar" id="pwa-install-bar">
+  <span style="font-size:20px;">⚡</span>
+  <span>Install Thunderstudy App</span>
+  <button id="pwa-install-btn">Install</button>
+  <button class="pwa-close" id="pwa-close-btn">×</button>
+</div>
+
 <button class="btt-btn" id="btt-btn" onclick="document.querySelector('.main').scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
 <div class="tooltip" id="tooltip"></div>
 
@@ -2181,6 +2254,99 @@ fbAuth.onAuthStateChanged(function(user) {
     clearInterval(window._cloudAutoSyncInterval);
   }
 });
+
+/* ══════════════════════════════════════════
+   PWA INSTALL
+══════════════════════════════════════════ */
+let _pwaPrompt = null;
+
+window.addEventListener('beforeinstallprompt', function (e) {
+  e.preventDefault();
+  _pwaPrompt = e;
+
+  // Don't show if user already dismissed
+  if (localStorage.getItem('ts_pwa_dismissed')) return;
+
+  // Show install bar after 3 seconds
+  setTimeout(function () {
+    const bar = document.getElementById('pwa-install-bar');
+    if (bar) bar.classList.add('visible');
+  }, 3000);
+});
+
+window.addEventListener('appinstalled', function () {
+  const bar = document.getElementById('pwa-install-bar');
+  if (bar) bar.classList.remove('visible');
+  _pwaPrompt = null;
+  showToast('✅ Thunderstudy installed successfully!', 'success', 3000);
+});
+
+function pwaInstall() {
+  if (!_pwaPrompt) {
+    showToast('ℹ️ Use browser menu → Add to Home Screen', 'success', 3500);
+    return;
+  }
+  _pwaPrompt.prompt();
+  _pwaPrompt.userChoice.then(function (result) {
+    if (result.outcome === 'accepted') {
+      showToast('✅ Installing Thunderstudy!', 'success');
+    }
+    _pwaPrompt = null;
+    const bar = document.getElementById('pwa-install-bar');
+    if (bar) bar.classList.remove('visible');
+  });
+}
+
+function pwaDismiss() {
+  localStorage.setItem('ts_pwa_dismissed', '1');
+  const bar = document.getElementById('pwa-install-bar');
+  if (bar) bar.classList.remove('visible');
+}
+
+// Wire up buttons after DOM loads
+document.addEventListener('DOMContentLoaded', function () {
+  const installBtn = document.getElementById('pwa-install-btn');
+  const closeBtn = document.getElementById('pwa-close-btn');
+  if (installBtn) installBtn.addEventListener('click', pwaInstall);
+  if (closeBtn) closeBtn.addEventListener('click', pwaDismiss);
+});
+
+function parseNoticeMessage(text) {
+  if (!text) return '';
+  const urlRegex = /(https?:\/\/[^\s<>"']+)/g;
+  const parts = text.split(urlRegex);
+  let result = '';
+  parts.forEach(function(part) {
+    if (/^https?:\/\//.test(part)) {
+      let btnLabel = '🔗 Open Link';
+      let btnColor = '#4f6ef7';
+      if (part.includes('t.me') || part.includes('telegram')) {
+        btnLabel = '📱 Open Telegram'; btnColor = '#0088cc';
+      } else if (part.includes('instagram.com')) {
+        btnLabel = '📸 Instagram'; btnColor = '#e1306c';
+      } else if (part.includes('youtube.com') || part.includes('youtu.be')) {
+        btnLabel = '▶ YouTube'; btnColor = '#ff0000';
+      } else if (part.includes('wa.me') || part.includes('whatsapp')) {
+        btnLabel = '💬 WhatsApp'; btnColor = '#25d366';
+      } else if (part.includes('drive.google.com')) {
+        btnLabel = '📁 Google Drive'; btnColor = '#4285f4';
+      } else if (part.includes('forms.gle') || part.includes('docs.google.com/forms')) {
+        btnLabel = '📝 Open Form'; btnColor = '#7c3aed';
+      }
+      result += '<a href="' + part + '" target="_blank" rel="noopener" style="'
+        + 'display:inline-flex;align-items:center;gap:4px;'
+        + 'background:' + btnColor + ';color:#fff;border-radius:20px;'
+        + 'padding:3px 11px;font-size:11px;font-weight:700;'
+        + 'text-decoration:none;font-family:var(--fn);'
+        + 'vertical-align:middle;margin:0 2px;">'
+        + btnLabel + '</a>';
+    } else {
+      result += escH(part).replace(/\n/g, '<br>');
+    }
+  });
+  return result;
+}
+
 /* ══════════════════════════════════════════
    CONFIG
 ══════════════════════════════════════════ */
@@ -2975,7 +3141,9 @@ function buildNewspaperCol(label, borderColor, bgColor, dividerColor, titleColor
           <div style="width:5px;height:5px;border-radius:50%;background:${borderColor};margin-top:5px;flex-shrink:0;"></div>
           <div style="flex:1;min-width:0;">
             <div style="font-size:12px;font-weight:800;color:${titleColor};margin-bottom:3px;line-height:1.35;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${escH(n.title)}</div>
-            <div style="font-size:10.5px;color:${subtitleColor};line-height:1.5;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;">${escH(n.message)}</div>
+            <div style="font-size:10.5px;color:${subtitleColor};line-height:1.6;">
+  ${parseNoticeMessage(n.message)}
+</div>
             ${n.expiry?`<div style="display:inline-flex;align-items:center;gap:4px;margin-top:5px;background:${borderColor}18;border-radius:20px;padding:2px 8px;font-size:9px;font-weight:700;color:${subtitleColor};"><span>⏱</span>${new Date(n.expiry).toLocaleDateString('en-IN')}</div>`:''}
           </div>
         </div>`).join('')
@@ -2997,22 +3165,162 @@ function renderAdminNotices(){
   }
 }
 
-function showAdminPopup(notice){
-  const existing=document.getElementById('admin-popup-modal');
-  if(existing)existing.remove();
-  const typeColors={info:'#4f6ef7',warning:'#f59e0b',urgent:'#f43f5e',exam:'#ec4899',motivation:'#10b981'};
-  const color=typeColors[notice.type]||'#4f6ef7';
-  const modal=document.createElement('div');
-  modal.id='admin-popup-modal';
-  modal.style.cssText=`position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9997;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:16px;`;
-  modal.innerHTML=`<div style="background:var(--card);border-radius:24px;padding:28px;max-width:440px;width:100%;border:2px solid ${color}40;animation:mIn .35s cubic-bezier(.34,1.56,.64,1);text-align:center;">
-    <div style="font-size:44px;margin-bottom:10px;">${{info:'📢',warning:'⚠️',urgent:'🚨',exam:'📝',motivation:'💪'}[notice.type]||'📢'}</div>
-    <div style="font-size:18px;font-weight:900;margin-bottom:8px;color:${color};">${escH(notice.title)}</div>
-    <div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:20px;">${escH(notice.message)}</div>
-    <button onclick="document.getElementById('admin-popup-modal').remove()" style="background:${color};color:#fff;border:none;border-radius:22px;padding:11px 28px;font-size:13px;font-weight:800;cursor:pointer;font-family:var(--fn);width:100%;">Got it! ✓</button>
-  </div>`;
-  document.body.appendChild(modal);
-  modal.addEventListener('click',e=>{if(e.target===modal)modal.remove();});
+function showAdminPopup(notices) {
+  if (!notices || !notices.length) return;
+  const t = THEMES[currentTheme] || THEMES.dark;
+
+  // Remove any existing popup
+  const old = document.getElementById('adminPopupOverlay');
+  if (old) old.remove();
+
+  let current = 0;
+  const total = notices.length;
+
+  const parseMessage = parseNoticeMessage;
+
+  function buildCard(notice) {
+    const iconMap = { EVENT:'🗓️', ALERT:'🚨', INFO:'ℹ️', UPDATE:'🔄' };
+    const icon = iconMap[notice.type] || '📢';
+    const colorMap = { EVENT:'#22c55e', ALERT:'#ef4444', INFO:'#3b82f6', UPDATE:'#f59e0b' };
+    const tagColor = colorMap[notice.type] || '#888';
+    const expiryHtml = notice.expiry
+      ? `<div style="font-size:11px;color:#aaa;margin-bottom:10px;">Expires: ${notice.expiry}</div>`
+      : '';
+    const counterHtml = total > 1
+      ? `<div style="font-size:11px;color:#aaa;text-align:center;margin-bottom:8px;">${current+1} of ${total}</div>`
+      : '';
+    return `
+      <div style="font-size:32px;margin-bottom:8px;text-align:center;">${icon}</div>
+      <div style="display:inline-block;background:${tagColor}22;color:${tagColor};
+        border-radius:20px;padding:3px 12px;font-size:11px;font-weight:800;
+        letter-spacing:.5px;margin-bottom:12px;">${notice.type||'NOTICE'}</div>
+      <div style="font-size:15px;font-weight:800;color:${t.text};
+        line-height:1.5;margin-bottom:10px;">${escH(notice.title||'')}</div>
+      <div style="font-size:13px;color:${t.subtext||'#666'};line-height:1.8;
+        margin-bottom:${notice.expiry ? '8px' : '16px'};">${parseMessage(notice.message)}</div>
+      ${expiryHtml}
+      ${counterHtml}
+    `;
+  }
+
+  const overlay = document.createElement('div');
+  overlay.id = 'adminPopupOverlay';
+  overlay.style.cssText = `
+    position:fixed;inset:0;z-index:9999;
+    background:rgba(0,0,0,.55);backdrop-filter:blur(4px);
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;
+  `;
+
+  const box = document.createElement('div');
+  box.style.cssText = `
+    background:${t.card||'#fff'};border-radius:20px;
+    padding:28px 24px 20px;max-width:360px;width:100%;
+    text-align:center;position:relative;
+    font-family:var(--fn);
+    transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s;
+  `;
+
+  const contentDiv = document.createElement('div');
+  contentDiv.innerHTML = buildCard(notices[0]);
+  box.appendChild(contentDiv);
+
+  // Got it / Next button
+  const btn = document.createElement('button');
+  btn.style.cssText = `
+    width:100%;padding:14px;border-radius:14px;border:none;cursor:pointer;
+    background:#22c55e;color:#fff;font-size:15px;font-weight:800;
+    font-family:var(--fn);margin-top:4px;
+    transition:transform .1s,box-shadow .1s;
+    box-shadow:0 4px 16px #22c55e55;
+  `;
+  btn.onmouseenter = () => { btn.style.transform='translateY(-2px)'; btn.style.boxShadow='0 8px 24px #22c55e66'; };
+  btn.onmouseleave = () => { btn.style.transform='none'; btn.style.boxShadow='0 4px 16px #22c55e55'; };
+
+  function updateBtn() {
+    btn.textContent = current < total - 1 ? 'Next →' : 'Got It! ✓';
+  }
+  updateBtn();
+
+  // Stack shadow cards behind (visual depth)
+  const stack1 = document.createElement('div');
+  stack1.style.cssText = `
+    position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
+    width:92%;height:100%;background:${t.card||'#fff'};
+    border-radius:20px;opacity:.5;z-index:-1;
+  `;
+  const stack2 = document.createElement('div');
+  stack2.style.cssText = `
+    position:absolute;bottom:-15px;left:50%;transform:translateX(-50%);
+    width:85%;height:100%;background:${t.card||'#fff'};
+    border-radius:20px;opacity:.25;z-index:-2;
+  `;
+
+  function animateNext() {
+    // Slide out current card to left
+    box.style.transform = 'translateX(-120%) rotate(-8deg)';
+    box.style.opacity = '0';
+    setTimeout(() => {
+      current++;
+      if (current >= total) {
+        overlay.remove();
+        return;
+      }
+      // Snap to right, update content
+      box.style.transition = 'none';
+      box.style.transform = 'translateX(120%) rotate(8deg)';
+      box.style.opacity = '0';
+      contentDiv.innerHTML = buildCard(notices[current]);
+      updateBtn();
+      // Hide stack cards if last
+      if (current === total - 1) {
+        stack1.style.opacity = '0';
+        stack2.style.opacity = '0';
+      }
+      // Slide in from right
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          box.style.transition = 'transform .35s cubic-bezier(.4,0,.2,1),opacity .35s';
+          box.style.transform = 'none';
+          box.style.opacity = '1';
+        });
+      });
+    }, 350);
+  }
+
+  btn.onclick = animateNext;
+
+  // Close X
+  const closeBtn = document.createElement('button');
+  closeBtn.innerHTML = '&times;';
+  closeBtn.style.cssText = `
+    position:absolute;top:12px;right:14px;background:none;border:none;
+    font-size:22px;cursor:pointer;color:${t.subtext||'#888'};line-height:1;
+    font-family:var(--fn);
+  `;
+  closeBtn.onclick = () => overlay.remove();
+
+  box.style.position = 'relative';
+  box.appendChild(btn);
+  box.appendChild(closeBtn);
+
+  // Only show stack shadows if multiple notices
+  if (total > 1) {
+    box.appendChild(stack1);
+    box.appendChild(stack2);
+  }
+
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+
+  // Entrance animation
+  box.style.transform = 'translateY(40px) scale(.95)';
+  box.style.opacity = '0';
+  box.style.transition = 'transform .4s cubic-bezier(.34,1.56,.64,1),opacity .3s';
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    box.style.transform = 'none';
+    box.style.opacity = '1';
+  }));
 }
 
 function renderExamCountdown(){
@@ -3491,7 +3799,248 @@ if(!sv.length){
   document.getElementById('sb-role-disp').textContent=prof.college||'CUET Aspirant';
   document.getElementById('home-greeting').textContent=`💕 Hello, ${uname}!`;
   document.getElementById('home-sub').textContent=`${new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'})} · ${rank.icon} ${rank.name} Rank`;
-  const goals=prof.goals||{};let H='';
+ const goals=prof.goals||{};let H='';
+
+/* ══════════════════════════════════════════
+   EXAM BANNER AT TOP OF HOME
+══════════════════════════════════════════ */
+(function(){
+  const now = new Date();
+  const upcomingExams = getAdminExams().filter(function(e){
+    if(!e.active) return false;
+    const examDate = new Date(e.date);
+    return examDate > now;
+  }).sort(function(a,b){
+    return new Date(a.date) - new Date(b.date);
+  });
+
+  if(!upcomingExams.length) return;
+
+  const next = upcomingExams[0];
+  const diff = new Date(next.date) - now;
+  const days  = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const mins  = Math.floor((diff % 3600000) / 60000);
+  const secs  = Math.floor((diff % 60000) / 1000);
+
+  // Build countdown label
+  let cdLabel = '';
+  if(days > 0){
+    cdLabel = days + 'd ' + hours + 'h';
+  } else if(hours > 0){
+    cdLabel = hours + 'h ' + mins + 'm';
+  } else {
+    cdLabel = mins + 'm ' + secs + 's';
+  }
+
+  // Urgency levels
+  const isUrgent   = diff < 86400000;       // less than 1 day
+  const isVeryNear = diff < 3600000 * 3;    // less than 3 hours
+  const isSoon     = diff < 86400000 * 3;   // less than 3 days
+
+  // Colors based on urgency
+  const accentColor = isVeryNear ? '#ef4444'
+                    : isUrgent   ? '#f97316'
+                    : isSoon     ? '#f59e0b'
+                    :              '#4f6ef7';
+
+  const bgGrad = isVeryNear
+    ? 'linear-gradient(135deg,#fff1f2,#fff5f5)'
+    : isUrgent
+    ? 'linear-gradient(135deg,#fff7ed,#fffbeb)'
+    : isSoon
+    ? 'linear-gradient(135deg,#fffbeb,#fefce8)'
+    : 'linear-gradient(135deg,#eff6ff,#f5f3ff)';
+
+  const borderColor = isVeryNear ? '#fecaca'
+                    : isUrgent   ? '#fed7aa'
+                    : isSoon     ? '#fde68a'
+                    :              '#bfdbfe';
+
+  const iconEmoji = isVeryNear ? '🚨'
+                  : isUrgent   ? '⏰'
+                  : isSoon     ? '📅'
+                  :              '📋';
+
+  const urgencyLabel = isVeryNear ? '🚨 EXAM STARTING VERY SOON'
+                     : isUrgent   ? '⏰ EXAM TOMORROW'
+                     : isSoon     ? '📅 UPCOMING EXAM'
+                     :              '📋 SCHEDULED EXAM';
+
+  const timeUnit = days > 0 ? 'Days Left'
+                 : hours > 0 ? 'Hours Left'
+                 : 'Minutes Left';
+
+  // Check if link exists
+  const hasLink = next.link && (
+    next.link.startsWith('http://') ||
+    next.link.startsWith('https://')
+  );
+
+  // Build extra exams list if more than 1
+  let extraExamsHTML = '';
+  if(upcomingExams.length > 1){
+    extraExamsHTML = '<div style="border-top:1px solid ' + borderColor + ';margin-top:14px;padding-top:12px;">';
+    extraExamsHTML += '<div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:' + accentColor + ';opacity:.7;margin-bottom:8px;">Also Coming Up</div>';
+    extraExamsHTML += '<div style="display:flex;flex-direction:column;gap:6px;">';
+
+    upcomingExams.slice(1, 4).forEach(function(exam){
+      const eDiff = new Date(exam.date) - now;
+      const eDays = Math.floor(eDiff / 86400000);
+      const eHours = Math.floor((eDiff % 86400000) / 3600000);
+      const eLabel = eDays > 0 ? eDays + 'd ' + eHours + 'h' : eHours + 'h';
+      const eHasLink = exam.link && exam.link.startsWith('http');
+
+      extraExamsHTML += '<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,.6);border-radius:11px;border:1px solid ' + borderColor + ';">';
+      extraExamsHTML += '<div style="font-size:13px;">📝</div>';
+      extraExamsHTML += '<div style="flex:1;min-width:0;">';
+      extraExamsHTML += '<div style="font-size:12px;font-weight:700;color:#1a1d2e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escH(exam.title) + '</div>';
+      extraExamsHTML += '<div style="font-size:10px;color:#6b7280;margin-top:1px;">';
+      extraExamsHTML += new Date(exam.date).toLocaleString('en-IN',{weekday:'short',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+      extraExamsHTML += ' · ' + exam.duration + ' min</div>';
+      extraExamsHTML += '</div>';
+      extraExamsHTML += '<div style="font-size:12px;font-weight:900;font-family:var(--mono);color:' + accentColor + ';flex-shrink:0;">' + eLabel + '</div>';
+      if(eHasLink){
+        extraExamsHTML += '<a href="' + exam.link + '" target="_blank" style="display:inline-flex;align-items:center;gap:4px;background:' + accentColor + ';color:#fff;border-radius:20px;padding:4px 11px;font-size:10px;font-weight:800;text-decoration:none;font-family:var(--fn);flex-shrink:0;">Open</a>';
+      }
+      extraExamsHTML += '</div>';
+    });
+
+    extraExamsHTML += '</div></div>';
+
+    if(upcomingExams.length > 4){
+      extraExamsHTML += '<div style="font-size:10px;color:#9298b5;text-align:center;margin-top:6px;font-weight:600;">+' + (upcomingExams.length - 4) + ' more exam' + (upcomingExams.length - 4 > 1 ? 's' : '') + ' scheduled</div>';
+    }
+  }
+
+  // Main banner HTML
+  H += '<div id="exam-top-banner" style="'
+    + 'background:' + bgGrad + ';'
+    + 'border:2px solid ' + borderColor + ';'
+    + 'border-radius:22px;'
+    + 'padding:18px 20px;'
+    + 'margin-bottom:22px;'
+    + 'position:relative;'
+    + 'overflow:hidden;'
+    + 'animation:fadeUp .4s ease both;'
+    + '">';
+
+  // Decorative background blobs
+  H += '<div style="position:absolute;top:-50px;right:-50px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,' + accentColor + '15,transparent 70%);pointer-events:none;"></div>';
+  H += '<div style="position:absolute;bottom:-40px;left:20px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,' + accentColor + '08,transparent 70%);pointer-events:none;"></div>';
+
+  // Urgency label strip at top
+  H += '<div style="'
+    + 'display:inline-flex;align-items:center;gap:6px;'
+    + 'background:' + accentColor + '18;'
+    + 'border:1.5px solid ' + accentColor + '35;'
+    + 'border-radius:30px;'
+    + 'padding:4px 14px;'
+    + 'font-size:9px;font-weight:800;'
+    + 'text-transform:uppercase;letter-spacing:1.2px;'
+    + 'color:' + accentColor + ';'
+    + 'margin-bottom:14px;'
+    + '">';
+
+  if(isVeryNear){
+    H += '<div style="width:7px;height:7px;border-radius:50%;background:' + accentColor + ';animation:syncPulse 1s ease-in-out infinite;"></div>';
+  }
+  H += urgencyLabel + '</div>';
+
+  // Main content row
+  H += '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:relative;z-index:1;">';
+
+  // Left icon
+  H += '<div style="'
+    + 'width:54px;height:54px;'
+    + 'border-radius:16px;'
+    + 'background:' + accentColor + '18;'
+    + 'border:2px solid ' + accentColor + '35;'
+    + 'display:flex;align-items:center;justify-content:center;'
+    + 'font-size:24px;flex-shrink:0;'
+    + '">' + iconEmoji + '</div>';
+
+  // Middle info
+  H += '<div style="flex:1;min-width:170px;">';
+  H += '<div style="font-size:19px;font-weight:900;color:#1a1d2e;letter-spacing:-.3px;margin-bottom:4px;line-height:1.2;">' + escH(next.title) + '</div>';
+  H += '<div style="font-size:12px;color:#6b7280;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">';
+  H += '<span>📅 ' + new Date(next.date).toLocaleString('en-IN',{weekday:'long',day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}) + '</span>';
+  H += '<span style="width:4px;height:4px;border-radius:50%;background:#d1d5db;flex-shrink:0;"></span>';
+  H += '<span>⏱ ' + next.duration + ' minutes</span>';
+  H += '</div>';
+
+  if(next.description){
+    H += '<div style="font-size:11px;color:#9298b5;margin-top:5px;line-height:1.6;">' + escH(next.description) + '</div>';
+  }
+
+  H += '</div>'; // end middle info
+
+  // Right countdown box
+  H += '<div style="'
+    + 'text-align:center;'
+    + 'background:' + accentColor + ';'
+    + 'border-radius:18px;'
+    + 'padding:14px 22px;'
+    + 'box-shadow:0 6px 20px ' + accentColor + '45;'
+    + 'flex-shrink:0;'
+    + (isVeryNear ? 'animation:retakePulse 1.5s ease-in-out infinite;' : '')
+    + '">';
+  H += '<div style="font-size:30px;font-weight:900;font-family:var(--mono);color:#fff;line-height:1;" id="exam-countdown-live">' + cdLabel + '</div>';
+  H += '<div style="font-size:9px;color:rgba(255,255,255,.75);text-transform:uppercase;letter-spacing:.8px;margin-top:4px;">' + timeUnit + '</div>';
+  H += '</div>';
+
+  // Open link button if exists
+  if(hasLink){
+    H += '<a href="' + next.link + '" target="_blank" style="'
+      + 'display:inline-flex;align-items:center;gap:8px;'
+      + 'background:' + accentColor + ';'
+      + 'color:#fff;'
+      + 'border-radius:30px;'
+      + 'padding:12px 22px;'
+      + 'font-size:13px;font-weight:800;'
+      + 'text-decoration:none;font-family:var(--fn);'
+      + 'box-shadow:0 4px 16px ' + accentColor + '45;'
+      + 'flex-shrink:0;'
+      + 'transition:all .2s;'
+      + '"'
+      + ' onmouseenter="this.style.transform=\'translateY(-2px)\';this.style.filter=\'brightness(1.1)\'"'
+      + ' onmouseleave="this.style.transform=\'none\';this.style.filter=\'none\'"'
+      + '>🔗 Open Exam Link</a>';
+  }
+
+  H += '</div>'; // end main content row
+
+  // Extra exams list
+  H += extraExamsHTML;
+
+  H += '</div>'; // end banner
+
+  // Live countdown ticker — updates every second
+  setTimeout(function(){
+    var tickInterval = setInterval(function(){
+      var el = document.getElementById('exam-countdown-live');
+      if(!el){ clearInterval(tickInterval); return; }
+      var remaining = new Date(next.date) - new Date();
+      if(remaining <= 0){
+        el.textContent = 'Starting Now!';
+        clearInterval(tickInterval);
+        return;
+      }
+      var td = Math.floor(remaining / 86400000);
+      var th = Math.floor((remaining % 86400000) / 3600000);
+      var tm = Math.floor((remaining % 3600000) / 60000);
+      var ts = Math.floor((remaining % 60000) / 1000);
+      if(td > 0){
+        el.textContent = td + 'd ' + th + 'h';
+      } else if(th > 0){
+        el.textContent = th + 'h ' + tm + 'm';
+      } else {
+        el.textContent = tm + 'm ' + ts + 's';
+      }
+    }, 1000);
+  }, 500);
+
+})();
 const heroGrads={'Apex':'linear-gradient(135deg,#f97316,#ec4899)','Thunder':'linear-gradient(135deg,#ef4444,#b91c1c)','Gold':'linear-gradient(135deg,#a855f7,#7c3aed)','Elite':'linear-gradient(135deg,#10b981,#0891b2)','Silver':'linear-gradient(135deg,#3b82f6,#60a5fa)','Bronze':'linear-gradient(135deg,#f59e0b,#d97706)','Explorer':'linear-gradient(135deg,#64748b,#94a3b8)','Rookie':'linear-gradient(135deg,#4f6ef7,#7c3aed)'};
 const heroGrad=heroGrads[currentTier.name]||'linear-gradient(135deg,#4f6ef7,#7c3aed)';
 H+=`<div class="ts-hero">
@@ -7696,14 +8245,16 @@ if (_gu) {
   }
 }
 
-  fetchLiveNoticesAndExams().then(()=>{
-    if(shouldShowOnboarding()){
+  fetchLiveNoticesAndExams().then(function(){
+  if(shouldShowOnboarding()){
     renderHome();
-    // Don't auto-start onboarding — user clicks Get Started button instead
     return;
   }
   renderHome();
-  });
+}).catch(function(){
+  // Still render even if notices fail
+  renderHome();
+});
   
   // Auto-refresh notices every 60 seconds
 setInterval(()=>{
@@ -8917,56 +9468,25 @@ async function sheetSyncFromHomeTopbar(btn) {
 let _cachedQuote = null;
 
 async function fetchDailyQuote() {
-  // Check cache first (cache for today only)
-  const today = new Date().toDateString();
-  const cached = localStorage.getItem('ts_quote_cache');
-  if (cached) {
-    try {
-      const obj = JSON.parse(cached);
-      if (obj.date === today && obj.quote) {
-        _cachedQuote = obj;
-        return obj;
-      }
-    } catch(e) {}
-  }
-  
-  // Fallback quotes if sheet fails
+  // Always fetch fresh from sheet, no cache
   const fallbacks = [
     { quote: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill", category: "motivation" },
     { quote: "The secret of getting ahead is getting started.", author: "Mark Twain", category: "motivation" },
     { quote: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson", category: "persistence" },
     { quote: "Education is the most powerful weapon which you can use to change the world.", author: "Nelson Mandela", category: "education" },
     { quote: "Your future is created by what you do today, not tomorrow.", author: "Robert Kiyosaki", category: "motivation" },
-    { quote: "The harder you work for something, the greater you'll feel when you achieve it.", author: "Anonymous", category: "motivation" },
-    { quote: "Dream bigger. Do bigger.", author: "Anonymous", category: "motivation" },
-    { quote: "Push yourself, because no one else is going to do it for you.", author: "Anonymous", category: "persistence" },
-    { quote: "Great things never come from comfort zones.", author: "Anonymous", category: "motivation" },
-    { quote: "It always seems impossible until it's done.", author: "Nelson Mandela", category: "motivation" }
   ];
-  
   try {
+    // Add timestamp to bust cache and get random/new quote each load
     const res = await Promise.race([
-      fetch(QUOTES_URL, { method: 'GET' }),
-      new Promise((_, r) => setTimeout(() => r(new Error('timeout')), 4000))
+      fetch(QUOTES_URL + '?t=' + Date.now(), { method: 'GET', cache: 'no-store' }),
+      new Promise((_, r) => setTimeout(() => r(new Error('timeout')), 5000))
     ]);
     const data = await res.json();
-    if (data && data.quote) {
-      const obj = { ...data, date: today };
-      localStorage.setItem('ts_quote_cache', JSON.stringify(obj));
-      _cachedQuote = obj;
-      return obj;
-    }
-  } catch(e) {
-    // Use fallback
-  }
-  
-  // Use day-based fallback
-  const dayIdx = Math.floor((new Date() - 
-    new Date(new Date().getFullYear(), 0, 0)) / 86400000) % fallbacks.length;
-  const fallback = { ...fallbacks[dayIdx], date: today };
-  localStorage.setItem('ts_quote_cache', JSON.stringify(fallback));
-  _cachedQuote = fallback;
-  return fallback;
+    if (data && data.quote) return data;
+  } catch(e) {}
+  // Random fallback on each load
+  return fallbacks[Math.floor(Math.random() * fallbacks.length)];
 }
 
 function buildQuoteCard(quoteObj) {
@@ -10422,6 +10942,19 @@ function screenshotShareCard() {
   );
 }
 
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js')
+      .then(function (reg) {
+        console.log('SW registered:', reg.scope);
+      })
+      .catch(function (err) {
+        console.log('SW failed:', err);
+      });
+  });
+}
 </script>
 </body>
 </html>
