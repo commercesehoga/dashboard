@@ -1,0 +1,38 @@
+{
+  "name": "Thunderstudy — CUET Dashboard",
+  "short_name": "Thunderstudy",
+  "description": "Your complete CUET preparation dashboard. Track scores, analytics, class rank and more.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f0f3fa",
+  "theme_color": "#4f6ef7",
+  "lang": "en-IN",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Scoreboard",
+      "short_name": "Scores",
+      "description": "View your scoreboard",
+      "url": "./?page=scoreboard",
+      "icons": [{ "src": "favicon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Analytics",
+      "short_name": "Analytics",
+      "description": "View analytics",
+      "url": "./?page=analytics",
+      "icons": [{ "src": "favicon.svg", "sizes": "any" }]
+    }
+  ]
+}
