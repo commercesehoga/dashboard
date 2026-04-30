@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en">
     
@@ -1360,6 +1357,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
   0%,100%{box-shadow:0 0 0 0 rgba(244,63,94,.3)}
   50%{box-shadow:0 0 0 4px rgba(244,63,94,.1)}
 }
+
+    @keyframes tsUpdateIn {
+  from { opacity:0; transform:translateX(-50%) translateY(20px); }
+  to   { opacity:1; transform:translateX(-50%) translateY(0); }
+}
+@media(max-width:768px) {
+  #ts-update-bar { bottom:88px !important; font-size:12px !important; }
+}
+
 </style>
 </head>
 <body>
@@ -3113,13 +3119,41 @@ H += `
   H+=`</div>`;
 
   // Popup trigger
-// Popup trigger — shows ALL popup notices that haven't been "Read it"-ed
-  setTimeout(() => {
+setTimeout(() => {
     try {
-      const readPopups = JSON.parse(
-        localStorage.getItem('ts_read_popups') || '[]'
-      );
-      // Get all notices marked as popup=true that user hasn't clicked "Read it" on
+      // Priority queue: update popup → daily update popup → admin notices
+      if (window._pendingUpdatePopup) {
+        _showUpdatePopupNow();
+        const t1 = setInterval(() => {
+          if (!document.getElementById('ts-update-popup')) {
+            clearInterval(t1);
+            _checkDailyThenAdmin(notices);
+          }
+        }, 500);
+        return;
+      }
+      _checkDailyThenAdmin(notices);
+    } catch(e) {}
+  }, 600);
+
+  function _checkDailyThenAdmin(notices) {
+    if (window._pendingDailyUpdatePopup) {
+      window._pendingDailyUpdatePopup = false;
+      _showDailyUpdatePopup(false);
+      const t2 = setInterval(() => {
+        if (!document.getElementById('ts-daily-update-popup')) {
+          clearInterval(t2);
+          _showAdminNoticePopup(notices);
+        }
+      }, 500);
+      return;
+    }
+    _showAdminNoticePopup(notices);
+  }
+
+  function _showAdminNoticePopup(notices) {
+    try {
+      const readPopups = JSON.parse(localStorage.getItem('ts_read_popups') || '[]');
       const popupNotices = notices.filter(n =>
         n.popup &&
         !readPopups.includes(String(n.id || '')) &&
@@ -3129,7 +3163,7 @@ H += `
         showAdminPopup(popupNotices);
       }
     } catch(e) {}
-  }, 600);
+  }
 
   return H;
 }
@@ -7599,8 +7633,8 @@ function lsdInitDisplay(){
 function lsdToggleAuto(el){
   const on=el.style.background==='#4f6ef7'||el.style.background==='rgb(79, 110, 247)';
   el.style.background=on?'var(--border)':'#4f6ef7';
-  const knob=el.querySelector('div');
-  if(knob)knob.style.left=on?'2px':'18px';
+  const *****=el.querySelector('div');
+  if(*****)*****.style.left=on?'2px':'18px';
   const lbl=document.getElementById('lsd-auto-label');
   if(lbl)lbl.textContent=on?'Auto-sync: off':'Auto-sync: every 5 minutes';
 }
@@ -8458,6 +8492,66 @@ setTimeout(()=>{
     }
   }
 });
+
+/* ══════════════════════════════════════════
+   DAILY MIDNIGHT AUTO-UPDATE
+══════════════════════════════════════════ */
+(function initDailyUpdate() {
+  const DAILY_KEY = 'ts_last_daily_update';
+  const today = new Date().toLocaleDateString('en-IN');
+  const lastUpdate = localStorage.getItem(DAILY_KEY);
+
+  // Check if we need to show "Daily Update" popup (opened after midnight, not yet shown today)
+  if (lastUpdate !== today) {
+    window._pendingDailyUpdatePopup = true;
+    localStorage.setItem(DAILY_KEY, today);
+  }
+
+  // Schedule midnight reload if app stays open
+  function scheduleNextMidnightReload() {
+    const now = new Date();
+    const midnight = new Date(now);
+    midnight.setDate(midnight.getDate() + 1);
+    midnight.setHours(0, 0, 10, 0); // 12:00:10 AM next day
+    const msUntilMidnight = midnight - now;
+    setTimeout(function() {
+      // Auto-reload at midnight
+      localStorage.setItem(DAILY_KEY, new Date().toLocaleDateString('en-IN'));
+      window.location.reload();
+    }, msUntilMidnight);
+  }
+  scheduleNextMidnightReload();
+
+  // Ctrl+Shift+R → show daily update popup
+  document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.shiftKey && (e.key === 'R' || e.key === 'r')) {
+      e.preventDefault();
+      _showDailyUpdatePopup(true);
+    }
+  });
+})();
+
+function _showDailyUpdatePopup(manualTrigger) {
+  if (document.getElementById('ts-daily-update-popup')) return;
+  const ov = document.createElement('div');
+  ov.id = 'ts-daily-update-popup';
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:20px;';
+  ov.innerHTML = `
+  <div style="background:var(--card);border-radius:28px;padding:30px 26px;max-width:390px;width:100%;border:1.5px solid rgba(16,185,129,.3);box-shadow:0 24px 80px rgba(16,185,129,.2);animation:mIn .4s cubic-bezier(.34,1.56,.64,1);text-align:center;position:relative;overflow:hidden;">
+    <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(16,185,129,.05),rgba(79,110,247,.04));pointer-events:none;border-radius:28px;"></div>
+    <div style="font-size:50px;margin-bottom:10px;">🌅</div>
+    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--green);margin-bottom:8px;">Daily Update</div>
+    <div style="font-size:20px;font-weight:900;color:var(--text);margin-bottom:10px;letter-spacing:-.3px;">Good ${new Date().getHours()<12?'Morning':'Afternoon'}! Ready to study?</div>
+    <div style="font-size:13px;color:var(--text3);line-height:1.7;margin-bottom:22px;">A fresh daily sync is recommended to get the latest notices, exam schedules, and leaderboard updates.</div>
+    <div style="display:flex;flex-direction:column;gap:9px;">
+      <button onclick="localStorage.setItem('ts_last_daily_update',new Date().toLocaleDateString('en-IN'));document.getElementById('ts-daily-update-popup').remove();window.location.reload();" style="width:100%;padding:13px;border-radius:15px;border:none;cursor:pointer;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:14px;font-weight:800;font-family:var(--fn);box-shadow:0 6px 20px rgba(16,185,129,.3);">🔄 Refresh Now</button>
+      <button onclick="document.getElementById('ts-daily-update-popup').remove()" style="width:100%;padding:11px;border-radius:15px;border:1.5px solid var(--border);cursor:pointer;background:var(--card2);color:var(--text2);font-size:12px;font-weight:700;font-family:var(--fn);">Not Now</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
+}
+
 /* HP → XP CONVERSION */
 function convertHPtoXP(){
   const inp=document.getElementById('hp-convert-amt');
@@ -11119,10 +11213,69 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js')
       .then(function (reg) {
         console.log('SW registered:', reg.scope);
+
+        if (reg.waiting) {
+          showUpdateBar();
+        }
+
+        reg.addEventListener('updatefound', function () {
+          const newWorker = reg.installing;
+          newWorker.addEventListener('statechange', function () {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              showUpdateBar();
+            }
+          });
+        });
       })
       .catch(function (err) {
         console.log('SW failed:', err);
       });
+
+    navigator.serviceWorker.addEventListener('message', function (e) {
+      if (e.data && e.data.type === 'TS_UPDATE_READY') {
+        showUpdateBar();
+      }
+    });
+  });
+}
+
+function showUpdateBar() {
+  if (document.getElementById('ts-update-popup')) return;
+  // Queue the update popup — to be shown before admin notice
+  window._pendingUpdatePopup = true;
+  _showUpdatePopupNow();
+}
+
+function _showUpdatePopupNow() {
+  if (!window._pendingUpdatePopup) return;
+  // Don't show if admin popup is already visible
+  if (document.getElementById('adminPopupOverlay')) return;
+  window._pendingUpdatePopup = false;
+  const ov = document.createElement('div');
+  ov.id = 'ts-update-popup';
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:20px;';
+  ov.innerHTML = `
+  <div style="background:var(--card);border-radius:28px;padding:32px 28px;max-width:400px;width:100%;border:1.5px solid rgba(79,110,247,.35);box-shadow:0 24px 80px rgba(79,110,247,.25);animation:mIn .4s cubic-bezier(.34,1.56,.64,1);text-align:center;position:relative;overflow:hidden;">
+    <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(79,110,247,.05),rgba(124,58,237,.04));pointer-events:none;border-radius:28px;"></div>
+    <div style="font-size:52px;margin-bottom:10px;">⚡</div>
+    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--acc);margin-bottom:8px;">App Update Ready</div>
+    <div style="font-size:20px;font-weight:900;color:var(--text);margin-bottom:10px;letter-spacing:-.3px;">Thunderstudy just got better!</div>
+    <div style="font-size:13px;color:var(--text3);line-height:1.7;margin-bottom:22px;">A new version of Thunderstudy is available with improvements and bug fixes. Update now to get the latest experience.</div>
+    <div style="display:flex;flex-direction:column;gap:9px;">
+      <button onclick="applyUpdate()" style="width:100%;padding:13px;border-radius:15px;border:none;cursor:pointer;background:linear-gradient(135deg,#4f6ef7,#7c3aed);color:#fff;font-size:14px;font-weight:800;font-family:var(--fn);box-shadow:0 6px 20px rgba(79,110,247,.3);">⚡ Update Now</button>
+      <button onclick="document.getElementById('ts-update-popup').remove()" style="width:100%;padding:11px;border-radius:15px;border:1.5px solid var(--border);cursor:pointer;background:var(--card2);color:var(--text2);font-size:12px;font-weight:700;font-family:var(--fn);">Close App</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
+}
+
+function applyUpdate() {
+  navigator.serviceWorker.getRegistration().then(function(reg) {
+    if (reg && reg.waiting) {
+      reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+    }
+    window.location.reload();
   });
 }
 
