@@ -1357,6 +1357,14 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
   0%,100%{box-shadow:0 0 0 0 rgba(244,63,94,.3)}
   50%{box-shadow:0 0 0 4px rgba(244,63,94,.1)}
 }
+
+    @keyframes tsUpdateIn {
+  from { opacity:0; transform:translateX(-50%) translateY(20px); }
+  to   { opacity:1; transform:translateX(-50%) translateY(0); }
+}
+@media(max-width:768px) {
+  #ts-update-bar { bottom:88px !important; font-size:12px !important; }
+}
 </style>
 </head>
 <body>
@@ -11116,10 +11124,72 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js')
       .then(function (reg) {
         console.log('SW registered:', reg.scope);
+
+        if (reg.waiting) {
+          showUpdateBar();
+        }
+
+        reg.addEventListener('updatefound', function () {
+          const newWorker = reg.installing;
+          newWorker.addEventListener('statechange', function () {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              showUpdateBar();
+            }
+          });
+        });
       })
       .catch(function (err) {
         console.log('SW failed:', err);
       });
+
+    navigator.serviceWorker.addEventListener('message', function (e) {
+      if (e.data && e.data.type === 'TS_UPDATE_READY') {
+        showUpdateBar();
+      }
+    });
+  });
+}
+
+function showUpdateBar() {
+  if (document.getElementById('ts-update-bar')) return;
+  const bar = document.createElement('div');
+  bar.id = 'ts-update-bar';
+  bar.innerHTML = `
+    <span style="font-size:18px;">⚡</span>
+    <span style="flex:1;">New version of Thunderstudy is ready!</span>
+    <button onclick="applyUpdate()" style="
+      background:rgba(255,255,255,0.2);
+      border:1.5px solid rgba(255,255,255,0.4);
+      border-radius:20px;padding:6px 16px;
+      font-size:12px;font-weight:800;color:#fff;
+      cursor:pointer;font-family:var(--fn);
+      white-space:nowrap;">Update Now</button>
+    <button onclick="this.parentElement.remove()" style="
+      background:none;border:none;
+      color:rgba(255,255,255,0.6);font-size:20px;
+      cursor:pointer;font-family:var(--fn);
+      line-height:1;padding:0 0 0 6px;">×</button>
+  `;
+  bar.style.cssText = `
+    position:fixed;bottom:80px;left:50%;
+    transform:translateX(-50%);z-index:9001;
+    background:linear-gradient(135deg,#4f6ef7,#7c3aed);
+    color:#fff;border-radius:30px;padding:12px 20px;
+    display:flex;align-items:center;gap:10px;
+    font-size:13px;font-weight:700;font-family:var(--fn);
+    box-shadow:0 8px 28px rgba(79,110,247,.45);
+    max-width:calc(100vw - 32px);
+    animation:tsUpdateIn .4s cubic-bezier(.34,1.56,.64,1);
+  `;
+  document.body.appendChild(bar);
+}
+
+function applyUpdate() {
+  navigator.serviceWorker.getRegistration().then(function(reg) {
+    if (reg && reg.waiting) {
+      reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+    }
+    window.location.reload();
   });
 }
 
