@@ -1,3 +1,6 @@
+
+
+
 <!DOCTYPE html>
 <html lang="en">
     
@@ -40,6 +43,39 @@
   --r:16px;--r2:22px;--sidebar-w:240px;
   --sh:0 2px 20px rgba(79,110,247,.08);--sh2:0 8px 40px rgba(79,110,247,.14);
 }
+
+body.dark-mode {
+  --bg:#0f1117;--sidebar:#161b27;--card:#1a2030;--card2:#1f2637;--border:#2a3348;
+  --text:#e8ecf4;--text2:#9298b5;--text3:#5a5f7a;
+}
+body.dark-mode .sidebar{box-shadow:4px 0 24px rgba(0,0,0,.3);}
+body.dark-mode .mobile-dock{background:#161b27;border-color:#2a3348;}
+body.dark-mode .donate-btn{box-shadow:0 4px 16px rgba(245,158,11,.25);}
+body.dark-mode .donate-popup{background:#161b27;border-color:#2a3348;}
+body.dark-mode .btt-btn{box-shadow:0 4px 14px rgba(79,110,247,.2);}
+body.dark-mode .pwa-install-bar{box-shadow:0 8px 28px rgba(79,110,247,.25);}
+body.dark-mode #ts-boot{background:#0f1117;}
+body.dark-mode .ts-hero{background:#1a2030;border-color:#2a3348;}
+body.dark-mode .ts-hero-top{border-color:#2a3348;}
+body.dark-mode .ts-tl-wrap{border-color:#2a3348;}
+body.dark-mode .ts-rp-wrap{border-color:#2a3348;}
+body.dark-mode .ts-stat-cell{border-color:#2a3348;}
+body.dark-mode .ts-hero-footer{background:#161b27;}
+body.dark-mode .badge-grid-wrap{background:#1a2030;border-color:#2a3348;}
+body.dark-mode .badge-card{background:#1a2030;border-color:#2a3348;}
+body.dark-mode .badge-card-name{color:#e8ecf4;}
+body.dark-mode .streak-card{background:linear-gradient(135deg,rgba(249,115,22,.12),rgba(245,158,11,.06));}
+body.dark-mode .xp-card{background:linear-gradient(135deg,rgba(79,110,247,.1),rgba(124,58,237,.06));}
+body.dark-mode .dock-item .dock-label{color:#9298b5;}
+body.dark-mode .dock-item.active .dock-label{color:#818cf8;}
+body.dark-mode .dock-bubble{background:#6366f1;}
+body.dark-mode .stat-card{background:#1a2030;border-color:#2a3348;}
+body.dark-mode .ch-card{background:#1a2030;border-color:#2a3348;}
+body.dark-mode .quick-links .ql-item{background:#1a2030;border-color:#2a3348;}
+body.dark-mode .quick-links .ql-item:hover{border-color:#818cf8;}
+body.dark-mode .rank-hero{box-shadow:0 8px 40px rgba(0,0,0,.4);}
+
+
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
 body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
@@ -114,7 +150,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
 .sec-link{font-size:12px;color:var(--acc);font-weight:700;cursor:pointer;}
 
 /* ── HEATMAP ── */
-.heatmap-wrap{overflow-x:auto;padding-bottom:4px;}
+.heatmap-wrap{overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;}
+.heatmap-wrap::-webkit-scrollbar{height:4px;}
+.heatmap-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
 .heatmap-grid{display:inline-flex;gap:3px;}
 .hm-week{display:flex;flex-direction:column;gap:3px;}
 .hm-day{width:11px;height:11px;border-radius:3px;background:var(--card2);cursor:pointer;transition:.15s;}
@@ -163,13 +201,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
 .mock-card.done{border-color:rgba(16,185,129,.25);}
 .mock-card.done::before{content:'✓';position:absolute;top:9px;right:11px;font-size:10px;font-weight:800;color:var(--green);background:rgba(16,185,129,.1);border-radius:20px;padding:2px 7px;}
 .mock-card:hover{transform:translateY(-2px);box-shadow:var(--sh2);}
-.mock-num{font-size:26px;font-weight:900;font-family:var(--mono);color:var(--acc);opacity:.3;position:absolute;right:12px;bottom:7px;}
+.mock-num{font-size:26px;font-weight:900;font-family:var(--mono);color:var(--acc);opacity:.3;position:absolute;right:12px;bottom:7px;z-index:0;}
 .mock-title{font-size:13px;font-weight:700;margin-bottom:5px;}
 .mock-subj{font-size:10px;color:var(--text3);margin-bottom:9px;}
 .mock-score{font-size:19px;font-weight:800;font-family:var(--mono);}
 .mock-date{font-size:10px;color:var(--text3);margin-top:2px;}
 
 /* ── LEADERBOARD ── */
+.lb-scroll-hint{display:none;font-size:10px;color:var(--text3);text-align:center;padding:6px;background:linear-gradient(90deg,transparent,var(--card2),transparent);}
+@media(max-width:600px){.lb-scroll-hint{display:block;}}
 .lb-row{display:grid;grid-template-columns:44px 1fr 90px 80px;align-items:center;gap:10px;padding:11px 18px;border-bottom:1px solid var(--border);transition:background .15s;}
 .lb-row:hover{background:var(--card2);}
 .lb-row:last-child{border-bottom:none;}
@@ -337,6 +377,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
 @keyframes socialPulse{0%,100%{box-shadow:0 4px 14px rgba(0,0,0,.15)}50%{box-shadow:0 8px 28px rgba(0,0,0,.3)}}
 .social-btn{animation:socialPulse 2.5s ease-in-out infinite;}
 
+/* ── SETTINGS ACCORDION ── */
+.settings-section{border:1px solid var(--border);border-radius:var(--r2);margin-bottom:10px;overflow:hidden;}
+.settings-section-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;background:var(--card);transition:background .15s;user-select:none;}
+.settings-section-hdr:hover{background:var(--card2);}
+.settings-section-hdr-title{font-size:14px;font-weight:800;display:flex;align-items:center;gap:8px;}
+.settings-section-chevron{font-size:16px;transition:transform .25s ease;color:var(--text3);}
+.settings-section-chevron.open{transform:rotate(180deg);}
+.settings-section-body{display:none;padding:0 18px 16px;}
+.settings-section-body.open{display:block;}
+
 /* ── LOG TABS ── */
 .log-tabs{display:flex;gap:6px;margin-bottom:14px;}
 .log-tab{flex:1;padding:9px;border-radius:12px;font-size:12px;font-weight:800;border:1.5px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer;text-align:center;transition:all .2s;}
@@ -458,6 +508,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
 .cuet-subj-row{display:flex;align-items:center;gap:9px;padding:9px 13px;background:var(--card2);border-radius:11px;margin-bottom:7px;}
 .cuet-need{font-size:11px;font-weight:800;font-family:var(--mono);min-width:80px;text-align:right;}
 
+/* ── GLOBAL SEARCH ── */
+.gsearch-bar{position:fixed;top:0;left:0;right:0;z-index:9990;background:var(--card);border-bottom:1px solid var(--border);padding:10px 16px;display:none;box-shadow:0 4px 20px rgba(0,0,0,.15);}
+.gsearch-bar.open{display:flex;align-items:center;gap:10px;animation:fadeUp .2s ease both;}
+.gsearch-input{flex:1;background:var(--card2);border:1.5px solid var(--border);border-radius:30px;padding:9px 16px;font-size:13px;color:var(--text);font-family:var(--fn);outline:none;}
+.gsearch-input:focus{border-color:var(--acc);}
+.gsearch-results{position:fixed;top:60px;left:0;right:0;z-index:9989;background:var(--card);border-bottom:1px solid var(--border);max-height:60vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.15);}
+.gsearch-item{display:flex;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.gsearch-item:hover{background:var(--card2);}
+
 /* ── EMPTY ── */
 .empty{text-align:center;padding:56px 20px;}
 .empty-icon{font-size:48px;margin-bottom:13px;}
@@ -558,7 +617,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
   }
 }
 
+/* ── DONATION BUTTON ── */
+.donate-btn{position:fixed;right:24px;bottom:76px;z-index:89;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;font-size:20px;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(245,158,11,.45);display:flex;align-items:center;justify-content:center;transition:all .3s;font-family:var(--fn);}
+.donate-btn:hover{transform:scale(1.12);box-shadow:0 6px 22px rgba(245,158,11,.6);}
+.donate-popup{position:fixed;right:76px;bottom:76px;z-index:90;background:var(--card);border:1.5px solid var(--border);border-radius:18px;padding:16px 18px;min-width:240px;max-width:280px;box-shadow:0 8px 32px rgba(0,0,0,.18);opacity:0;transform:scale(.9) translateX(10px);transition:all .25s cubic-bezier(.34,1.56,.64,1);pointer-events:none;}
+.donate-popup.visible{opacity:1;transform:scale(1) translateX(0);pointer-events:auto;}
+@media(max-width:768px){.donate-btn{bottom:100px;right:16px;}.donate-popup{right:68px;bottom:100px;min-width:200px;}}
+
 /* ── BACK TO TOP ── */
+.offline-banner{position:fixed;top:0;left:0;right:0;z-index:99998;background:#f43f5e;color:#fff;padding:9px 16px;font-size:12px;font-weight:800;font-family:var(--fn);text-align:center;display:none;align-items:center;justify-content:center;gap:10px;box-shadow:0 2px 12px rgba(244,63,94,.4);}
+.offline-banner.visible{display:flex;}
 .btt-btn{position:fixed;bottom:24px;right:24px;width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#4f6ef7,#7c3aed);color:#fff;font-size:16px;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(79,110,247,.35);display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;z-index:90;font-family:var(--fn);}
 .btt-btn.visible{opacity:1;transform:translateY(0);pointer-events:auto;}
 @media(max-width:768px){.btt-btn{bottom:82px;}}
@@ -608,451 +676,203 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
 .rank-badge-item.current{animation:badgePulse 2.4s ease-in-out infinite;}
 .rank-badge-item.earned:not(.current){animation:badgeShine 3s ease-in-out infinite;}
 /* ── OVERLAY ── */
+/* ══ BOOT SCREEN — WHITE & BLUE 3D PROFESSIONAL ══ */
 #ts-boot {
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-  background: #f2f6ff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  font-family: 'Outfit', sans-serif;
+  position:fixed;inset:0;z-index:99999;
+  background:#f0f4ff;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;font-family:'Outfit',sans-serif;
 }
-@media (min-width: 769px) {
-  #ts-boot {
-    /* Changed from 5.1s to 4.8s to start slightly earlier if desired */
-    animation: tsBootExit 0.8s cubic-bezier(0.4, 0, 0.2, 1) 4.8s forwards;
-  }
+@media(min-width:769px){
+  #ts-boot{animation:tsBootExitDesktop .7s cubic-bezier(.4,0,.2,1) 4.6s forwards;}
 }
-/* Mobile exit — slide down */
-@media (max-width: 768px) {
-  #ts-boot.exit-mobile {
-    animation: tsBootSlideDown 0.65s cubic-bezier(0.4,0,0.2,1) forwards;
-  }
+@media(max-width:768px){
+  #ts-boot.exit-mobile{animation:tsBootSlideDown .6s cubic-bezier(.4,0,.2,1) forwards;}
 }
-@keyframes tsBootSlideDown {
-  0%  { transform: translateY(0);    opacity: 1; }
-  100%{ transform: translateY(100%); opacity: 0; pointer-events: none; }
+@keyframes tsBootExitDesktop{
+  0%{opacity:1;transform:scale(1);}
+  100%{opacity:0;transform:scale(1.06);pointer-events:none;}
+}
+@keyframes tsBootSlideDown{
+  0%{transform:translateY(0);opacity:1;}
+  100%{transform:translateY(100%);opacity:0;pointer-events:none;}
 }
 
-/* Subtle blue dot grid */
-#ts-boot::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image:
-    radial-gradient(circle, rgba(37,99,235,0.12) 1px, transparent 1px);
-  background-size: 36px 36px;
-  animation: tsGridFade 0.6s ease-out 0.2s both;
+/* ── 3D CARD CONTAINER ── */
+.tsb-scene{
+  perspective:1200px;
+  display:flex;align-items:center;justify-content:center;
+  width:100%;height:100%;
 }
-
-@keyframes tsGridFade {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-/* Update the exit animation for Desktop */
-@keyframes tsBootExit {
-  0% { 
-    opacity: 1; 
-    transform: scale(1) translate(0, 0); 
-    pointer-events: all; 
-  }
-  100% { 
-    opacity: 0; 
-    /* This moves it towards the top-left and shrinks it */
-    transform: scale(0.3) translate(-150%, -150%); 
-    pointer-events: none; 
-  }
-}
-
-/* Ensure the stage can move smoothly */
-.ts-stage {
-  transition: all 0.5s ease-in-out;
-}
-
-/* ── PARTICLES ── */
-.ts-particle {
-  position: absolute;
-  left: var(--x); top: var(--y);
-  width: var(--s); height: var(--s);
-  border-radius: 50%;
-  background: #fbbf24;
-  opacity: 0;
-  animation: tsParticle var(--d) ease-out var(--dl) infinite;
-}
-
-@keyframes tsParticle {
-  0%   { opacity: 0; transform: translateY(0) scale(1); }
-  20%  { opacity: 0.5; }
-  100% { opacity: 0; transform: translateY(-60px) scale(0); }
-}
-
-/* ── RIPPLE RINGS ── */
-.ts-ring {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  border-radius: 50%;
-  border: 2px solid;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.ts-ring-1 {
-  width: 120px; height: 120px;
-  border-color: rgba(251,191,36,0.6);
-  animation: tsRing 0.7s ease-out 0.92s forwards;
-}
-.ts-ring-2 {
-  width: 200px; height: 200px;
-  border-color: rgba(37,99,235,0.3);
-  animation: tsRing 0.8s ease-out 1.0s forwards;
-}
-.ts-ring-3 {
-  width: 300px; height: 300px;
-  border-color: rgba(37,99,235,0.15);
-  animation: tsRing 0.9s ease-out 1.08s forwards;
-}
-
-@keyframes tsRing {
-  0%   { transform: translate(-50%,-50%) scale(0); opacity: 0.8; }
-  100% { transform: translate(-50%,-50%) scale(1);   opacity: 0; }
-}
-
-/* ── STAGE ── */
-.ts-stage {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-  z-index: 2;
-}
-
-/* ── BOLT WRAPPER ── */
-.ts-bolt-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* Drops from sky */
-  animation: tsBoltDrop 0.38s cubic-bezier(0.22,1,0.36,1) 0.45s both;
-}
-
-@keyframes tsBoltDrop {
-  0%   { transform: translateY(-200px); opacity: 0; }
-  65%  { transform: translateY(10px);   opacity: 1; }
-  82%  { transform: translateY(-7px);   opacity: 1; }
-  100% { transform: translateY(0);      opacity: 1; }
-}
-
-/* ── BOLT SVG ── */
-.ts-bolt-svg {
-  width: 96px;
-  height: 128px;
-  animation: tsBoltPulse 1.8s ease-in-out 1.2s infinite;
-}
-@media (max-width: 768px) {
-  .ts-bolt-svg { width: 80px; height: 108px; }
-}
-
-@keyframes tsBoltPulse {
-  0%, 100% { filter: drop-shadow(0 0 16px rgba(245,158,11,0.7)) drop-shadow(0 0 40px rgba(245,158,11,0.3)); }
-  50%       { filter: drop-shadow(0 0 28px rgba(245,158,11,0.95)) drop-shadow(0 0 60px rgba(245,158,11,0.5)); }
-}
-
-/* Bolt path traces in */
-.ts-bolt-path {
-  stroke-dasharray: 500;
-  stroke-dashoffset: 500;
-  animation: tsBoltTrace 0.28s ease-out 0.48s forwards;
-}
-
-@keyframes tsBoltTrace {
-  to { stroke-dashoffset: 0; }
-}
-
-/* Bolt ground shadow */
-.ts-bolt-shadow {
-  opacity: 0;
-  animation: tsShadowIn 0.3s ease-out 0.85s forwards;
-}
-
-@keyframes tsShadowIn {
-  to { opacity: 1; }
-}
-
-/* ── SHOCKWAVE ── */
-.ts-shockwave {
-  position: absolute;
-  bottom: -16px; left: 50%;
-  transform: translateX(-50%) scaleX(0);
-  width: 150px; height: 20px;
-  border-radius: 50%;
-  background: radial-gradient(ellipse,
-    rgba(245,158,11,0.55) 0%,
-    rgba(37,99,235,0.2) 50%,
-    transparent 70%);
-  opacity: 0;
-  animation: tsShock 0.5s ease-out 0.87s forwards;
-}
-
-@keyframes tsShock {
-  0%   { transform: translateX(-50%) scaleX(0);   opacity: 1; }
-  50%  { transform: translateX(-50%) scaleX(1.6); opacity: 0.85; }
-  100% { transform: translateX(-50%) scaleX(2.8); opacity: 0; }
-}
-
-/* ── SPARKS ── */
-.ts-sparks {
-  position: absolute;
-  bottom: -8px; left: 50%;
-  transform: translateX(-50%);
-  width: 130px; height: 70px;
-  opacity: 0;
-  animation:
-    tsSparksIn  0.08s ease-out 0.87s forwards,
-    tsSparksOut 0.45s ease-out 0.97s forwards;
-}
-
-@keyframes tsSparksIn  { to { opacity: 1; } }
-@keyframes tsSparksOut { to { opacity: 0; } }
-
-.ts-spark {
-  position: absolute;
-  bottom: 0; left: 50%;
-  width: 2px;
-  height: var(--h);
-  border-radius: 2px;
-  background: linear-gradient(to top, transparent, #fbbf24, #fff);
-  transform-origin: bottom center;
-  transform: translateX(-50%) rotate(var(--a));
-  box-shadow: 0 0 4px #fbbf24;
-}
-
-/* ── GROUND LINE ── */
-.ts-ground-line {
-  position: absolute;
-  bottom: -26px; left: 50%;
-  transform: translateX(-50%) scaleX(0);
-  width: 220px; height: 2px;
-  background: linear-gradient(90deg,
-    transparent,
-    rgba(37,99,235,0.3) 20%,
-    rgba(37,99,235,0.7) 50%,
-    rgba(37,99,235,0.3) 80%,
-    transparent);
-  border-radius: 99px;
-  animation: tsGroundLine 0.5s ease-out 0.92s forwards;
-}
-
-@keyframes tsGroundLine {
-  to { transform: translateX(-50%) scaleX(1); }
-}
-
-/* ── BRAND ── */
-.ts-brand {
-  margin-top: 18px;
-  text-align: center;
-  opacity: 0;
-  animation: tsBrandUp 0.55s cubic-bezier(0.34,1.56,0.64,1) 1.25s forwards;
-}
-
-@keyframes tsBrandUp {
-  0%   { opacity: 0; transform: translateY(16px) scale(0.95); }
-  100% { opacity: 1; transform: translateY(0)    scale(1); }
-}
-
-.ts-brand-name {
-  font-family: 'Syne', 'Plus Jakarta Sans', system-ui, sans-serif;
-  font-size: clamp(26px, 5vw, 36px);
-  font-weight: 800;
-  letter-spacing: 2px;
-  color: #1e3a8a;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  justify-content: center;
-}
-
-/* Mobile logo lockup (replaces plain text brand on small screens) */
-@media (max-width: 768px) {
-  .ts-brand-name { display: none; }
-  .ts-brand-sub  { display: none; }
-  .ts-logo-lockup { display: flex; }
-  .ts-brand-tagline { display: block; }
-}
-@media (min-width: 769px) {
-  .ts-logo-lockup   { display: none; }
-  .ts-brand-tagline { display: none; }
-}
-
-/* Logo lockup styles (from mobile file) */
-.ts-logo-lockup {
-  display: flex; align-items: center; gap: 12px; justify-content: center;
-}
-.ts-logo-icon {
-  width: 44px; height: 44px; background: #2563eb; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  box-shadow: 0 4px 18px rgba(37,99,235,.38);
-}
-.ts-logo-words  { display: flex; flex-direction: column; line-height: 1.15; }
-.ts-logo-main   { display: flex; align-items: baseline; }
-.ts-logo-thunder{ font-family:'Outfit',sans-serif; font-size:24px; font-weight:900; color:#2563eb; letter-spacing:-.6px; }
-.ts-logo-study  { font-family:'Outfit',sans-serif; font-size:24px; font-weight:700; color:#1e3a8a; letter-spacing:-.6px; }
-.ts-logo-sub    { display: flex; align-items: center; gap: 5px; margin-top: 2px; }
-.ts-logo-line   { width: 18px; height: 1px; background: #bfdbfe; }
-.ts-logo-by     { font-family:'Outfit',sans-serif; font-size:9.5px; font-weight:500; color:#60a5fa; letter-spacing:.8px; }
-.ts-brand-tagline {
-  font-family: 'Outfit', sans-serif; font-size: 10px;
-  letter-spacing: 3px; text-transform: uppercase;
-  color: rgba(37,99,235,.5); margin-top: 8px; font-weight: 600;
-}
-
-.ts-bolt-char {
-  font-style: normal;
-  font-size: 1.15em;
-  /* Gold gradient on the ⚡ emoji */
-  background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 60%, #d97706 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 2px 8px rgba(245,158,11,0.5));
-  animation: tsBoltCharPulse 1.8s ease-in-out 1.8s infinite;
-}
-
-@keyframes tsBoltCharPulse {
-  0%, 100% { filter: drop-shadow(0 2px 8px rgba(245,158,11,0.5)); }
-  50%       { filter: drop-shadow(0 2px 16px rgba(245,158,11,0.9)); }
-}
-
-.ts-brand-sub {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  font-size: 11px;
-  letter-spacing: 3.5px;
-  text-transform: uppercase;
-  color: rgba(37,99,235,0.55);
-  margin-top: 5px;
-  font-weight: 600;
-}
-
-/* ── LOADER ── */
-.ts-loader {
-  margin-top: 32px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  opacity: 0;
-  animation: tsFadeIn 0.5s ease-out 1.6s forwards;
-}
-
-@keyframes tsFadeIn {
-  to { opacity: 1; }
-}
-
-.ts-loader-glass {
-  position: relative;
-  width: 60px; height: 60px;
-}
-
-/* Outer frosted disc */
-.ts-loader-track {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.7);
-  border: 1px solid rgba(37,99,235,0.15);
+.tsb-card{
+  width:320px;
+  background:#ffffff;
+  border-radius:28px;
+  padding:44px 36px 40px;
+  text-align:center;
   box-shadow:
-    0 4px 20px rgba(37,99,235,0.08),
-    inset 0 1px 0 rgba(255,255,255,0.9);
-  backdrop-filter: blur(8px);
+    0 2px 4px rgba(37,99,235,.06),
+    0 8px 20px rgba(37,99,235,.10),
+    0 24px 60px rgba(37,99,235,.14),
+    0 60px 120px rgba(37,99,235,.10),
+    inset 0 1px 0 rgba(255,255,255,.9);
+  border:1px solid rgba(37,99,235,.08);
+  transform:rotateX(8deg) translateY(20px);
+  opacity:0;
+  animation:tsbCardIn .8s cubic-bezier(.34,1.56,.64,1) .2s forwards;
+  position:relative;
+  overflow:hidden;
+}
+@keyframes tsbCardIn{
+  0%{transform:rotateX(20deg) translateY(40px) scale(.92);opacity:0;}
+  60%{transform:rotateX(-3deg) translateY(-4px) scale(1.01);}
+  100%{transform:rotateX(0deg) translateY(0) scale(1);opacity:1;}
 }
 
-/* Main spinning arc — blue */
-.ts-loader-arc {
-  position: absolute;
-  inset: 5px;
-  border-radius: 50%;
-  border: 2.5px solid transparent;
-  border-top-color: #2563eb;
-  border-right-color: rgba(37,99,235,0.35);
-  animation: tsSpin 0.85s linear infinite;
-  box-shadow: 0 0 0 0 transparent;
-  filter: drop-shadow(0 0 4px rgba(37,99,235,0.6));
+/* Shimmer overlay on card */
+.tsb-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,
+    rgba(255,255,255,.6) 0%,
+    rgba(255,255,255,0) 50%,
+    rgba(37,99,235,.04) 100%);
+  border-radius:28px;pointer-events:none;z-index:1;
 }
 
-/* Inner counter-arc — gold */
-.ts-loader-arc-2 {
-  position: absolute;
-  inset: 13px;
-  border-radius: 50%;
-  border: 1.5px solid transparent;
-  border-bottom-color: #f59e0b;
-  border-left-color: rgba(245,158,11,0.35);
-  animation: tsSpin 1.5s linear infinite reverse;
-  filter: drop-shadow(0 0 3px rgba(245,158,11,0.6));
+/* Blue accent strip at top */
+.tsb-card::after{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,#2563eb,#4f46e5,#7c3aed);
+  border-radius:28px 28px 0 0;
 }
 
-@keyframes tsSpin { to { transform: rotate(360deg); } }
-
-/* Centre pulsing dot — alternates blue/gold */
-.ts-loader-dot {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: #2563eb;
-  box-shadow: 0 0 10px #2563eb, 0 0 24px rgba(37,99,235,0.4);
-  animation: tsDotPulse 1.4s ease-in-out infinite;
+/* ── LOGO ICON ── */
+.tsb-icon-wrap{
+  position:relative;z-index:2;
+  width:80px;height:80px;margin:0 auto 22px;
+  animation:tsbIconDrop .6s cubic-bezier(.34,1.56,.64,1) .7s both;
+}
+@keyframes tsbIconDrop{
+  0%{transform:translateY(-20px) scale(.8);opacity:0;}
+  100%{transform:translateY(0) scale(1);opacity:1;}
+}
+.tsb-icon-bg{
+  width:80px;height:80px;
+  background:linear-gradient(135deg,#2563eb,#4338ca);
+  border-radius:22px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:
+    0 4px 12px rgba(37,99,235,.3),
+    0 12px 32px rgba(37,99,235,.2),
+    inset 0 1px 0 rgba(255,255,255,.25);
 }
 
-@keyframes tsDotPulse {
-  0%, 100% {
-    transform: translate(-50%,-50%) scale(1);
-    background: #2563eb;
-    box-shadow: 0 0 10px #2563eb, 0 0 24px rgba(37,99,235,0.4);
-  }
-  50% {
-    transform: translate(-50%,-50%) scale(1.6);
-    background: #f59e0b;
-    box-shadow: 0 0 14px #f59e0b, 0 0 30px rgba(245,158,11,0.5);
-  }
+/* Glow ring around icon */
+.tsb-icon-ring{
+  position:absolute;inset:-8px;
+  border-radius:30px;
+  border:1.5px solid rgba(37,99,235,.15);
+  animation:tsbRingPulse 2s ease-in-out 1.2s infinite;
+}
+.tsb-icon-ring-2{
+  position:absolute;inset:-16px;
+  border-radius:38px;
+  border:1px solid rgba(37,99,235,.07);
+  animation:tsbRingPulse 2s ease-in-out 1.5s infinite;
+}
+@keyframes tsbRingPulse{
+  0%,100%{opacity:.5;transform:scale(1);}
+  50%{opacity:1;transform:scale(1.04);}
 }
 
-/* Loading text */
-.ts-loader-text {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  font-size: 10px;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  font-weight: 700;
-  color: rgba(37,99,235,0.5);
-  animation: tsTextBlink 1.6s ease-in-out infinite;
+/* ── BRAND TEXT ── */
+.tsb-brand{
+  position:relative;z-index:2;
+  animation:tsbTextUp .5s cubic-bezier(.34,1.56,.64,1) 1s both;
+}
+@keyframes tsbTextUp{
+  0%{opacity:0;transform:translateY(12px);}
+  100%{opacity:1;transform:translateY(0);}
+}
+.tsb-brand-name{
+  font-size:28px;font-weight:900;letter-spacing:-.5px;
+  color:#1e3a8a;line-height:1;margin-bottom:5px;
+}
+.tsb-brand-name span{color:#2563eb;}
+.tsb-brand-tag{
+  font-size:10px;font-weight:600;
+  letter-spacing:3px;text-transform:uppercase;
+  color:rgba(37,99,235,.45);
 }
 
-@keyframes tsTextBlink {
-  0%, 100% { opacity: 0.5; }
-  50%       { opacity: 1; }
+/* ── DIVIDER ── */
+.tsb-divider{
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(37,99,235,.15),transparent);
+  margin:22px 0;position:relative;z-index:2;
+  animation:tsbTextUp .5s ease 1.2s both;
 }
 
-/* ── FLASH ── */
-.ts-flash {
-  position: absolute;
-  inset: 0;
-  background: rgba(255,252,235,0.7);
-  opacity: 0;
-  pointer-events: none;
-  animation: tsFlash 0.4s ease-out 0.87s forwards;
+/* ── PROGRESS ── */
+.tsb-progress-wrap{
+  position:relative;z-index:2;
+  animation:tsbTextUp .5s ease 1.3s both;
+}
+.tsb-progress-track{
+  height:4px;background:#eff6ff;
+  border-radius:4px;overflow:hidden;
+  border:1px solid rgba(37,99,235,.1);
+  margin-bottom:12px;
+}
+.tsb-progress-fill{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,#2563eb,#4f46e5);
+  border-radius:4px;
+  transition:width .5s cubic-bezier(.4,0,.2,1);
+  position:relative;overflow:hidden;
+}
+/* Shine on progress fill */
+.tsb-progress-fill::after{
+  content:'';
+  position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);
+  animation:tsbShine 1.4s ease-in-out 1.5s infinite;
+}
+@keyframes tsbShine{
+  0%{left:-100%;}100%{left:200%;}
+}
+.tsb-progress-label{
+  font-size:10px;font-weight:700;
+  letter-spacing:2.5px;text-transform:uppercase;
+  color:rgba(37,99,235,.4);
+  animation:tsbBlink 1.8s ease-in-out infinite;
+}
+@keyframes tsbBlink{0%,100%{opacity:.4;}50%{opacity:.9;}}
+
+/* ── FLOATING DOTS BG ── */
+.tsb-dot{
+  position:absolute;border-radius:50%;
+  background:radial-gradient(circle,rgba(37,99,235,.12),transparent 70%);
+  pointer-events:none;
+  animation:tsbDotFloat var(--dur,6s) ease-in-out var(--del,0s) infinite alternate;
+}
+@keyframes tsbDotFloat{
+  0%{transform:translate(0,0) scale(1);}
+  100%{transform:translate(var(--tx,10px),var(--ty,-15px)) scale(1.1);}
 }
 
-@keyframes tsFlash {
-  0%   { opacity: 0.8; }
-  100% { opacity: 0; }
+/* ── CORNER ACCENT SQUARES ── */
+.tsb-corner{
+  position:absolute;width:60px;height:60px;
+  border:1.5px solid rgba(37,99,235,.08);
+  pointer-events:none;
 }
+.tsb-corner-tl{top:16px;left:16px;border-right:none;border-bottom:none;border-radius:8px 0 0 0;}
+.tsb-corner-tr{top:16px;right:16px;border-left:none;border-bottom:none;border-radius:0 8px 0 0;}
+.tsb-corner-bl{bottom:16px;left:16px;border-right:none;border-top:none;border-radius:0 0 0 8px;}
+.tsb-corner-br{bottom:16px;right:16px;border-left:none;border-top:none;border-radius:0 0 8px 0;}
+
 /* ── NEW CONCEPT-4 HERO ── */
 .ts-hero{background:#fff;border:1px solid #dbeafe;border-radius:22px;overflow:hidden;box-shadow:0 2px 24px rgba(59,130,246,.08);margin-bottom:14px;}
 .ts-hero-top{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 13px;border-bottom:1px solid #eff6ff;gap:12px;flex-wrap:wrap;}
@@ -1104,7 +924,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
 /* ── BOOKMARK BUTTON on card ── */
 .bm-btn {
   position: absolute;
-  top: 10px;
+  top: 40px;
   right: 10px;
   width: 32px;
   height: 32px;
@@ -1116,7 +936,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
   justify-content: center;
   font-size: 16px;
   cursor: pointer;
-  z-index: 50; /* CRITICAL: High z-index to stay above other elements */
+  z-index: 50;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -1400,137 +1220,412 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
   top:-20px;left:var(--cx,50%);
 }
 
+/* ── BOOT SCREEN NEW STYLES ── */
+#ts-boot {
+  position:fixed;inset:0;z-index:99999;
+  background:linear-gradient(135deg,#f0f7ff 0%,#e8f0fe 50%,#f5f3ff 100%);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;font-family:'Outfit',sans-serif;
+}
+@media(min-width:769px){
+  #ts-boot{animation:tsBootExitDesktop .7s cubic-bezier(.4,0,.2,1) 4.6s forwards;}
+}
+@media(max-width:768px){
+  #ts-boot.exit-mobile{animation:tsBootSlideDown .6s cubic-bezier(.4,0,.2,1) forwards;}
+}
+@keyframes tsBootExitDesktop{
+  0%{opacity:1;transform:scale(1);}
+  100%{opacity:0;transform:scale(1.05);pointer-events:none;}
+}
+@keyframes tsBootSlideDown{
+  0%{transform:translateY(0);opacity:1;}
+  100%{transform:translateY(100%);opacity:0;pointer-events:none;}
+}
+@keyframes bootBlob1{
+  0%{transform:translate(0,0) scale(1);}
+  100%{transform:translate(40px,-30px) scale(1.1);}
+}
+@keyframes bootBlob2{
+  0%{transform:translate(0,0) scale(1);}
+  100%{transform:translate(-30px,40px) scale(1.08);}
+}
+@keyframes bootBlob3{
+  0%{transform:translate(0,0);}
+  100%{transform:translate(-20px,25px);}
+}
+@keyframes bootShimmer{
+  0%{background-position:-200% 0;}
+  100%{background-position:200% 0;}
+}
+@keyframes bootPulse{
+  0%,100%{opacity:.5;transform:scale(1);}
+  50%{opacity:1;transform:scale(1.05);}
+}
+@keyframes bootBlink{
+  0%,100%{opacity:.4;}
+  50%{opacity:1;}
+}
+@keyframes bootDotBounce{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-4px);}
+}
+.boot-dot{
+  position:absolute;border-radius:50%;
+  background:rgba(37,99,235,.35);
+  animation:bootDotFloat var(--dur,5s) var(--del,0s) ease-in-out infinite alternate;
+}
+@keyframes bootDotFloat{
+  0%{transform:translate(0,0);}
+  100%{transform:translate(10px,-15px);}
+}
+/* Boot step rows */
+.boot-step{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 12px;border-radius:12px;
+  background:rgba(37,99,235,.04);
+  border:1px solid rgba(37,99,235,.08);
+  transition:all .35s ease;
+  opacity:.3;
+}
+.boot-step-active{
+  background:rgba(37,99,235,.09) !important;
+  border-color:rgba(37,99,235,.25) !important;
+  opacity:1 !important;
+  transform:translateX(4px);
+}
+.boot-step-icon{font-size:15px;flex-shrink:0;}
+.boot-step-text{
+  flex:1;font-size:12px;font-weight:600;
+  color:#1e40af;font-family:'Outfit',sans-serif;
+}
+.boot-step-check{
+  font-size:12px;font-weight:800;color:#2563eb;
+  opacity:0;transition:opacity .3s ease;
+}
+
+/* ── FOOTER ── */
+#ts-footer {
+  width:100%;
+  margin-left:0;
+  max-width:100%;
+  align-self:stretch;
+}
+
+@media(max-width:768px){
+  #ts-footer {
+    margin-bottom:80px;
+  }
+}
+
+.main { 
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  overflow-x:hidden;
+}
+
 </style>
 </head>
 <body>
   
   <div id="ts-boot">
+  <!-- Animated background blobs -->
+  <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">
+    <div style="position:absolute;width:600px;height:600px;border-radius:50%;
+      background:radial-gradient(circle,rgba(59,130,246,.12),transparent 70%);
+      top:-200px;left:-150px;animation:bootBlob1 8s ease-in-out infinite alternate;"></div>
+    <div style="position:absolute;width:500px;height:500px;border-radius:50%;
+      background:radial-gradient(circle,rgba(99,102,241,.10),transparent 70%);
+      bottom:-150px;right:-100px;animation:bootBlob2 10s ease-in-out infinite alternate;"></div>
+    <div style="position:absolute;width:300px;height:300px;border-radius:50%;
+      background:radial-gradient(circle,rgba(147,197,253,.15),transparent 70%);
+      top:40%;left:60%;animation:bootBlob3 7s ease-in-out infinite alternate;"></div>
+    <!-- Grid pattern overlay -->
+    <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:.04;" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="boot-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#2563eb" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#boot-grid)"/>
+    </svg>
+    <!-- Floating dots -->
+    <div class="boot-dot" style="width:6px;height:6px;top:20%;left:15%;--dur:4s;--del:0s;"></div>
+    <div class="boot-dot" style="width:4px;height:4px;top:60%;left:80%;--dur:5s;--del:1s;"></div>
+    <div class="boot-dot" style="width:8px;height:8px;top:75%;left:25%;--dur:6s;--del:.5s;"></div>
+    <div class="boot-dot" style="width:5px;height:5px;top:35%;left:70%;--dur:4.5s;--del:1.5s;"></div>
+    <div class="boot-dot" style="width:3px;height:3px;top:85%;left:55%;--dur:5.5s;--del:.8s;"></div>
+  </div>
 
-  <!-- Ripple rings that expand on bolt impact -->
-  <div class="ts-ring ts-ring-1"></div>
-  <div class="ts-ring ts-ring-2"></div>
-  <div class="ts-ring ts-ring-3"></div>
+  <!-- Center card -->
+  <div style="position:relative;z-index:10;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;height:100%;gap:0;padding:20px;">
 
-  <!-- Floating ambient particles -->
-  <div class="ts-particle" style="--x:18%;--y:22%;--s:5px;--d:2.8s;--dl:1.9s"></div>
-  <div class="ts-particle" style="--x:80%;--y:18%;--s:3px;--d:3.2s;--dl:2.2s"></div>
-  <div class="ts-particle" style="--x:12%;--y:68%;--s:4px;--d:2.5s;--dl:2.0s"></div>
-  <div class="ts-particle" style="--x:88%;--y:72%;--s:6px;--d:3.6s;--dl:1.8s"></div>
-  <div class="ts-particle" style="--x:50%;--y:10%;--s:3px;--d:2.9s;--dl:2.4s"></div>
-  <div class="ts-particle" style="--x:35%;--y:85%;--s:4px;--d:3.1s;--dl:2.1s"></div>
+    <!-- Main logo card -->
+    <div id="tsb-main-card" style="
+      background:rgba(255,255,255,.92);
+      backdrop-filter:blur(20px);
+      border:1px solid rgba(59,130,246,.15);
+      border-radius:32px;
+      padding:44px 48px 40px;
+      text-align:center;
+      box-shadow:
+        0 4px 6px rgba(59,130,246,.04),
+        0 20px 50px rgba(59,130,246,.12),
+        0 60px 120px rgba(59,130,246,.08),
+        inset 0 1px 0 rgba(255,255,255,.9);
+      opacity:0;
+      transform:translateY(30px) scale(.94);
+      transition:all .8s cubic-bezier(.34,1.56,.64,1);
+      position:relative;overflow:hidden;
+      min-width:300px;max-width:360px;width:90vw;">
 
-  <!-- Center stage -->
-  <div class="ts-stage">
+      <!-- Top accent gradient bar -->
+      <div style="position:absolute;top:0;left:0;right:0;height:4px;
+        background:linear-gradient(90deg,#3b82f6,#6366f1,#8b5cf6);
+        border-radius:32px 32px 0 0;"></div>
 
-    <!-- Gold bolt drops from above -->
-    <div class="ts-bolt-wrap" id="tsBolt">
-      <svg class="ts-bolt-svg" viewBox="0 0 80 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="tsBoltGrad" x1="40" y1="0" x2="40" y2="120" gradientUnits="userSpaceOnUse">
-            <stop offset="0%"   stop-color="#fff9e6"/>
-            <stop offset="35%"  stop-color="#fcd34d"/>
-            <stop offset="70%"  stop-color="#f59e0b"/>
-            <stop offset="100%" stop-color="#d97706"/>
-          </linearGradient>
-          <linearGradient id="tsBoltShine" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%"   stop-color="rgba(255,255,255,0.55)"/>
-            <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
-          </linearGradient>
-          <filter id="tsGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="4" result="blur"/>
-            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-          <filter id="tsGlowSoft" x="-80%" y="-80%" width="260%" height="260%">
-            <feGaussianBlur stdDeviation="10" result="blur"/>
-            <feColorMatrix in="blur" type="matrix"
-              values="1 0.8 0 0 0  0.8 0.6 0 0 0  0 0 0 0 0  0 0 0 0.6 0" result="amber"/>
-            <feMerge><feMergeNode in="amber"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
+      <!-- Shimmer sweep -->
+      <div id="tsb-shimmer" style="position:absolute;inset:0;border-radius:32px;
+        background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.6) 50%,transparent 60%);
+        background-size:200% 100%;
+        animation:bootShimmer 2.5s ease-in-out 1s infinite;pointer-events:none;"></div>
 
-        <!-- Shadow glow beneath bolt -->
-        <ellipse cx="40" cy="115" rx="22" ry="5"
-          fill="rgba(245,158,11,0.25)"
-          class="ts-bolt-shadow"/>
-
-        <!-- Main bolt shape -->
-        <path class="ts-bolt-path"
-          d="M52 4 L18 56 L37 56 L24 116 L64 50 L45 50 L66 4 Z"
-          fill="url(#tsBoltGrad)"
-          stroke="rgba(255,255,255,0.6)"
-          stroke-width="1.2"
-          filter="url(#tsGlowSoft)"/>
-
-        <!-- Glass shine overlay -->
-        <path
-          d="M52 4 L18 56 L37 56 L24 116 L64 50 L45 50 L66 4 Z"
-          fill="url(#tsBoltShine)"
-          opacity="0.35"/>
-      </svg>
-
-      <!-- Impact shockwave -->
-      <div class="ts-shockwave"></div>
-
-      <!-- Ground sparks burst -->
-      <div class="ts-sparks" id="tsSparks">
-        <div class="ts-spark" style="--a:-75deg;--h:30px"></div>
-        <div class="ts-spark" style="--a:-55deg;--h:22px"></div>
-        <div class="ts-spark" style="--a:-35deg;--h:34px"></div>
-        <div class="ts-spark" style="--a:-15deg;--h:20px"></div>
-        <div class="ts-spark" style="--a: 15deg;--h:20px"></div>
-        <div class="ts-spark" style="--a: 35deg;--h:34px"></div>
-        <div class="ts-spark" style="--a: 55deg;--h:22px"></div>
-        <div class="ts-spark" style="--a: 75deg;--h:30px"></div>
+      <!-- Logo icon with pulse ring -->
+      <div style="position:relative;display:inline-block;margin-bottom:22px;">
+        <div id="tsb-icon" style="
+          width:84px;height:84px;
+          background:linear-gradient(135deg,#2563eb,#4f46e5);
+          border-radius:24px;
+          display:flex;align-items:center;justify-content:center;
+          box-shadow:0 8px 24px rgba(37,99,235,.35),
+            0 20px 50px rgba(37,99,235,.2),
+            inset 0 1px 0 rgba(255,255,255,.2);
+          margin:0 auto;
+          transform:scale(0);
+          transition:transform .6s .3s cubic-bezier(.34,1.56,.64,1);">
+          <svg width="40" height="44" viewBox="0 0 20 22" fill="none">
+            <path d="M13 1L3 13H9L4 21L17 9H11L13 1Z" fill="white"/>
+          </svg>
+        </div>
+        <!-- Pulse rings -->
+        <div style="position:absolute;inset:-10px;border-radius:34px;
+          border:2px solid rgba(37,99,235,.2);
+          animation:bootPulse 2s ease-in-out 1.2s infinite;"></div>
+        <div style="position:absolute;inset:-20px;border-radius:44px;
+          border:1.5px solid rgba(37,99,235,.1);
+          animation:bootPulse 2s ease-in-out 1.5s infinite;"></div>
       </div>
 
-      <!-- Ground glow line -->
-      <div class="ts-ground-line"></div>
-    </div>
-
-<!-- Brand name fades up after impact -->
-<div class="ts-brand">
-  <!-- Desktop: original text brand -->
-
-
-  <!-- Mobile: logo lockup (matches sidebar exactly) -->
-  <div class="ts-logo-lockup">
-    <div class="ts-logo-icon">
-      <svg width="24" height="26" viewBox="0 0 20 22" fill="none">
-        <path d="M13 1L3 13H9L4 21L17 9H11L13 1Z" fill="white"/>
-      </svg>
-    </div>
-    <div class="ts-logo-words">
-      <div class="ts-logo-main">
-        <span class="ts-logo-thunder">Thunder</span><span class="ts-logo-study">Study</span>
+      <!-- Brand name -->
+      <div id="tsb-brand" style="opacity:0;transform:translateY(12px);
+        transition:all .5s .6s cubic-bezier(.34,1.56,.64,1);">
+        <div style="font-family:'Outfit',sans-serif;font-size:30px;font-weight:900;
+          letter-spacing:-1px;line-height:1;margin-bottom:5px;">
+          <span style="color:#2563eb;">Thunder</span><span style="color:#1e3a8a;">Study</span>
+        </div>
+        <div style="font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;
+          letter-spacing:3.5px;text-transform:uppercase;color:rgba(37,99,235,.45);
+          margin-bottom:24px;">CUET Preparation</div>
       </div>
-      <div class="ts-logo-sub">
-        <div class="ts-logo-line"></div>
-        <span class="ts-logo-by">by Wondermayank</span>
+
+      <!-- Loading steps -->
+      <div id="tsb-steps" style="opacity:0;transform:translateY(8px);
+        transition:all .4s 1s ease;">
+      <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px;">
+
+  <div class="boot-step" id="bstep-0">
+    <div style="width:24px;height:24px;border-radius:7px;
+      background:rgba(37,99,235,.1);
+      display:flex;align-items:center;justify-content:center;
+      font-size:11px;flex-shrink:0;">📚</div>
+    <div style="font-size:11px;font-weight:700;color:#1e40af;flex:1;">
+      Loading subjects & chapters
+    </div>
+    <div style="width:14px;height:14px;border-radius:50%;
+      background:#e0eeff;overflow:hidden;position:relative;
+      flex-shrink:0;">
+      <div id="bfill-0" style="
+        position:absolute;bottom:0;left:0;right:0;
+        height:0%;
+        background:linear-gradient(180deg,#10b981,#059669);
+        transition:height .6s cubic-bezier(.4,0,.2,1);">
       </div>
     </div>
   </div>
-  <div class="ts-brand-tagline">CUET Preparation Dashboard</div>
+
+  <div class="boot-step" id="bstep-1">
+    <div style="width:24px;height:24px;border-radius:7px;
+      background:rgba(37,99,235,.1);
+      display:flex;align-items:center;justify-content:center;
+      font-size:11px;flex-shrink:0;">📊</div>
+    <div style="font-size:11px;font-weight:700;color:#1e40af;flex:1;">
+      Fetching your scores
+    </div>
+    <div style="width:14px;height:14px;border-radius:50%;
+      background:#e0eeff;overflow:hidden;position:relative;
+      flex-shrink:0;">
+      <div id="bfill-1" style="
+        position:absolute;bottom:0;left:0;right:0;
+        height:0%;
+        background:linear-gradient(180deg,#10b981,#059669);
+        transition:height .6s cubic-bezier(.4,0,.2,1);">
+      </div>
+    </div>
+  </div>
+
+  <div class="boot-step" id="bstep-2">
+    <div style="width:24px;height:24px;border-radius:7px;
+      background:rgba(37,99,235,.1);
+      display:flex;align-items:center;justify-content:center;
+      font-size:11px;flex-shrink:0;">🔔</div>
+    <div style="font-size:11px;font-weight:700;color:#1e40af;flex:1;">
+      Syncing notices & exams
+    </div>
+    <div style="width:14px;height:14px;border-radius:50%;
+      background:#e0eeff;overflow:hidden;position:relative;
+      flex-shrink:0;">
+      <div id="bfill-2" style="
+        position:absolute;bottom:0;left:0;right:0;
+        height:0%;
+        background:linear-gradient(180deg,#10b981,#059669);
+        transition:height .6s cubic-bezier(.4,0,.2,1);">
+      </div>
+    </div>
+  </div>
+
+  <div class="boot-step" id="bstep-3">
+    <div style="width:24px;height:24px;border-radius:7px;
+      background:rgba(37,99,235,.1);
+      display:flex;align-items:center;justify-content:center;
+      font-size:11px;flex-shrink:0;">🏆</div>
+    <div style="font-size:11px;font-weight:700;color:#1e40af;flex:1;">
+      Preparing your dashboard
+    </div>
+    <div style="width:14px;height:14px;border-radius:50%;
+      background:#e0eeff;overflow:hidden;position:relative;
+      flex-shrink:0;">
+      <div id="bfill-3" style="
+        position:absolute;bottom:0;left:0;right:0;
+        height:0%;
+        background:linear-gradient(180deg,#10b981,#059669);
+        transition:height .6s cubic-bezier(.4,0,.2,1);">
+      </div>
+    </div>
+  </div>
+
 </div>
 
-    <!-- Glassmorphic loading ring -->
-    <div class="ts-loader">
-      <div class="ts-loader-glass">
-        <div class="ts-loader-track"></div>
-        <div class="ts-loader-arc"></div>
-        <div class="ts-loader-arc-2"></div>
-        <div class="ts-loader-dot"></div>
+        <!-- Thin progress bar -->
+        <div style="height:3px;background:#e0f2fe;border-radius:3px;
+          overflow:hidden;margin-bottom:12px;">
+          <div id="tsb-pbar" style="height:100%;width:0%;border-radius:3px;
+            background:linear-gradient(90deg,#2563eb,#6366f1);
+            transition:width .5s ease;"></div>
+        </div>
+
+        <div id="tsb-label" style="font-family:'Outfit',sans-serif;font-size:11px;
+          font-weight:600;letter-spacing:1.5px;text-transform:uppercase;
+          color:rgba(37,99,235,.45);text-align:center;
+          animation:bootBlink 1.8s ease-in-out infinite;">
+          Initializing
+        </div>
       </div>
-      <div class="ts-loader-text">Loading</div>
     </div>
 
-  </div><!-- /ts-stage -->
+    <!-- Bottom tagline -->
+    <div id="tsb-tagline" style="margin-top:20px;opacity:0;
+      transition:opacity .4s 1.2s ease;">
+      <div style="display:flex;align-items:center;gap:10px;
+        background:rgba(255,255,255,.7);backdrop-filter:blur(10px);
+        border:1px solid rgba(59,130,246,.12);border-radius:30px;
+        padding:8px 18px;">
+        <div style="display:flex;gap:5px;">
+          <div style="width:7px;height:7px;border-radius:50%;background:#2563eb;
+            animation:bootDotBounce .8s ease-in-out infinite;"></div>
+          <div style="width:7px;height:7px;border-radius:50%;background:#6366f1;
+            animation:bootDotBounce .8s .15s ease-in-out infinite;"></div>
+          <div style="width:7px;height:7px;border-radius:50%;background:#8b5cf6;
+            animation:bootDotBounce .8s .3s ease-in-out infinite;"></div>
+        </div>
+        <span style="font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;
+          color:rgba(37,99,235,.6);letter-spacing:.5px;">
+          Made with ❤️ by Wondermayank
+        </span>
+      </div>
+    </div>
+  </div>
 
-  <!-- Full-screen white flash on impact -->
-  <div class="ts-flash" id="tsFlash"></div>
-  
+<script>
+(function(){
+  // Animate card in
+  setTimeout(function(){
+    var card = document.getElementById('tsb-main-card');
+    var icon = document.getElementById('tsb-icon');
+    var brand = document.getElementById('tsb-brand');
+    var steps = document.getElementById('tsb-steps');
+    var tagline = document.getElementById('tsb-tagline');
+    if(card){ card.style.opacity='1'; card.style.transform='translateY(0) scale(1)'; }
+    setTimeout(function(){ if(icon) icon.style.transform='scale(1)'; }, 200);
+    setTimeout(function(){ if(brand){ brand.style.opacity='1'; brand.style.transform='translateY(0)'; } }, 400);
+    setTimeout(function(){ if(steps){ steps.style.opacity='1'; steps.style.transform='translateY(0)'; } }, 800);
+    setTimeout(function(){ if(tagline) tagline.style.opacity='1'; }, 1000);
+  }, 100);
 
- 
-</div><!-- /ts-boot -->
+  // Animate steps sequentially
+  var stepData = [
+    {pct:25, label:'Loading subjects'},
+    {pct:50, label:'Fetching scores'},
+    {pct:75, label:'Syncing notices'},
+    {pct:95, label:'Almost ready!'},
+  ];
+  var delays = [900, 1800, 2700, 3500];
+  stepData.forEach(function(s, i){
+    setTimeout(function(){
+      var step = document.getElementById('bstep-'+i);
+      var fill = document.getElementById('bfill-'+i);
+      var pbar = document.getElementById('tsb-pbar');
+      var label = document.getElementById('tsb-label');
+
+      if(step){ step.style.opacity='1'; step.classList.add('boot-step-active'); }
+
+      if(i > 0){
+  var prev = document.getElementById('bstep-'+(i-1));
+  var prevFill = document.getElementById('bfill-'+(i-1));
+  if(prev){ prev.classList.remove('boot-step-active'); prev.style.opacity='0.65'; }
+  if(prevFill){
+    prevFill.style.transition='height .6s cubic-bezier(.4,0,.2,1)';
+    prevFill.style.height='100%';
+  }
+}
+
+if(i === stepData.length - 1){
+  setTimeout(function(){
+    var lastFill = document.getElementById('bfill-3');
+    if(lastFill){
+      lastFill.style.transition='height .6s cubic-bezier(.4,0,.2,1)';
+      lastFill.style.height='100%';
+    }
+    if(pbar) pbar.style.width='100%';
+    if(label) label.textContent='Ready!';
+  },300);
+}
+
+      if(pbar) pbar.style.width = s.pct + '%';
+      if(label) label.textContent = s.label;
+
+      if(i === stepData.length - 1){
+        setTimeout(function(){
+          if(fill){ fill.style.height='100%'; }
+          if(pbar) pbar.style.width='100%';
+          if(label) label.textContent = 'Ready!';
+        }, 300);
+      }
+    }, delays[i]);
+  });
+})();
+</script>
+</div>
 
 <!-- SIDEBAR -->
 <nav class="sidebar">
@@ -1548,6 +1643,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
       </div>
     </div>
   </div>
+  <button onclick="toggleGlobalSearch()" title="Search (Ctrl+K)"
+    style="margin:0 10px 8px;display:flex;align-items:center;gap:8px;width:calc(100% - 20px);padding:8px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card2);font-size:12px;color:var(--text3);cursor:pointer;font-family:var(--fn);transition:all .2s;"
+    onmouseenter="this.style.borderColor='var(--acc)';this.style.color='var(--text)'"
+    onmouseleave="this.style.borderColor='var(--border)';this.style.color='var(--text3)'">
+    🔍 <span>Search…</span>
+    <kbd style="margin-left:auto;font-family:var(--mono);font-size:9px;background:var(--card);border:1px solid var(--border);border-radius:4px;padding:1px 5px;">Ctrl+K</kbd>
+  </button>
   <div class="sb-nav">
     <div class="sb-section-label">Main</div>
     <div class="nav-item active" onclick="goPage('home')"><span class="nav-icon">🏠</span> Home</div>
@@ -1555,8 +1657,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
     <div class="nav-item" onclick="goPage('subjects')"><span class="nav-icon">📚</span> Subject Scores</div>
     <div class="nav-item" onclick="goPage('mocks')"><span class="nav-icon">📝</span> More Mocks</div>
     <div class="nav-item" onclick="goPage('analytics')"><span class="nav-icon">📈</span> Analytics<span class="nav-badge green">NEW</span></div>
+<div class="nav-item" id="nav-notices-item" onclick="showAllNoticesModal()">
+  <span class="nav-icon">🔔</span> Notices
+  <span class="nav-badge" id="notices-badge" style="display:none;background:var(--red);">0</span>
+</div>
     <div class="nav-item" onclick="goPage('rank')"><span class="nav-icon">🏆</span> Class Rank<span class="nav-badge">LIVE</span></div>
     <div class="sb-section-label" style="margin-top:12px;">Tools</div>
+<div class="nav-item" onclick="toggleDonatePopup()">
+  <span class="nav-icon">💛</span> 
+  <span>Support Us</span>
+</div>
     <div class="nav-item" onclick="goPage('settings')"><span class="nav-icon">⚙️</span> Settings<span class="sync-dot" id="sync-dot-nav" title="Sync status"></span></div>
   </div>
   <div class="sb-profile" onclick="openProfileModal()">
@@ -1618,12 +1728,210 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
     <div id="rank-content"></div>
   </div>
 
-  <div class="page" id="page-settings">
+<div class="page" id="page-settings">
     <div class="topbar">
       <div><div class="page-title">⚙️ Settings</div><div class="page-sub">Manage preferences, data & sync</div></div>
     </div>
     <div id="settings-content"></div>
   </div>
+
+  <!-- ══ SITE FOOTER ══ -->
+  <footer id="ts-footer" style="
+  display:none;
+  background:var(--sidebar);
+  border-top:1px solid var(--border);
+  padding:0;
+  font-family:var(--fn);
+  position:relative;
+  z-index:5;
+  margin-top:auto;
+  flex-shrink:0;
+  width:100%;
+  clear:both;
+">
+
+  <!-- Collapsed strip (always visible) -->
+  <div id="ts-footer-strip" style="
+    padding:12px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    flex-wrap:wrap;
+    cursor:pointer;
+    transition:background .2s;
+    width:100%;
+    box-sizing:border-box;
+  " onclick="tsFooterExpand()" title="Click to expand footer">
+    <div style="display:flex;align-items:center;gap:7px;">
+      <div style="width:22px;height:22px;background:linear-gradient(135deg,#4f6ef7,#7c3aed);
+        border-radius:6px;display:flex;align-items:center;justify-content:center;
+        font-size:11px;flex-shrink:0;">⚡</div>
+      <span style="font-size:12px;font-weight:700;color:var(--text3);">
+        Made with <span style="color:#f43f5e;">♥</span> by 
+        <a href="https://wondermayank.github.io" target="_blank" rel="noopener"
+          style="color:var(--acc);font-weight:800;text-decoration:none;"
+          onclick="event.stopPropagation()">Wondermayank</a>
+      </span>
+    </div>
+    <div id="ts-footer-chevron" style="font-size:12px;color:var(--text3);
+      transition:transform .25s ease;">▾</div>
+  </div>
+
+  <!-- Expanded content (hidden by default) -->
+  <div id="ts-footer-expanded" style="
+    display:none;
+    border-top:1px solid var(--border);
+    padding:20px 24px 24px;
+    animation:fadeUp .25s ease both;
+  ">
+    <div style="max-width:900px;margin:0 auto;">
+
+      <!-- Top row: brand + links grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;
+        margin-bottom:20px;flex-wrap:wrap;">
+
+        <!-- Brand column -->
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <div style="width:30px;height:30px;background:linear-gradient(135deg,#4f6ef7,#7c3aed);
+              border-radius:8px;display:flex;align-items:center;justify-content:center;">
+              <svg width="14" height="16" viewBox="0 0 20 22" fill="none">
+                <path d="M13 1L3 13H9L4 21L17 9H11L13 1Z" fill="white"/>
+              </svg>
+            </div>
+            <div>
+              <div style="font-size:14px;font-weight:900;color:var(--text);">
+                <span style="color:#4f6ef7;">Thunder</span>Study
+              </div>
+              <div style="font-size:9px;color:var(--text3);letter-spacing:.5px;">
+                CUET Preparation
+              </div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text3);line-height:1.7;margin-bottom:12px;">
+            The best free CUET preparation platform with chapter-wise mocks, analytics, leaderboard and more.
+          </div>
+          <div style="font-size:11px;font-weight:700;color:var(--text3);
+            text-transform:uppercase;letter-spacing:.8px;margin-bottom:7px;">
+            Contact
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <a href="javascript:void(0)" onclick="tsShowContactPopup()" style="
+              display:inline-flex;align-items:center;gap:5px;
+              padding:5px 11px;border-radius:20px;font-size:11px;font-weight:700;
+              background:rgba(79,110,247,.08);border:1.5px solid rgba(79,110,247,.2);
+              color:var(--acc);text-decoration:none;cursor:pointer;transition:all .2s;"
+              onmouseenter="this.style.background='rgba(79,110,247,.15)'"
+              onmouseleave="this.style.background='rgba(79,110,247,.08)'">
+              📬 Get in touch
+            </a>
+          </div>
+        </div>
+
+        <!-- Our Sites column -->
+        <div>
+          <div style="font-size:11px;font-weight:800;color:var(--text3);
+            text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;">
+            Our Sites
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <a href="https://commercesehoga.blogspot.com" target="_blank" rel="noopener"
+              style="font-size:12px;font-weight:600;color:var(--text2);
+              text-decoration:none;display:flex;align-items:center;gap:6px;
+              padding:4px 0;transition:color .2s;"
+              onmouseenter="this.style.color='var(--acc)'"
+              onmouseleave="this.style.color='var(--text2)'">
+              🏠 Main Site (Commerce Se Hoga)
+            </a>
+            <a href="https://commercesehoga.github.io/jee-neet" target="_blank" rel="noopener"
+              style="font-size:12px;font-weight:600;color:var(--text2);
+              text-decoration:none;display:flex;align-items:center;gap:6px;
+              padding:4px 0;transition:color .2s;"
+              onmouseenter="this.style.color='var(--acc)'"
+              onmouseleave="this.style.color='var(--text2)'">
+              🔬 JEE & NEET Mocks
+            </a>
+            <a href="https://commercesehoga.github.io/ssc" target="_blank" rel="noopener"
+              style="font-size:12px;font-weight:600;color:var(--text2);
+              text-decoration:none;display:flex;align-items:center;gap:6px;
+              padding:4px 0;transition:color .2s;"
+              onmouseenter="this.style.color='var(--acc)'"
+              onmouseleave="this.style.color='var(--text2)'">
+              📋 SSC Mocks
+            </a>
+            <a href="https://commercesehoga.github.io/banking" target="_blank" rel="noopener"
+              style="font-size:12px;font-weight:600;color:var(--text2);
+              text-decoration:none;display:flex;align-items:center;gap:6px;
+              padding:4px 0;transition:color .2s;"
+              onmouseenter="this.style.color='var(--acc)'"
+              onmouseleave="this.style.color='var(--text2)'">
+              🏦 Banking Mocks
+            </a>
+            <a href="https://commercesehoga.github.io/studyhub" target="_blank" rel="noopener"
+              style="font-size:12px;font-weight:600;color:var(--text2);
+              text-decoration:none;display:flex;align-items:center;gap:6px;
+              padding:4px 0;transition:color .2s;"
+              onmouseenter="this.style.color='var(--acc)'"
+              onmouseleave="this.style.color='var(--text2)'">
+              📚 Study Material (HP)
+            </a>
+            <a href="https://wondermayank.github.io" target="_blank" rel="noopener"
+              style="font-size:12px;font-weight:600;color:var(--text2);
+              text-decoration:none;display:flex;align-items:center;gap:6px;
+              padding:4px 0;transition:color .2s;"
+              onmouseenter="this.style.color='var(--acc)'"
+              onmouseleave="this.style.color='var(--text2)'">
+              🌐 Developer — Wondermayank
+            </a>
+          </div>
+        </div>
+
+        <!-- Legal column -->
+        <div>
+          <div style="font-size:11px;font-weight:800;color:var(--text3);
+            text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;">
+            Legal
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:16px;">
+            <a href="https://wondermayank.github.io/privacy" target="_blank" rel="noopener"
+              style="font-size:12px;font-weight:600;color:var(--text2);
+              text-decoration:none;display:flex;align-items:center;gap:6px;
+              padding:4px 0;transition:color .2s;"
+              onmouseenter="this.style.color='var(--acc)'"
+              onmouseleave="this.style.color='var(--text2)'">
+              🔒 Privacy Policy
+            </a>
+            <a href="https://wondermayank.github.io/terms" target="_blank" rel="noopener"
+              style="font-size:12px;font-weight:600;color:var(--text2);
+              text-decoration:none;display:flex;align-items:center;gap:6px;
+              padding:4px 0;transition:color .2s;"
+              onmouseenter="this.style.color='var(--acc)'"
+              onmouseleave="this.style.color='var(--text2)'">
+              📜 Terms of Use
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom bar -->
+      <div style="border-top:1px solid var(--border);padding-top:14px;
+        display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <div style="font-size:11px;color:var(--text3);">
+          © 2026 <strong style="color:var(--text2);">Wondermayank</strong>. All rights reserved.
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:10px;color:var(--text3);">Version</span>
+          <span style="font-size:10px;font-weight:800;font-family:var(--mono);
+            background:rgba(79,110,247,.1);border-radius:20px;padding:2px 8px;
+            color:var(--acc);">20xt51</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</footer>
+
 </div>
 
 <!-- ONBOARDING OVERLAY -->
@@ -1665,7 +1973,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
 
 <div style="position:relative;margin:4px 0 14px;"><div style="position:absolute;inset:0;display:flex;align-items:center;"><div style="flex:1;border-top:1px solid var(--border);"></div><span style="padding:0 12px;font-size:11px;color:var(--text3);background:var(--card);">OR fill manually</span><div style="flex:1;border-top:1px solid var(--border);"></div></div></div>
 
- <div class="form-row"><div class="form-lbl">Your Name</div><input class="form-inp" id="ob-name" placeholder="Enter your full name" oninput="obValidate1()"></div>
+ <div class="form-row"><div class="form-lbl">Your Name</div><input class="form-inp" id="ob-name" placeholder="Enter your full name" oninput="debounce(obValidate1,200)()"></div>
   <div class="form-row"><div class="form-lbl">Target College</div><input class="form-inp" id="ob-college" placeholder="e.g. Delhi University, Christ, Jamia..."></div>
   <div class="form-row"><div class="form-lbl">Stream / Board</div>
     <select class="form-inp" id="ob-class">
@@ -1817,6 +2125,25 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
   <button class="pwa-close" id="pwa-close-btn">×</button>
 </div>
 
+<div class="offline-banner" id="offline-banner">
+  📡 You're offline — results save locally and sync when back online
+  <button onclick="document.getElementById('offline-banner').classList.remove('visible')" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:800;cursor:pointer;color:#fff;font-family:var(--fn);">✕</button>
+</div>
+
+<div class="donate-popup" id="donate-popup">
+  <div style="font-size:13px;font-weight:900;margin-bottom:4px;">❤️ Support Thunderstudy</div>
+  <div style="font-size:11px;color:var(--text3);line-height:1.65;margin-bottom:12px;">If Thunderstudy has helped your CUET prep, consider supporting to keep it free & growing!</div>
+  <a href="https://commercesehoga.github.io/help" target="_blank" rel="noopener"
+    onclick="document.getElementById('donate-popup').classList.remove('visible')"
+    style="display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border-radius:12px;background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;font-size:12px;font-weight:800;text-decoration:none;font-family:var(--fn);box-shadow:0 4px 14px rgba(245,158,11,.35);transition:all .2s;"
+    onmouseenter="this.style.filter='brightness(1.1)'" onmouseleave="this.style.filter='none'">
+    💳 Support the Developer
+  </a>
+  <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:8px;">UPI · Card · Net Banking · Multiple ways</div>
+</div>
+<button class="donate-btn" id="donate-btn" title="Support Thunderstudy ❤️" 
+  onclick="toggleDonatePopup()">💛</button>
+
 <button class="btt-btn" id="btt-btn" onclick="document.querySelector('.main').scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
 <div class="tooltip" id="tooltip"></div>
 
@@ -1858,6 +2185,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--fn);display:flex;}
     <span class="dock-label">Settings</span>
   </div>
 </nav>
+
+  
 
 <script>
   
@@ -2376,6 +2705,8 @@ function parseNoticeMessage(text) {
    CONFIG
 ══════════════════════════════════════════ */
 const GS_URL="https://script.google.com/macros/s/AKfycbyEsrvdSuRh06TIKPK0ozP-jQNjqHO8PaIeBcW5r45aGdr4H3ZVFHpKMm3xaDHrYmqX/exec";
+window._noticesFetchPromise = fetchLiveNoticesAndExams().catch(()=>{});
+window._quoteFetchPromise = fetchDailyQuote().catch(()=>null);
 const NOTICES_URL = "https://script.google.com/macros/s/AKfycbz300__XPoTsb2hZ4EEMWRgA503M4v4BPAaLyVym8gRDrXQSXTNnxyTanKYgkrEqwV_Fw/exec";
 const QUOTES_URL = "https://script.google.com/macros/s/AKfycbxXsABIhWgBn5o9SoIaMYTBVYjN47sJvf9R_h50yDpXsqIOLyoolbSdyqkorSkUiPmOyg/exec";
 const SUBJECT_URLS={bst:"https://commercesehoga.github.io/commerce/bst/",eco:"https://commercesehoga.github.io/commerce/eco/",acc:"https://commercesehoga.github.io/commerce/acc/",amat:"https://commercesehoga.github.io/commerce/amat/",eng:"https://commercesehoga.github.io/english/",gat:"https://commercesehoga.github.io/gat/",phy:"https://commercesehoga.github.io/science/phy/",che:"https://commercesehoga.github.io/science/che/",bio:"https://commercesehoga.github.io/science/bio/",mat:"https://commercesehoga.github.io/science/mat/",his:"https://commercesehoga.github.io/humanities/his/",geo:"https://commercesehoga.github.io/humanities/geo/",pol:"https://commercesehoga.github.io/humanities/pol/",psy:"https://commercesehoga.github.io/humanities/psy/",pe:"https://commercesehoga.github.io/physical/",ip:"https://commercesehoga.github.io/computer/ip/",cs:"https://commercesehoga.github.io/computer/cs/"};
@@ -2555,8 +2886,8 @@ function processNewResultsForRP(){
 }
 
 function initRPSystem(){
+  try {
   if(localStorage.getItem('ts_rp_init')){processNewResultsForRP();return;}
-  // First ever load — replay all history chronologically
   const allRes=[];
   getSS().forEach(sId=>{
     const subj=SUBJECTS_MASTER.find(s=>s.id===sId);if(!subj)return;
@@ -2568,9 +2899,16 @@ function initRPSystem(){
   });
   allRes.sort((a,b)=>a.date-b.date);
   const processed={};
-  allRes.forEach(({key,pct})=>{applyTestRP(pct);processed[key]=1;});
+  allRes.forEach(({key,pct})=>{try{applyTestRP(pct);}catch(e){}processed[key]=1;});
   localStorage.setItem('ts_rp_processed',JSON.stringify(processed));
   localStorage.setItem('ts_rp_init','1');
+  } catch(e) {
+    console.error('initRPSystem error:', e);
+    // Reset corrupted RP data
+    localStorage.setItem('ts_rp_data','{"rankIndex":0,"rp":0,"apexBonus":0,"consecutiveBad":0,"log":[]}');
+    localStorage.setItem('ts_rp_init','1');
+    localStorage.setItem('ts_rp_processed','{}');
+  }
 }
 
 function showRPToast(result){
@@ -2936,6 +3274,26 @@ function getBestStreak(a){
 /* GLOBALS */
 let CI={},LB_DATA=null,currentSubjectTab=null,currentMockSubj=null,currentAnalyticsTab='weak';
 
+
+function toggleDarkMode(){
+  const isDark=document.body.classList.toggle('dark-mode');
+  localStorage.setItem('ts_dark_mode',isDark?'1':'');
+  const icon=document.getElementById('dark-mode-icon');
+  const lbl=document.getElementById('dark-mode-label');
+  if(icon)icon.textContent=isDark?'☀️':'🌙';
+  if(lbl)lbl.textContent=isDark?'Light Mode':'Dark Mode';
+}
+function initDarkMode(){
+  if(localStorage.getItem('ts_dark_mode')==='1'){
+    document.body.classList.add('dark-mode');
+    const icon=document.getElementById('dark-mode-icon');
+    const lbl=document.getElementById('dark-mode-label');
+    if(icon)icon.textContent='☀️';
+    if(lbl)lbl.textContent='Light Mode';
+  }
+}
+
+function debounce(fn,ms){let t;return function(){clearTimeout(t);t=setTimeout(fn,ms);};}
 /* ══════ ADMIN PANEL BRIDGE ══════ */
 function getAdminNotices(){
   try{return JSON.parse(sessionStorage.getItem('ts_live_notices')||'[]');}catch(e){return[];}
@@ -2945,13 +3303,28 @@ function getAdminExams(){
 }
 async function fetchLiveNoticesAndExams(){
   try{
+    const timeout = (ms) => new Promise((_,r) => setTimeout(()=>r(new Error('timeout')), ms));
     const [nRes, eRes] = await Promise.all([
-      fetch(NOTICES_URL+'?action=getNotices').then(r=>r.json()),
-      fetch(NOTICES_URL+'?action=getExams').then(r=>r.json())
+      Promise.race([
+        fetch(NOTICES_URL+'?action=getNotices').then(r=>{
+          if(!r.ok) throw new Error('HTTP '+r.status);
+          return r.json();
+        }),
+        timeout(8000)
+      ]).catch(e => { console.log('Notices fetch failed:', e.message); return null; }),
+      Promise.race([
+        fetch(NOTICES_URL+'?action=getExams').then(r=>{
+          if(!r.ok) throw new Error('HTTP '+r.status);
+          return r.json();
+        }),
+        timeout(8000)
+      ]).catch(e => { console.log('Exams fetch failed:', e.message); return null; })
     ]);
-    if(Array.isArray(nRes)) sessionStorage.setItem('ts_live_notices', JSON.stringify(nRes));
-    if(Array.isArray(eRes)) sessionStorage.setItem('ts_live_exams', JSON.stringify(eRes));
-  }catch(e){console.log('Notice fetch failed:',e);}
+    if(nRes && Array.isArray(nRes)) sessionStorage.setItem('ts_live_notices', JSON.stringify(nRes));
+    if(eRes && Array.isArray(eRes)) sessionStorage.setItem('ts_live_exams', JSON.stringify(eRes));
+  }catch(e){
+    console.log('Notice fetch failed:',e);
+  }
 }
 function getMyRewards(studentName){
   try{
@@ -3014,12 +3387,11 @@ function buildAdminNoticesHTML(){
   const prof=getProfile();
   const myName=(prof.name||'').trim().toLowerCase();
   const rewards=myName?getMyRewards(myName):[];
-
-  if(!notices.length&&!rewards.length)return '';
-
   const now=new Date();
   const exams=getAdminExams().filter(e=>e.active&&new Date(e.date)>now).sort((a,b)=>new Date(a.date)-new Date(b.date));
 
+  if(!notices.length&&!rewards.length&&!exams.length)return '';
+  
   let H=`<div style="margin-bottom:24px;">`;
 
   // ── SECTION HEADER ──
@@ -3129,6 +3501,12 @@ const allActiveNotices = notices.filter(n => {
   return true;
 });
 
+const _readPopupsForCount = JSON.parse(localStorage.getItem('ts_read_popups')||'[]');
+const _unreadCount = allActiveNotices.filter(n => {
+  const key = String(n.id||n.title||'');
+  return key && !_readPopupsForCount.includes(key);
+}).length;
+
 H += `
 <div style="display:flex;align-items:center;justify-content:center;margin-top:14px;">
   <button onclick="showAllNoticesModal()" style="
@@ -3137,16 +3515,27 @@ H += `
     background:linear-gradient(135deg,rgba(79,110,247,.1),rgba(124,58,237,.07));
     border:1.5px solid rgba(79,110,247,.25);
     font-size:12px;font-weight:800;color:var(--acc);
-    cursor:pointer;font-family:var(--fn);
-    transition:all .2s;
-  "
+    cursor:pointer;font-family:var(--fn);transition:all .2s;"
   onmouseenter="this.style.background='linear-gradient(135deg,rgba(79,110,247,.18),rgba(124,58,237,.12))';this.style.transform='translateY(-1px)'"
   onmouseleave="this.style.background='linear-gradient(135deg,rgba(79,110,247,.1),rgba(124,58,237,.07))';this.style.transform='none'">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
       <path d="M15 17H20L18.6 15.6C18.2 15.2 18 14.7 18 14.2V11C18 8.4 16.4 6.2 14 5.3V5C14 3.9 13.1 3 12 3C10.9 3 10 3.9 10 5V5.3C7.6 6.2 6 8.4 6 11V14.2C6 14.7 5.8 15.2 5.4 15.6L4 17H9M15 17V18C15 19.7 13.7 21 12 21C10.3 21 9 19.7 9 18V17H15Z" stroke="var(--acc)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
-    View All ${allActiveNotices.length} Active Notices
-    <div style="background:var(--acc);color:#fff;font-size:9px;font-weight:900;padding:2px 7px;border-radius:20px;">${allActiveNotices.length}</div>
+    View All Notices
+    <!-- Total count pill -->
+    <div style="background:var(--acc);color:#fff;font-size:10px;font-weight:900;
+      padding:3px 9px;border-radius:20px;min-width:22px;text-align:center;">
+      ${allActiveNotices.length}
+    </div>
+    <!-- Unread count pill — only if any unread -->
+    ${_unreadCount > 0 ? `
+    <div style="background:#f43f5e;color:#fff;font-size:10px;font-weight:900;
+      padding:3px 9px;border-radius:20px;min-width:22px;text-align:center;
+      display:flex;align-items:center;gap:4px;
+      animation:syncPulse 1.5s ease-in-out infinite;">
+      <div style="width:6px;height:6px;border-radius:50%;background:#fff;opacity:.8;"></div>
+      ${_unreadCount} unread
+    </div>` : ''}
   </button>
 </div>`;
 
@@ -3612,6 +4001,21 @@ function showToast(msg,type='success',duration=2400){
   },duration);
 }
 
+function updateNoticesBadge(){
+  const readPopups=JSON.parse(localStorage.getItem('ts_read_popups')||'[]');
+  const unread=getAdminNotices().filter(n=>{
+    if(!n.active)return false;
+    if(n.expiry&&new Date(n.expiry)<new Date())return false;
+    const key=String(n.id||n.title||'');
+    return!readPopups.includes(key);
+  }).length;
+  const badge=document.getElementById('notices-badge');
+  if(badge){
+    badge.textContent=unread>9?'9+':unread;
+    badge.style.display=unread>0?'':'none';
+  }
+}
+
 /* STORAGE */
 function rKey(s,c){return`thunderstudy_result_${s}_${c}`;}
 function hKey(s,c){return`thunderstudy_history_${s}_${c}`;}
@@ -3660,32 +4064,47 @@ function rClr(p){return p>=75?'#10b981':p>=50?'#4f6ef7':p>=35?'#f59e0b':'#f43f5e
 function fd(iso){try{return new Date(iso).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});}catch(e){return'—';}}
 function fdS(iso){try{return new Date(iso).toLocaleDateString('en-IN',{day:'2-digit',month:'short'});}catch(e){return'—';}}
 function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+let _allAttCache = null, _allAttCacheKey = '';
 function getAllAtt(){
-  const sv=getSS(),all=[];
+  try {
+  const sv=getSS();
+  const cacheKey = sv.join(',') + '_' + sv.map(sId=>{
+    const subj=SUBJECTS_MASTER.find(s=>s.id===sId);
+    return subj ? subj.chapters.map(ch=>localStorage.getItem(rKey(sId,ch.id))?'1':'0').join('') : '';
+  }).join('|');
+  if(_allAttCache && _allAttCacheKey === cacheKey) return _allAttCache;
+  const all=[];
   sv.forEach(sId=>{
     const subj=SUBJECTS_MASTER.find(s=>s.id===sId);if(!subj)return;
-    subj.chapters.forEach(ch=>{const r=lR(sId,ch.id);if(r)all.push({...r,correct:r.correct||0,incorrect:r.incorrect||0,unanswered:r.unanswered||0,subjectId:sId,subjectName:subj.name,subjectIcon:subj.icon,ci:ch});});
+    subj.chapters.forEach(ch=>{
+      try {
+        const r=lR(sId,ch.id);
+        if(r)all.push({...r,correct:r.correct||0,incorrect:r.incorrect||0,unanswered:r.unanswered||0,subjectId:sId,subjectName:subj.name,subjectIcon:subj.icon,ci:ch});
+      } catch(e) {}
+    });
   });
+  _allAttCache = all; _allAttCacheKey = cacheKey;
   return all;
+  } catch(e) {
+    console.error('getAllAtt error:', e);
+    return [];
+  }
 }
+function invalidateAttCache(){ _allAttCache=null; _allAttCacheKey=''; }
 function destroyCharts(){
-  Object.entries(CI).forEach(([k,c])=>{
+  Object.keys(CI).forEach(k=>{
     try{
-      if(c&&typeof c.destroy==='function'){
-        // Check if canvas still exists in DOM before destroying
-        if(c.canvas&&document.contains(c.canvas)){
-          c.canvas.getContext('2d').clearRect(0,0,c.canvas.width,c.canvas.height);
-        }
-        c.destroy();
-      }
+      const c=CI[k];
+      if(c&&typeof c.destroy==='function') c.destroy();
     }catch(e){}
+    delete CI[k];
   });
   CI={};
-  // Also clean up any orphaned Chart instances on canvases still in DOM
-  document.querySelectorAll('canvas').forEach(cv=>{
-    const existing=Chart.getChart(cv);
-    if(existing){try{existing.destroy();}catch(e){}}
-  });
+  setTimeout(()=>{
+    document.querySelectorAll('canvas').forEach(cv=>{
+      try{ const ex=Chart.getChart(cv); if(ex) ex.destroy(); }catch(e){}
+    });
+  },0);
 }
 
 /* ══════════════════════════════════════════
@@ -3878,6 +4297,8 @@ document.addEventListener('keydown',(e)=>{
   const pages=['home','scoreboard','subjects','mocks','analytics','rank','settings'];
   const n=parseInt(e.key)-1;
   if(!isNaN(n)&&n>=0&&n<pages.length)goPage(pages[n]);
+  if(e.key==='?'&&!e.shiftKey){showShortcutOverlay();return;}
+if(e.key==='Escape'){const ov=document.getElementById('shortcut-overlay');if(ov)ov.remove();}
 });
 
 /* ══════════════════════════════════════════
@@ -3906,7 +4327,11 @@ document.querySelectorAll('.dock-item').forEach(d=>d.classList.remove('active'))
       el.innerHTML=`<div class="sk-card"><div class="skeleton sk-line" style="width:40%;height:22px;margin-bottom:16px;"></div><div class="skeleton sk-line" style="width:100%;height:14px;"></div><div class="skeleton sk-line" style="width:85%;height:14px;"></div><div class="skeleton sk-line" style="width:70%;height:14px;"></div></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;">${Array(4).fill(0).map(()=>`<div class="sk-card" style="padding:18px;"><div class="skeleton sk-line" style="width:38px;height:38px;border-radius:11px;margin-bottom:12px;"></div><div class="skeleton sk-line" style="width:60%;height:24px;"></div><div class="skeleton sk-line" style="width:80%;height:10px;"></div></div>`).join('')}</div><div class="sk-card"><div class="skeleton sk-line" style="width:30%;height:16px;margin-bottom:14px;"></div>${Array(3).fill(0).map(()=>`<div class="skeleton sk-line" style="width:100%;height:11px;"></div>`).join('')}</div>`;
     }
   }
-  setTimeout(()=>map[id](),80);
+  setTimeout(()=>{
+  try{ map[id](); }
+  catch(e){ console.error('goPage error:',e); }
+  setTimeout(showFooter, 400);
+},20);
 }
 }
 
@@ -3914,8 +4339,10 @@ document.querySelectorAll('.dock-item').forEach(d=>d.classList.remove('active'))
    HOME PAGE
 ══════════════════════════════════════════ */
 function renderHome(){
-  syncHistory();
-  checkSectionCompletion();
+  try {
+updateNoticesBadge();
+  if(!sessionStorage.getItem('ts_history_synced')){ syncHistory(); sessionStorage.setItem('ts_history_synced','1'); }
+setTimeout(()=>{try{checkSectionCompletion();}catch(e){}},100);
   const sv=getSS();
 if(!sv.length){
     const existingGU = getGoogleUser();
@@ -4016,11 +4443,12 @@ if(!sv.length){
     renderAdminNotices();
     renderExamCountdown();
     return;
+    showFooter();
   }
   const prof=getProfile(),allAtt=getAllAtt();
   const uname=prof.name||'Student';
  const tS=allAtt.reduce((s,d)=>s+d.score,0),tM=allAtt.reduce((s,d)=>s+d.maxScore,0);
-  initRPSystem();
+  setTimeout(()=>{try{initRPSystem();}catch(e){console.error(e);}},0);
   const rpData=getRPData();
   const currentTier=RANK_TIERS[rpData.rankIndex];
   const rank={name:currentTier.name,icon:currentTier.icon,color:currentTier.color};
@@ -4035,6 +4463,43 @@ if(!sv.length){
   document.getElementById('sb-name-disp').textContent=uname;
   document.getElementById('sb-role-disp').textContent=prof.college||'CUET Aspirant';
   document.getElementById('home-greeting').textContent=`💕 Hello, ${uname}!`;
+  // Add dark mode toggle to mobile home topbar
+const existingDMBtn = document.getElementById('mobile-dm-toggle');
+if(!existingDMBtn){
+  const topbarRight = document.getElementById('home-topbar-right');
+  if(topbarRight && window.innerWidth <= 768){
+    const dmBtn = document.createElement('button');
+    dmBtn.id = 'mobile-dm-toggle';
+    const isDark = document.body.classList.contains('dark-mode');
+    dmBtn.innerHTML = isDark ? '☀️' : '🌙';
+    dmBtn.title = 'Toggle Dark Mode';
+    dmBtn.style.cssText = `background:var(--card2);border:1.5px solid var(--border);border-radius:50%;width:36px;height:36px;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;`;
+    dmBtn.onclick = function(){
+      toggleDarkMode();
+      this.innerHTML = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+    };
+    topbarRight.insertBefore(dmBtn, topbarRight.firstChild);
+  }
+}
+  // Mini exam countdown in topbar
+const topbarRight=document.getElementById('home-topbar-right');
+const nextExam=getAdminExams().filter(e=>e.active&&new Date(e.date)>new Date()).sort((a,b)=>new Date(a.date)-new Date(b.date))[0];
+if(nextExam&&topbarRight){
+  const existingWidget=document.getElementById('topbar-exam-widget');
+  if(!existingWidget){
+    const diff=new Date(nextExam.date)-new Date();
+    const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000);
+    const label=d>0?`${d}d ${h}h`:h>0?`${h}h`:Math.floor(diff/60000)+'m';
+    const urgent=diff<86400000*2;
+    const widget=document.createElement('div');
+    widget.id='topbar-exam-widget';
+    widget.style.cssText=`display:flex;align-items:center;gap:7px;background:${urgent?'rgba(244,63,94,.1)':'rgba(79,110,247,.08)'};border:1.5px solid ${urgent?'rgba(244,63,94,.35)':'rgba(79,110,247,.2)'};border-radius:30px;padding:5px 13px;font-size:11px;font-weight:800;color:${urgent?'var(--red)':'var(--acc)'};cursor:pointer;`;
+    widget.title=`Next Exam: ${nextExam.title}`;
+    widget.innerHTML=`<span style="font-size:14px;">${urgent?'⏰':'📅'}</span>${label}`;
+    widget.onclick=()=>document.getElementById('exam-top-banner')?.scrollIntoView({behavior:'smooth'});
+    document.getElementById('home-google-area')?.parentNode.insertBefore(widget,document.getElementById('home-google-area'));
+  }
+}
   document.getElementById('home-sub').textContent=`${new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'})} · ${rank.icon} ${rank.name} Rank`;
  const goals=prof.goals||{};let H='';
 
@@ -4609,10 +5074,29 @@ H+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin
   H+=`<div class="sec-hdr" style="margin-top:20px;"><div class="sec-title">🎯 Target Score Planner</div></div>${buildTargetSetter(sv)}`;
   setTimeout(()=>calcTarget(),150);
   document.getElementById('home-content').innerHTML=H;
-  fetchDailyQuote().then(q => {
+  setTimeout(()=>showFooter(), 500);
+  // Show donate popup once per session if no active notices
+  setTimeout(()=>{
+    const notices=getAdminNotices().filter(n=>n.active);
+    if(!notices.length&&!sessionStorage.getItem('ts_donate_shown')){
+      sessionStorage.setItem('ts_donate_shown','1');
+      const popup=document.getElementById('donate-popup');
+      if(popup){
+        popup.classList.add('visible');
+        setTimeout(()=>popup.classList.remove('visible'),6000);
+      }
+    }
+  },3000);
+
+(window._quoteFetchPromise || fetchDailyQuote()).then(q => {
+  window._quoteFetchPromise = null;
   const wrap = document.getElementById('quote-card-wrap');
   if (wrap) wrap.innerHTML = buildQuoteCard(q);
+}).catch(() => {
+  const wrap = document.getElementById('quote-card-wrap');
+  if (wrap) wrap.innerHTML = '';
 });
+
   // Fetch StudentID from leaderboard
 const localSID = getStudentID();
 const sidEl = document.getElementById('hero-sid');
@@ -4634,6 +5118,15 @@ fetch(GS_URL+'?action=getAll',{method:'GET',redirect:'follow'})
     const xf=document.getElementById('xp-fill-bar');if(xf)setTimeout(()=>xf.style.width=xpInfo.progress+'%',100);
     document.querySelectorAll('.goal-fill').forEach(el=>{const w=el.style.width;el.style.width='0';setTimeout(()=>el.style.width=w,60);});
   },80);
+  } catch(err) {
+    console.error('renderHome error:', err);
+    const hc = document.getElementById('home-content');
+    if(hc) hc.innerHTML = `<div style="padding:24px;background:rgba(244,63,94,.08);border:1.5px solid rgba(244,63,94,.3);border-radius:16px;margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:800;color:#f43f5e;margin-bottom:6px;">⚠️ Home page error</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:12px;">${escH(err.message)}</div>
+      <button onclick="localStorage.removeItem('ts_rp_data');localStorage.removeItem('ts_rp_processed');localStorage.removeItem('ts_rp_init');location.reload();" style="background:#f43f5e;color:#fff;border:none;border-radius:10px;padding:9px 18px;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--fn);">🔄 Fix & Reload</button>
+    </div>`;
+  }
 }
 
 /* HEATMAP */
@@ -4756,6 +5249,10 @@ function buildTrendChart(filterSId){
   const tc=document.getElementById('sc-trend');if(!tc)return;
   if(CI['trend']){try{if(typeof CI['trend'].destroy==='function')CI['trend'].destroy();}catch(e){}}delete CI['trend'];
   const{labels,datasets}=getWeeklyData(filterSId);
+  if(!datasets.length||datasets.every(d=>d.data.every(v=>v===null))){
+    if(tc.parentElement) tc.parentElement.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:190px;color:var(--text3);font-size:13px;">No data yet.</div>';
+    return;
+  }
   if(!datasets.length){tc.parentElement.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:190px;color:var(--text3);font-size:13px;">No data yet.</div>';return;}
   CI['trend']=new Chart(tc.getContext('2d'),{type:'line',data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'top',labels:{color:'#5a5f7a',font:{size:10},boxWidth:9}}},scales:{x:{grid:{display:false},ticks:{color:'#9298b5',font:{size:10}}},y:{min:0,max:100,grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#9298b5',font:{size:10},callback:v=>v+'%'}}}}});
 }
@@ -4778,24 +5275,9 @@ function exportPDF(){
 /* ══════════════════════════════════════════
    SUBJECTS PAGE
 ══════════════════════════════════════════ */
-function renderSubjects(){
-  const sv=getSS();
-  if(!sv.length){document.getElementById('subjects-content').innerHTML=`<div class="empty"><div class="empty-icon">📚</div><div class="empty-title">No Subjects Added</div><button class="btn btn-prim" style="margin-top:14px" onclick="openAddSubjModal()">+ Add Subject</button></div>`;return;}
-  if(!currentSubjectTab||!sv.includes(currentSubjectTab))currentSubjectTab=sv[0];
-  let H=`<div class="subj-tabs">`;
-  sv.forEach(sId=>{const s=SUBJECTS_MASTER.find(x=>x.id===sId);if(!s)return;H+=`<div class="subj-tab ${sId===currentSubjectTab?'active':''}" onclick="switchSubjTab('${sId}')">${s.icon} ${s.name}</div>`;});
-  H+=`</div><div id="subj-tab-content"></div>`;
-  document.getElementById('subjects-content').innerHTML=H;
-  renderSubjTab(currentSubjectTab);
-}
-
-function switchSubjTab(sId){
-  currentSubjectTab=sId;
-  document.querySelectorAll('.subj-tab').forEach(t=>{
-    t.classList.toggle('active',t.getAttribute('onclick')===`switchSubjTab('${sId}')`);
-  });
-  setTimeout(()=>renderSubjTab(sId),30);
-}
+/* ══════════════════════════════════════════
+   SUBJECTS PAGE — FULL REMAKE
+══════════════════════════════════════════ */
 
 function checkCertEligibility(sId){
   const subj=SUBJECTS_MASTER.find(s=>s.id===sId);if(!subj)return null;
@@ -4816,182 +5298,626 @@ function checkCertEligibility(sId){
   };
 }
 
+function renderSubjects(){
+  const sv=getSS();
+  const container=document.getElementById('subjects-content');
+  if(!sv.length){
+    container.innerHTML=`<div class="empty">
+      <div class="empty-icon">📚</div>
+      <div class="empty-title">No Subjects Added</div>
+      <div class="empty-sub">Add your CUET subjects to start tracking.</div>
+      <button class="btn btn-prim" style="margin-top:14px" onclick="openAddSubjModal()">+ Add Subject</button>
+    </div>`;
+    return;
+  }
+  if(!currentSubjectTab||!sv.includes(currentSubjectTab)) currentSubjectTab=sv[0];
+
+  // Build tab bar
+  let tabsHTML=`<div class="subj-tabs" id="subj-tab-bar">`;
+  sv.forEach(sId=>{
+    const s=SUBJECTS_MASTER.find(x=>x.id===sId);if(!s)return;
+    const att=s.chapters.filter(ch=>lR(sId,ch.id)).length;
+    const total=s.chapters.length;
+    tabsHTML+=`<div class="subj-tab ${sId===currentSubjectTab?'active':''}" 
+      id="stab-${sId}"
+      onclick="switchSubjTab('${sId}')">
+      ${s.icon} ${s.name}
+      <span style="font-size:9px;opacity:.7;margin-left:3px;">${att}/${total}</span>
+    </div>`;
+  });
+  tabsHTML+=`</div>`;
+
+  container.innerHTML=tabsHTML+`<div id="subj-tab-content"></div>`;
+  renderSubjTab(currentSubjectTab);
+}
+
+function switchSubjTab(sId){
+  if(currentSubjectTab===sId) return; // no re-render if same tab
+  currentSubjectTab=sId;
+  // Update tab styles
+  document.querySelectorAll('.subj-tab').forEach(t=>{
+    const active=t.id===`stab-${sId}`;
+    t.classList.toggle('active',active);
+  });
+  destroyCharts();
+  renderSubjTab(sId);
+}
+
 function renderSubjTab(sId){
   const subj=SUBJECTS_MASTER.find(s=>s.id===sId);if(!subj)return;
   const wrap=document.getElementById('subj-tab-content');
-  if(!wrap){setTimeout(()=>renderSubjTab(sId),50);return;}
-  destroyCharts();
-  wrap.innerHTML='';
-  const att=[];subj.chapters.forEach(ch=>{const r=lR(sId,ch.id);if(r)att.push({...r,ci:ch});});
+  if(!wrap){setTimeout(()=>renderSubjTab(sId),60);return;}
+
+  // Gather data once
+  const att=[];
+  subj.chapters.forEach(ch=>{
+    const r=lR(sId,ch.id);
+    if(r) att.push({...r,ci:ch});
+  });
+  const notAtt=subj.chapters.filter(ch=>!lR(sId,ch.id));
+
+  // Certificate eligibility
   const certInfo=checkCertEligibility(sId);
   let certH='';
-  if(certInfo){if(certInfo.eligible){certH=`<div class="cert-unlock"><div class="cert-icon">🏅</div><div style="flex:1"><div class="cert-title">🎉 Certificate Unlocked!</div><div class="cert-sub">All ${certInfo.total} mocks done with ${certInfo.avg.toFixed(1)}% avg!</div></div><button class="btn btn-prim" onclick="openCertificate('${sId}')">🏅 View & Download</button></div>`;}else if(certInfo.done>0){certH=`<div style="background:rgba(79,110,247,.05);border:1.5px dashed rgba(79,110,247,.2);border-radius:var(--r2);padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:10px;"><div style="font-size:26px">🔒</div><div><div style="font-size:13px;font-weight:700;">Certificate — ${certInfo.total-certInfo.done>0?`${certInfo.total-certInfo.done} more mocks needed`:'Score 90%+ to unlock'}</div><div style="font-size:11px;color:var(--text3);margin-top:2px;">${certInfo.done}/${certInfo.total} done · Avg: ${certInfo.avg.toFixed(1)}% (need 90%+)</div></div></div>`;}}
-  if(!att.length){wrap.innerHTML=certH+`<div class="empty"><div class="empty-icon">${subj.icon}</div><div class="empty-title">No ${subj.name} Results Yet</div><div class="empty-sub">Complete a quiz to see results here.</div></div>`;return;}
-  const tS=att.reduce((s,d)=>s+d.score,0),tM=att.reduce((s,d)=>s+d.maxScore,0),tC=att.reduce((s,d)=>s+d.correct,0),tW=att.reduce((s,d)=>s+d.incorrect,0),tU=att.reduce((s,d)=>s+d.unanswered,0);
-  const op=tM>0?tS/tM*100:0,sorted=[...att].sort((a,b)=>b.percentage-a.percentage),best=sorted[0],worst=sorted[sorted.length-1];
-  let H=certH;
-  H+=`<div class="stat-grid" style="grid-template-columns:repeat(auto-fit,minmax(110px,1fr));margin-bottom:18px;"><div class="stat-card"><div class="stat-icon bg-acc">✅</div><div class="stat-val" style="color:var(--acc)">${att.length}/${subj.chapters.length}</div><div class="stat-lbl">Done</div></div><div class="stat-card"><div class="stat-icon bg-yellow">⭐</div><div class="stat-val c-yellow">${op.toFixed(1)}%</div><div class="stat-lbl">Overall %</div></div><div class="stat-card"><div class="stat-icon bg-green">✅</div><div class="stat-val c-green">${tC}</div><div class="stat-lbl">Correct</div></div><div class="stat-card"><div class="stat-icon bg-red">❌</div><div class="stat-val c-red">${tW}</div><div class="stat-lbl">Wrong</div></div><div class="stat-card"><div class="stat-icon" style="background:rgba(148,163,184,.1)">⏭️</div><div class="stat-val c-text3">${tU}</div><div class="stat-lbl">Skipped</div></div></div>`;
-  H+=`<div class="grid-2" style="margin-bottom:18px;"><div class="card card-p" style="border:1.5px solid rgba(16,185,129,.2);background:rgba(16,185,129,.03);"><div style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--green);margin-bottom:5px;">⭐ Best Chapter</div><div style="font-size:13px;font-weight:700;margin-bottom:3px;">${best.ci?.name||best.chapterId}</div><div style="font-size:26px;font-weight:900;font-family:var(--mono);color:var(--green);">${best.percentage?.toFixed(1)}%</div><div style="font-size:10px;color:var(--text3);margin-top:2px;">${best.score}/${best.maxScore} · ${fd(best.date)}</div></div><div class="card card-p" style="border:1.5px solid rgba(244,63,94,.2);background:rgba(244,63,94,.03);"><div style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--red);margin-bottom:5px;">⚠️ Needs Work</div><div style="font-size:13px;font-weight:700;margin-bottom:3px;">${worst.ci?.name||worst.chapterId}</div><div style="font-size:26px;font-weight:900;font-family:var(--mono);color:var(--red);">${worst.percentage?.toFixed(1)}%</div><div style="font-size:10px;color:var(--text3);margin-top:2px;">${worst.score}/${worst.maxScore} · ${fd(worst.date)}</div></div></div>`;
-  const chartId=`ct-${sId}-${Date.now()}`;
-// Time stats
-const totalTime = att.reduce((s, d) => s + (d.timeTaken || 0), 0);
-const avgTimePerQ = att.length > 0 && totalTime > 0
-  ? Math.round(totalTime / att.reduce((s, d) => s + (d.totalQ || 50), 0)) : null;
-const fastestTest = att.reduce((min, d) => 
-  d.timeTaken && d.timeTaken < min ? d.timeTaken : min, Infinity);
-
-if (totalTime > 0) {
-  const totalMins = Math.round(totalTime / 60);
-  H += `
-  <div style="background:var(--card2);border:1px solid var(--border);
-    border-radius:14px;padding:13px 16px;margin-bottom:14px;
-    display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-    <div style="display:flex;align-items:center;gap:7px;">
-      <div style="font-size:20px;">⏱️</div>
-      <div>
-        <div style="font-size:10px;font-weight:700;
-          color:var(--text3);text-transform:uppercase;
-          letter-spacing:.5px;">Time Stats</div>
-      </div>
-    </div>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;">
-      <div style="text-align:center;">
-        <div style="font-size:16px;font-weight:900;
-          font-family:var(--mono);color:var(--acc);">
-          ${totalMins}m
+  if(certInfo){
+    if(certInfo.eligible){
+      certH=`<div class="cert-unlock">
+        <div class="cert-icon">🏅</div>
+        <div style="flex:1">
+          <div class="cert-title">🎉 Certificate Unlocked!</div>
+          <div class="cert-sub">All ${certInfo.total} mocks done · ${certInfo.avg.toFixed(1)}% avg</div>
         </div>
-        <div style="font-size:9px;color:var(--text3);">
-          Total Time
-        </div>
-      </div>
-      ${avgTimePerQ ? `
-      <div style="text-align:center;">
-        <div style="font-size:16px;font-weight:900;
-          font-family:var(--mono);color:var(--yellow);">
-          ${avgTimePerQ}s
-        </div>
-        <div style="font-size:9px;color:var(--text3);">
-          Per Question
-        </div>
-      </div>` : ''}
-      ${fastestTest !== Infinity ? `
-      <div style="text-align:center;">
-        <div style="font-size:16px;font-weight:900;
-          font-family:var(--mono);color:var(--green);">
-          ${Math.round(fastestTest / 60)}m
-        </div>
-        <div style="font-size:9px;color:var(--text3);">
-          Fastest Test
-        </div>
-      </div>` : ''}
-    </div>
-  </div>`;
-}
-H+=`<div class="grid-2" style="margin-bottom:18px;">
-  <div class="card card-p" style="border-radius:18px;">
-    <div class="sec-hdr"><div class="sec-title">📈 Score Trend</div><div style="font-size:10px;color:var(--text3);">${att.length} attempt${att.length!==1?'s':''}</div></div>
-    <div style="height:150px;"><canvas id="${chartId}"></canvas></div>
-  </div>
-  <div class="card card-p" style="border-radius:18px;max-height:280px;overflow-y:auto;">
-    <div class="sec-hdr" style="position:sticky;top:0;background:var(--card);z-index:2;padding-bottom:8px;"><div class="sec-title">📋 Chapter Progress</div><div style="font-size:10px;color:var(--text3);">${att.length}/${subj.chapters.length}</div></div>
-    ${[...att].sort((a,b)=>a.chapterId.localeCompare(b.chapterId)).map(d=>{
-      const p=d.percentage||0,clr=rClr(p);
-      return`<div class="prog-row" style="margin-bottom:8px;">
-        <div class="prog-lbl" title="${d.ci?.name||d.chapterId}" style="font-size:11px;">${(d.ci?.name||d.chapterId).substring(0,22)}</div>
-        <div class="prog-track" style="height:6px;border-radius:6px;">
-          <div class="prog-fill" style="width:${p}%;background:${clr};border-radius:6px;"></div>
-        </div>
-        <div class="prog-pct" style="color:${clr};font-size:11px;">${p.toFixed(0)}%</div>
+        <button class="btn btn-prim" onclick="openCertificate('${sId}')">🏅 Download</button>
       </div>`;
-    }).join('')}
-  </div>
-</div>`;
-  H+=`<div class="ch-filter-bar"><input class="filter-inp" id="fs-${sId}" placeholder="🔍 Search chapter…" oninput="applySubjFilter('${sId}')"><select class="filter-sel" id="ft-${sId}" onchange="applySubjFilter('${sId}')"><option value="">All Types</option>${Object.entries(TL).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select><select class="filter-sel" id="fs2-${sId}" onchange="applySubjFilter('${sId}')"><option value="date">Latest First</option><option value="score_d">Score ↓</option><option value="score_a">Score ↑</option><option value="name">Name A-Z</option></select></div><div class="ch-grid" id="cg-${sId}"></div>`;
-  const na=subj.chapters.filter(ch=>!att.find(a=>a.chapterId===ch.id));
-if(na.length) {
-  // Priority scoring - full mocks and pyqs first
-  const priorityOrder = ['fullmock','pyq','special','andr','imgbased','chapwise',
-    'vocabulary','grammar','reading','rc'];
-  const sortedNa = [...na].sort((a, b) => {
-    const ai = priorityOrder.indexOf(a.type);
-    const bi = priorityOrder.indexOf(b.type);
-    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
-  });
-  
-  H += `
-  <div class="sec-hdr" style="margin-top:20px;">
-    <div class="sec-title">
-      📋 Not Attempted (${na.length})
-    </div>
-    <div style="font-size:10px;color:var(--text3);">
-      Sorted by priority
-    </div>
-  </div>
-  <div style="display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
-    gap:8px;">
-    ${sortedNa.map((ch, idx) => {
-      const isHighPriority = ['fullmock','pyq'].includes(ch.type);
-      const isMedPriority = ['special','andr'].includes(ch.type);
-      const priorityColor = isHighPriority ? '#f43f5e' 
-        : isMedPriority ? '#f59e0b' : 'var(--text3)';
-      const priorityLabel = isHighPriority ? '🔴 High Priority' 
-        : isMedPriority ? '🟡 Medium' : '';
-      
-      return `
-      <a class="na-item" 
-        href="${(SUBJECT_URLS[sId] || '') + ch.id + '.html'}" 
-        target="_blank"
-        style="position:relative;
-          ${isHighPriority ? 
-            'border-color:rgba(244,63,94,.3);' : ''}
-          ${isMedPriority ? 
-            'border-color:rgba(245,158,11,.25);' : ''}">
-        <div class="na-dot" style="background:${priorityColor};
-          ${isHighPriority ? 
-            'animation:syncPulse 1.5s ease-in-out infinite;' : ''}">
-        </div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:13px;font-weight:600;
-            overflow:hidden;text-overflow:ellipsis;
-            white-space:nowrap;">
-            ${ch.name}
+    } else if(certInfo.done>0){
+      certH=`<div style="background:rgba(79,110,247,.05);border:1.5px dashed rgba(79,110,247,.2);
+        border-radius:var(--r2);padding:14px 18px;margin-bottom:14px;
+        display:flex;align-items:center;gap:10px;">
+        <div style="font-size:26px">🔒</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;">
+            Certificate — ${certInfo.total-certInfo.done>0
+              ?`${certInfo.total-certInfo.done} more mocks needed`
+              :'Score 90%+ avg to unlock'}
           </div>
-          <div style="display:flex;align-items:center;
-            gap:6px;margin-top:3px;flex-wrap:wrap;">
-            <div style="font-size:9px;font-weight:700;
-              padding:1px 7px;border-radius:20px;
-              background:${TC[ch.type]||TC.chapwise};
-              color:${TX[ch.type]||TX.chapwise};">
-              ${TL[ch.type] || ch.type}
-            </div>
-            ${priorityLabel ? `
-            <div style="font-size:9px;font-weight:700;
-              color:${priorityColor};">
-              ${priorityLabel}
-            </div>` : ''}
+          <div style="font-size:11px;color:var(--text3);margin-top:2px;">
+            ${certInfo.done}/${certInfo.total} done · Avg: ${certInfo.avg.toFixed(1)}%
           </div>
         </div>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-          <path d="M5 12h14M12 5l7 7-7 7" 
-            stroke="var(--text3)" stroke-width="2" 
-            stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>`;
-    }).join('')}
+      </div>`;
+    }
+  }
+
+  // Empty state
+  if(!att.length){
+    wrap.innerHTML=certH+`<div class="empty">
+      <div class="empty-icon">${subj.icon}</div>
+      <div class="empty-title">No ${subj.name} Results Yet</div>
+      <div class="empty-sub">Complete a quiz to see your results here.</div>
+      <a href="${SUBJECT_URLS[sId]||'#'}" target="_blank" class="btn btn-prim" style="margin-top:14px;display:inline-flex;">
+        📝 Start a Test →
+      </a>
+    </div>`;
+    return;
+  }
+
+  // Aggregate stats — computed once
+  const tS=att.reduce((s,d)=>s+d.score,0);
+  const tM=att.reduce((s,d)=>s+d.maxScore,0);
+  const tC=att.reduce((s,d)=>s+d.correct,0);
+  const tW=att.reduce((s,d)=>s+d.incorrect,0);
+  const tU=att.reduce((s,d)=>s+d.unanswered,0);
+  const op=tM>0?tS/tM*100:0;
+  const sorted=[...att].sort((a,b)=>b.percentage-a.percentage);
+  const best=sorted[0];
+  const worst=sorted[sorted.length-1];
+
+  // Time stats
+  const totalTime=att.reduce((s,d)=>s+(d.timeTaken||0),0);
+  const avgTimePerQ=totalTime>0&&att.length>0
+    ?Math.round(totalTime/att.reduce((s,d)=>s+(d.totalQ||50),0))
+    :null;
+
+  // Chart ID — use stable ID without timestamp to avoid duplicate canvases
+  const chartId=`ct-${sId}`;
+
+  let H=certH;
+
+  // ── STAT CARDS ──
+  H+=`<div class="stat-grid" style="grid-template-columns:repeat(auto-fit,minmax(110px,1fr));margin-bottom:18px;">
+    <div class="stat-card">
+      <div class="stat-icon bg-acc">✅</div>
+      <div class="stat-val" style="color:var(--acc)">${att.length}/${subj.chapters.length}</div>
+      <div class="stat-lbl">Done</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon bg-yellow">⭐</div>
+      <div class="stat-val c-yellow">${op.toFixed(1)}%</div>
+      <div class="stat-lbl">Overall %</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon bg-green">✅</div>
+      <div class="stat-val c-green">${tC}</div>
+      <div class="stat-lbl">Correct</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon bg-red">❌</div>
+      <div class="stat-val c-red">${tW}</div>
+      <div class="stat-lbl">Wrong</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:rgba(148,163,184,.1)">⏭️</div>
+      <div class="stat-val c-text3">${tU}</div>
+      <div class="stat-lbl">Skipped</div>
+    </div>
+    ${totalTime>0?`<div class="stat-card">
+      <div class="stat-icon bg-teal">⏱️</div>
+      <div class="stat-val" style="color:var(--teal)">${Math.round(totalTime/60)}m</div>
+      <div class="stat-lbl">Time Spent</div>
+    </div>`:''}
   </div>`;
-}
-  wrap.innerHTML=H;wrap._att=att;wrap._sId=sId;
+
+  // ── BEST / WORST ──
+  H+=`<div class="grid-2" style="margin-bottom:18px;">
+    <div class="card card-p" style="border:1.5px solid rgba(16,185,129,.2);background:rgba(16,185,129,.03);">
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--green);margin-bottom:5px;">⭐ Best Chapter</div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escH(best.ci?.name||best.chapterId)}">${escH((best.ci?.name||best.chapterId).substring(0,32))}</div>
+      <div style="font-size:26px;font-weight:900;font-family:var(--mono);color:var(--green);">${best.percentage?.toFixed(1)}%</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:2px;">${best.score}/${best.maxScore} · ${fd(best.date)}</div>
+    </div>
+    <div class="card card-p" style="border:1.5px solid rgba(244,63,94,.2);background:rgba(244,63,94,.03);">
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;color:var(--red);margin-bottom:5px;">⚠️ Needs Work</div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escH(worst.ci?.name||worst.chapterId)}">${escH((worst.ci?.name||worst.chapterId).substring(0,32))}</div>
+      <div style="font-size:26px;font-weight:900;font-family:var(--mono);color:var(--red);">${worst.percentage?.toFixed(1)}%</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:2px;">${worst.score}/${worst.maxScore} · ${fd(worst.date)}</div>
+    </div>
+  </div>`;
+
+  // ── TREND + PROGRESS ──
+  H+=`<div class="grid-2" style="margin-bottom:18px;">
+    <div class="card card-p" style="border-radius:18px;">
+      <div class="sec-hdr">
+        <div class="sec-title">📈 Score Trend</div>
+        <div style="font-size:10px;color:var(--text3);">${att.length} attempt${att.length!==1?'s':''}</div>
+      </div>
+      <div style="height:150px;"><canvas id="${chartId}"></canvas></div>
+    </div>
+    <div class="card card-p" style="border-radius:18px;max-height:240px;overflow-y:auto;">
+      <div class="sec-hdr" style="position:sticky;top:0;background:var(--card);z-index:2;padding-bottom:8px;">
+        <div class="sec-title">📋 All Progress</div>
+        <div style="font-size:10px;color:var(--text3);">${att.length}/${subj.chapters.length}</div>
+      </div>
+      ${[...att].sort((a,b)=>b.percentage-a.percentage).map(d=>{
+        const p=d.percentage||0,clr=rClr(p);
+        return`<div class="prog-row" style="margin-bottom:8px;">
+          <div class="prog-lbl" title="${escH(d.ci?.name||d.chapterId)}" style="font-size:11px;">${escH((d.ci?.name||d.chapterId).substring(0,22))}</div>
+          <div class="prog-track" style="height:6px;border-radius:6px;">
+            <div class="prog-fill" style="width:${p}%;background:${clr};border-radius:6px;"></div>
+          </div>
+          <div class="prog-pct" style="color:${clr};font-size:11px;">${p.toFixed(0)}%</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+
+  // ── TIME INSIGHT ──
+  if(avgTimePerQ){
+    H+=`<div style="background:var(--card2);border:1px solid var(--border);border-radius:14px;
+      padding:13px 16px;margin-bottom:14px;
+      display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:7px;">
+        <div style="font-size:20px;">⏱️</div>
+        <div style="font-size:11px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;">Time Insights</div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;">
+        <div style="text-align:center;">
+          <div style="font-size:16px;font-weight:900;font-family:var(--mono);color:var(--acc);">${Math.round(totalTime/60)}m</div>
+          <div style="font-size:9px;color:var(--text3);">Total</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:16px;font-weight:900;font-family:var(--mono);color:var(--yellow);">${avgTimePerQ}s</div>
+          <div style="font-size:9px;color:var(--text3);">Per Question</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:16px;font-weight:900;font-family:var(--mono);color:var(--green);">${Math.round(totalTime/att.length/60)}m</div>
+          <div style="font-size:9px;color:var(--text3);">Per Test</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // ── FILTERS ──
+  H+=`<div class="ch-filter-bar">
+    <input class="filter-inp" id="fs-${sId}" placeholder="🔍 Search chapter…" 
+      oninput="debounceSubjFilter('${sId}',this.value)">
+    <select class="filter-sel" id="ft-${sId}" onchange="applySubjFilter('${sId}')">
+      <option value="">All Types</option>
+      ${Object.entries(TL).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}
+    </select>
+    <select class="filter-sel" id="fs2-${sId}" onchange="applySubjFilter('${sId}')">
+      <option value="date">Latest First</option>
+      <option value="score_d">Score ↓</option>
+      <option value="score_a">Score ↑</option>
+      <option value="name">Name A-Z</option>
+    </select>
+    <div style="font-size:11px;color:var(--text3);padding:0 4px;" id="filter-count-${sId}">
+      ${att.length} results
+    </div>
+  </div>
+  <div class="ch-grid" id="cg-${sId}"></div>`;
+
+  // ── NOT ATTEMPTED ──
+  if(notAtt.length){
+    // Priority sort — full mocks and pyqs first
+    const priorityOrder=['fullmock','pyq','special','andr','imgbased','chapwise'];
+    const sortedNa=[...notAtt].sort((a,b)=>{
+      const ai=priorityOrder.indexOf(a.type);
+      const bi=priorityOrder.indexOf(b.type);
+      return(ai===-1?99:ai)-(bi===-1?99:bi);
+    });
+    H+=`<div style="display:flex;align-items:center;justify-content:space-between;
+      margin-top:20px;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+      <div style="font-size:14px;font-weight:900;">
+        📋 Not Attempted <span style="font-size:12px;font-weight:600;color:var(--text3);">(${notAtt.length})</span>
+      </div>
+      <div style="font-size:10px;color:var(--text3);">sorted by priority</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;">
+      ${sortedNa.map(ch=>{
+        const isHigh=['fullmock','pyq'].includes(ch.type);
+        const isMed=['special','andr'].includes(ch.type);
+        const pColor=isHigh?'#f43f5e':isMed?'#f59e0b':'var(--text3)';
+        const pLabel=isHigh?'🔴 High Priority':isMed?'🟡 Medium':'';
+        return`<a class="na-item" 
+          href="${(SUBJECT_URLS[sId]||'')+ch.id+'.html'}" 
+          target="_blank"
+          style="${isHigh?'border-color:rgba(244,63,94,.3);':isMed?'border-color:rgba(245,158,11,.25);':''}">
+          <div class="na-dot" style="background:${pColor};
+            ${isHigh?'animation:syncPulse 1.5s ease-in-out infinite;':''}">
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:12px;font-weight:600;
+              overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+              ${escH(ch.name)}
+            </div>
+            <div style="display:flex;align-items:center;gap:5px;margin-top:3px;flex-wrap:wrap;">
+              <div style="font-size:9px;font-weight:700;padding:1px 7px;border-radius:20px;
+                background:${TC[ch.type]||TC.chapwise};color:${TX[ch.type]||TX.chapwise};">
+                ${TL[ch.type]||ch.type}
+              </div>
+              ${pLabel?`<div style="font-size:9px;font-weight:700;color:${pColor};">${pLabel}</div>`:''}
+            </div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h14M12 5l7 7-7 7" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>`;
+      }).join('')}
+    </div>`;
+  }
+
+  // Write HTML
+  wrap.innerHTML=H;
+  // Store data for filter
+  wrap._att=att;
+  wrap._sId=sId;
+
+  // Render chart and animate bars
   setTimeout(()=>{
     applySubjFilter(sId);
+
     const cv=document.getElementById(chartId);
-    if(cv){
+    if(cv&&!Chart.getChart(cv)){
       const srt=[...att].sort((a,b)=>new Date(a.date)-new Date(b.date));
-      const g=cv.getContext('2d').createLinearGradient(0,0,0,140);g.addColorStop(0,subj.color+'40');g.addColorStop(1,subj.color+'00');
-      CI[`ct-${sId}`]=new Chart(cv.getContext('2d'),{type:'line',data:{labels:srt.map(d=>(d.ci?.name||d.chapterId).substring(0,5)),datasets:[{data:srt.map(d=>d.percentage||0),fill:true,backgroundColor:g,borderColor:subj.color,pointBackgroundColor:subj.color,pointRadius:3,borderWidth:2,tension:.35}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#9298b5',font:{size:9},maxRotation:40,maxTicksLimit:8}},y:{min:0,max:100,grid:{color:'rgba(0,0,0,.05)'},ticks:{color:'#9298b5',font:{size:9},callback:v=>v+'%'}}}}});
+      const ctx=cv.getContext('2d');
+      const g=ctx.createLinearGradient(0,0,0,140);
+      g.addColorStop(0,subj.color+'40');
+      g.addColorStop(1,subj.color+'00');
+      CI[`ct-${sId}`]=new Chart(ctx,{
+        type:'line',
+        data:{
+          labels:srt.map(d=>(d.ci?.name||d.chapterId).substring(0,5)),
+          datasets:[{
+            data:srt.map(d=>d.percentage||0),
+            fill:true,
+            backgroundColor:g,
+            borderColor:subj.color,
+            pointBackgroundColor:srt.map(d=>rClr(d.percentage||0)),
+            pointRadius:4,
+            borderWidth:2,
+            tension:.35
+          }]
+        },
+        options:{
+          responsive:true,
+          maintainAspectRatio:false,
+          plugins:{legend:{display:false},tooltip:{
+            callbacks:{
+              title:items=>srt[items[0].dataIndex]?.ci?.name||'',
+              label:item=>`${item.raw.toFixed(1)}%`
+            }
+          }},
+          scales:{
+            x:{grid:{display:false},ticks:{color:'#9298b5',font:{size:9},maxRotation:40,maxTicksLimit:8}},
+            y:{min:0,max:100,grid:{color:'rgba(0,0,0,.05)'},ticks:{color:'#9298b5',font:{size:9},callback:v=>v+'%'}}
+          }
+        }
+      });
     }
-    document.querySelectorAll('.prog-fill').forEach(el=>{const w=el.style.width;el.style.width='0';setTimeout(()=>el.style.width=w,70);});
-  },100);
+
+    // Animate progress bars
+    document.querySelectorAll(`#subj-tab-content .prog-fill`).forEach(el=>{
+      const w=el.style.width;
+      el.style.width='0';
+      setTimeout(()=>el.style.width=w,60);
+    });
+
+    // Animate ring counters
+    document.querySelectorAll('.ch-ring-circle').forEach((circle,i)=>{
+      const svg=circle.closest('.ch-ring-svg');
+      const pct=parseFloat(svg?.dataset.pct||'0');
+      const circ=2*Math.PI*20;
+      const targetOffset=circ-(pct/100)*circ;
+      setTimeout(()=>{
+        circle.style.strokeDashoffset=targetOffset;
+        // Animate counter number
+        const cardEl=circle.closest('[data-sId]');
+        const chId=svg?.dataset.chid;
+        const counterId=`ring-counter-${sId}-${chId}`;
+        const counter=document.getElementById(counterId);
+        if(counter){
+          let cur=0;
+          const steps=30;
+          const inc=pct/steps;
+          const timer=setInterval(()=>{
+            cur=Math.min(pct,cur+inc);
+            counter.textContent=Math.round(cur)+'%';
+            if(cur>=pct)clearInterval(timer);
+          },30);
+        }
+      },i*50);
+    });
+  },80);
+}
+
+// Debounced search for subject filter
+const _subjFilterTimers={};
+function debounceSubjFilter(sId,val){
+  clearTimeout(_subjFilterTimers[sId]);
+  _subjFilterTimers[sId]=setTimeout(()=>applySubjFilter(sId),250);
+}
+
+function applySubjFilter(sId){
+  const wrap=document.getElementById('subj-tab-content');
+  if(!wrap||!wrap._att)return;
+  const search=(document.getElementById(`fs-${sId}`)?.value||'').toLowerCase();
+  const type=document.getElementById(`ft-${sId}`)?.value||'';
+  const sort=document.getElementById(`fs2-${sId}`)?.value||'date';
+  const countEl=document.getElementById(`filter-count-${sId}`);
+
+  let f=[...wrap._att];
+  if(search) f=f.filter(d=>(d.ci?.name||d.chapterId).toLowerCase().includes(search));
+  if(type) f=f.filter(d=>d.ci?.type===type);
+
+  if(sort==='score_d') f.sort((a,b)=>b.percentage-a.percentage);
+  else if(sort==='score_a') f.sort((a,b)=>a.percentage-b.percentage);
+  else if(sort==='name') f.sort((a,b)=>(a.ci?.name||a.chapterId).localeCompare(b.ci?.name||b.chapterId));
+  else f.sort((a,b)=>new Date(b.date)-new Date(a.date));
+
+  if(countEl) countEl.textContent=`${f.length} result${f.length!==1?'s':''}`;
+
+  const grid=document.getElementById(`cg-${sId}`);
+  if(!grid)return;
+  grid.innerHTML=f.length
+    ?f.map(d=>buildChCard(d,sId)).join('')
+    :`<div style="text-align:center;padding:32px;color:var(--text3);">
+        <div style="font-size:32px;margin-bottom:8px;">🔍</div>
+        <div style="font-size:13px;font-weight:700;">No results match your filters</div>
+      </div>`;
+
+  // Trigger ring animations after DOM update
+  requestAnimationFrame(()=>{
+    grid.querySelectorAll('.ch-ring-circle').forEach((circle,i)=>{
+      const svg=circle.closest('.ch-ring-svg');
+      const pct=parseFloat(svg?.dataset.pct||'0');
+      const circ=2*Math.PI*20;
+      setTimeout(()=>{
+        circle.style.strokeDashoffset=circ-(pct/100)*circ;
+        const chId=svg?.dataset.chid||'';
+        const safeChId=chId.replace(/[^a-z0-9]/gi,'-');
+        const counter=document.getElementById(`ring-counter-${sId}-${safeChId}`);
+        if(counter){
+          let cur=0;
+          const steps=30;
+          const inc=pct/steps;
+          const timer=setInterval(()=>{
+            cur=Math.min(pct,cur+inc);
+            counter.textContent=Math.round(cur)+'%';
+            if(cur>=pct)clearInterval(timer);
+          },30);
+        }
+      },i*40);
+    });
+  });
+}
+
+function buildChCard(d,sId){
+  const p=d.percentage||0;
+  const clr=rClr(p);
+  const ttype=d.ci?.type||'chapwise';
+  const circ=2*Math.PI*20;
+  const dash=circ-(p/100)*circ;
+
+  // Grade badge
+  const grade=p>=90?{l:'A+',bg:'rgba(16,185,129,.12)',bc:'rgba(16,185,129,.3)',c:'#10b981'}
+    :p>=75?{l:'A',bg:'rgba(79,110,247,.1)',bc:'rgba(79,110,247,.25)',c:'#4f6ef7'}
+    :p>=60?{l:'B',bg:'rgba(245,158,11,.1)',bc:'rgba(245,158,11,.25)',c:'#f59e0b'}
+    :p>=40?{l:'C',bg:'rgba(249,115,22,.1)',bc:'rgba(249,115,22,.25)',c:'#f97316'}
+    :{l:'D',bg:'rgba(244,63,94,.1)',bc:'rgba(244,63,94,.25)',c:'#f43f5e'};
+
+  // Sparkline
+  const hist=lH(sId,d.chapterId);
+  const spark=hist.slice(-3).reverse();
+  const sparkHTML=spark.length>1?`<div style="display:flex;align-items:flex-end;gap:3px;height:20px;margin-left:4px;">
+    ${spark.map((h,i)=>{
+      const bh=Math.max(3,Math.round(h.percentage*0.18));
+      const bc=rClr(h.percentage);
+      return`<div style="width:5px;height:${bh}px;background:${bc};border-radius:2px;opacity:${i===spark.length-1?1:0.5};"></div>`;
+    }).join('')}
+  </div>`:'';
+
+  const avgTime=d.timeTaken?Math.round(d.timeTaken/(d.totalQ||50))+'s/q':null;
+  const showRetake=p<50;
+
+  // Safe chapter ID for use in element IDs
+  const safeChId=d.chapterId.replace(/[^a-z0-9]/gi,'-');
+
+  return`<div style="
+    background:var(--card);
+    border:1.5px solid ${p<50?'rgba(244,63,94,.2)':'var(--border)'};
+    border-radius:18px;overflow:hidden;
+    transition:transform .2s,box-shadow .2s;
+    position:relative;
+  "
+  onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 32px rgba(0,0,0,.1)';this.style.borderColor='${clr}60'"
+  onmouseleave="this.style.transform='none';this.style.boxShadow='none';this.style.borderColor='${p<50?'rgba(244,63,94,.2)':'var(--border)'}'">
+
+    <!-- Top accent bar -->
+    <div style="height:4px;background:linear-gradient(90deg,${clr},${clr}70);"></div>
+
+    <!-- Retake badge -->
+    ${showRetake?`<div style="position:absolute;top:12px;left:12px;z-index:3;
+      display:flex;align-items:center;gap:4px;
+      background:rgba(244,63,94,.12);border:1.5px solid rgba(244,63,94,.4);
+      border-radius:20px;padding:3px 8px;
+      animation:retakePulse 2s ease-in-out infinite;">
+      <div style="width:5px;height:5px;border-radius:50%;background:#f43f5e;
+        animation:syncPulse 1.2s ease-in-out infinite;"></div>
+      <span style="font-size:9px;font-weight:800;color:#f43f5e;">Retake</span>
+    </div>`:''}
+
+    <div style="padding:14px 15px;">
+
+      <!-- Header row -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;
+        gap:8px;margin-bottom:11px;">
+        <div style="flex:1;min-width:0;${showRetake?'margin-top:22px;':''}">
+          <div style="font-size:12.5px;font-weight:800;color:var(--text);
+            line-height:1.4;overflow:hidden;display:-webkit-box;
+            -webkit-line-clamp:2;-webkit-box-orient:vertical;">
+            ${escH(d.ci?.name||d.chapterId)}
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:5px;flex-wrap:wrap;">
+            <div style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;
+              background:${TC[ttype]||TC.chapwise};color:${TX[ttype]||TX.chapwise};white-space:nowrap;">
+              ${TL[ttype]||ttype}
+            </div>
+            <div style="font-size:9px;font-weight:800;padding:2px 8px;border-radius:20px;
+              background:${grade.bg};border:1px solid ${grade.bc};color:${grade.c};">
+              Grade ${grade.l}
+            </div>
+          </div>
+        </div>
+
+        <!-- Ring chart -->
+        <div style="position:relative;width:50px;height:50px;flex-shrink:0;">
+          <svg width="50" height="50" viewBox="0 0 50 50"
+            style="transform:rotate(-90deg)"
+            class="ch-ring-svg"
+            data-pct="${p}"
+            data-chid="${escH(d.chapterId)}">
+            <circle fill="none" stroke="var(--border)" stroke-width="4" cx="25" cy="25" r="20"/>
+            <circle fill="none" stroke="${clr}" stroke-width="4" stroke-linecap="round"
+              cx="25" cy="25" r="20"
+              stroke-dasharray="${circ.toFixed(1)}"
+              stroke-dashoffset="${circ.toFixed(1)}"
+              class="ch-ring-circle"
+              style="transition:stroke-dashoffset 1.2s cubic-bezier(.34,1.56,.64,1);"/>
+          </svg>
+          <div id="ring-counter-${sId}-${safeChId}"
+            style="position:absolute;inset:0;display:flex;align-items:center;
+            justify-content:center;font-size:10px;font-weight:900;
+            color:${clr};font-family:var(--mono);">
+            0%
+          </div>
+        </div>
+      </div>
+
+      <!-- Score box -->
+      <div style="background:${clr}0d;border:1px solid ${clr}25;border-radius:12px;
+        padding:9px 12px;margin-bottom:10px;
+        display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:9px;font-weight:700;color:var(--text3);
+            text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">Score</div>
+          <div style="font-size:22px;font-weight:900;font-family:var(--mono);
+            color:${clr};line-height:1;">
+            ${d.score}<span style="font-size:12px;color:var(--text3);font-weight:600;">/${d.maxScore}</span>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:9px;font-weight:700;color:var(--text3);
+            text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">Accuracy</div>
+          <div style="font-size:22px;font-weight:900;font-family:var(--mono);
+            color:var(--acc);line-height:1;">
+            ${d.accuracy||0}<span style="font-size:12px;color:var(--text3);font-weight:600;">%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- C/W/S stats -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;">
+        <div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);
+          border-radius:10px;padding:7px 6px;text-align:center;">
+          <div style="font-size:14px;font-weight:900;font-family:var(--mono);color:#10b981;">${d.correct}</div>
+          <div style="font-size:8.5px;font-weight:700;color:#10b981;opacity:.7;margin-top:1px;">Correct</div>
+        </div>
+        <div style="background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.15);
+          border-radius:10px;padding:7px 6px;text-align:center;">
+          <div style="font-size:14px;font-weight:900;font-family:var(--mono);color:#f43f5e;">${d.incorrect}</div>
+          <div style="font-size:8.5px;font-weight:700;color:#f43f5e;opacity:.7;margin-top:1px;">Wrong</div>
+        </div>
+        <div style="background:rgba(148,163,184,.08);border:1px solid rgba(148,163,184,.2);
+          border-radius:10px;padding:7px 6px;text-align:center;">
+          <div style="font-size:14px;font-weight:900;font-family:var(--mono);color:var(--text3);">${d.unanswered}</div>
+          <div style="font-size:8.5px;font-weight:700;color:var(--text3);opacity:.7;margin-top:1px;">Skip</div>
+        </div>
+      </div>
+
+      <!-- Sparkline + time -->
+      ${(sparkHTML||avgTime)?`<div style="display:flex;align-items:center;justify-content:space-between;
+        background:var(--card2);border-radius:10px;padding:7px 10px;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:10px;color:var(--text3);font-weight:600;">Trend</span>
+          ${sparkHTML}
+        </div>
+        ${avgTime?`<div style="font-size:9px;color:var(--text3);font-weight:600;">⏱ ${avgTime}</div>`:''}
+      </div>`:''}
+
+      <!-- Footer -->
+      <div style="display:flex;align-items:center;justify-content:space-between;
+        padding-top:9px;border-top:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:5px;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="4" width="18" height="18" rx="2" stroke="var(--text3)" stroke-width="2"/>
+            <path d="M16 2v4M8 2v4M3 10h18" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span style="font-size:10px;color:var(--text3);">${fd(d.date)}</span>
+        </div>
+        <a href="${(SUBJECT_URLS[sId]||'')+d.chapterId+'.html'}"
+          target="_blank"
+          style="display:inline-flex;align-items:center;gap:5px;
+          background:rgba(79,110,247,.08);border:1.5px solid rgba(79,110,247,.2);
+          border-radius:20px;padding:4px 11px;font-size:10px;font-weight:800;
+          color:var(--acc);text-decoration:none;transition:all .2s;"
+          onmouseenter="this.style.background='rgba(79,110,247,.15)'"
+          onmouseleave="this.style.background='rgba(79,110,247,.08)'"
+          onclick="event.stopPropagation()">
+          ↻ Retake
+        </a>
+      </div>
+    </div>
+  </div>`;
 }
 
 /* CERTIFICATE */
@@ -6187,7 +7113,8 @@ const stuArr = Object.values(byStu).map(stu => ({
 
    // ── LEADERBOARD TABLE ──
 H += `<div class="card" style="overflow:hidden;margin-bottom:16px;">
-  <div style="overflow-x:auto;">
+  <div class="lb-scroll-hint">← Scroll to see all columns →</div>
+<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
     <table style="width:100%;border-collapse:collapse;min-width:480px;">
       <thead>
         <tr style="background:var(--card2);">
@@ -6380,31 +7307,171 @@ function renderSettings(){
 
   // ── 1. COMMUNITY LINKS (redesigned) ──
   H+=`
-  <div class="card card-p" style="margin-bottom:14px;">
-    <div class="sec-hdr"><div class="sec-title">🌐 Join Our Community</div></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px;">
-      <a href="https://t.me/THUNDERSTUDY" target="_blank" style="display:flex;align-items:center;gap:10px;padding:13px 15px;border-radius:16px;background:linear-gradient(135deg,#0088cc,#006699);color:#fff;text-decoration:none;font-family:var(--fn);font-weight:800;font-size:13px;transition:all .25s;box-shadow:0 4px 14px rgba(0,136,204,.3);" onmouseenter="this.style.transform='translateY(-2px)';this.style.filter='brightness(1.1)'" onmouseleave="this.style.transform='none';this.style.filter='none'">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-2.013 9.49c-.148.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.876.731z"/></svg>
-        Telegram
-      </a>
-      <a href="https://instagram.com/THUNDERSTUDY_OFFICIAL" target="_blank" style="display:flex;align-items:center;gap:10px;padding:13px 15px;border-radius:16px;background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366);color:#fff;text-decoration:none;font-family:var(--fn);font-weight:800;font-size:13px;transition:all .25s;box-shadow:0 4px 14px rgba(220,39,67,.25);" onmouseenter="this.style.transform='translateY(-2px)';this.style.filter='brightness(1.1)'" onmouseleave="this.style.transform='none';this.style.filter='none'">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-        Instagram
-      </a>
-      <a href="https://x.com/THUNDERSTUDY_OFFICIAL" target="_blank" style="display:flex;align-items:center;gap:10px;padding:13px 15px;border-radius:16px;background:linear-gradient(135deg,#111,#333);color:#fff;text-decoration:none;font-family:var(--fn);font-weight:800;font-size:13px;transition:all .25s;box-shadow:0 4px 14px rgba(0,0,0,.3);" onmouseenter="this.style.transform='translateY(-2px)';this.style.filter='brightness(1.2)'" onmouseleave="this.style.transform='none';this.style.filter='none'">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-        X (Twitter)
-      </a>
-      <a href="https://youtube.com/@THUNDERSTUDY_OFFICIAL" target="_blank" style="display:flex;align-items:center;gap:10px;padding:13px 15px;border-radius:16px;background:linear-gradient(135deg,#ff0000,#cc0000);color:#fff;text-decoration:none;font-family:var(--fn);font-weight:800;font-size:13px;transition:all .25s;box-shadow:0 4px 14px rgba(255,0,0,.3);" onmouseenter="this.style.transform='translateY(-2px)';this.style.filter='brightness(1.1)'" onmouseleave="this.style.transform='none';this.style.filter='none'">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-        YouTube
-      </a>
+<div class="settings-section">
+  <div class="settings-section-hdr" onclick="toggleSettingsSection(this)">
+    <div class="settings-section-hdr-title">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Join Our Community
     </div>
-    <a href="https://t.me/mindmaster_robot" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:13px;border-radius:16px;background:linear-gradient(135deg,#7c3aed,#4f6ef7);color:#fff;text-decoration:none;font-family:var(--fn);font-weight:800;font-size:13px;transition:all .25s;box-shadow:0 4px 14px rgba(79,110,247,.3);" onmouseenter="this.style.transform='translateY(-2px)'" onmouseleave="this.style.transform='none'">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-      Feedback / Bug Report
-    </a>
-  </div>`;
+    <div class="settings-section-chevron open">▾</div>
+  </div>
+  <div class="settings-section-body open">
+    <div style="padding-top:16px;">
+
+      <!-- Top tagline -->
+      <div style="background:linear-gradient(135deg,rgba(79,110,247,.08),rgba(124,58,237,.05));
+        border:1.5px solid rgba(79,110,247,.18);border-radius:16px;
+        padding:14px 16px;margin-bottom:16px;text-align:center;">
+        <div style="font-size:13px;font-weight:800;color:var(--text);margin-bottom:3px;">
+          🎓 Stay Updated with Thunderstudy
+        </div>
+        <div style="font-size:11px;color:var(--text3);line-height:1.6;">
+          Join 10,000+ students on our platforms for daily updates, mocks & tips
+        </div>
+      </div>
+
+      <!-- Social links 2x2 grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px;">
+
+        <!-- Telegram -->
+        <a href="https://t.me/THUNDERSTUDY" target="_blank" rel="noopener" style="
+          display:flex;flex-direction:column;align-items:flex-start;gap:8px;
+          padding:14px;border-radius:16px;text-decoration:none;
+          background:linear-gradient(135deg,#0088cc12,#00669908);
+          border:1.5px solid #0088cc30;
+          transition:all .25s cubic-bezier(.34,1.56,.64,1);
+          position:relative;overflow:hidden;"
+          onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 30px rgba(0,136,204,.2)';this.style.borderColor='#0088cc60'"
+          onmouseleave="this.style.transform='none';this.style.boxShadow='none';this.style.borderColor='#0088cc30'">
+          <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+            <div style="width:40px;height:40px;border-radius:12px;
+              background:linear-gradient(135deg,#0088cc,#006699);
+              display:flex;align-items:center;justify-content:center;
+              box-shadow:0 4px 12px rgba(0,136,204,.35);flex-shrink:0;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.68 7.92c-.12.56-.44.7-.88.44l-2.44-1.8-1.18 1.14c-.13.13-.24.24-.48.24l.17-2.4 4.38-3.96c.19-.17-.04-.26-.29-.09l-5.41 3.41-2.33-.73c-.51-.16-.52-.51.1-.75l9.08-3.5c.42-.16.79.1.66.08z"/>
+              </svg>
+            </div>
+            <div style="font-size:10px;font-weight:800;color:#0088cc;
+              background:#0088cc15;border-radius:20px;padding:3px 9px;">MAIN</div>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:800;color:var(--text);">Telegram</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:1px;">@THUNDERSTUDY</div>
+          </div>
+        </a>
+
+        <!-- Instagram -->
+        <a href="https://instagram.com/THUNDERSTUDY_OFFICIAL" target="_blank" rel="noopener" style="
+          display:flex;flex-direction:column;align-items:flex-start;gap:8px;
+          padding:14px;border-radius:16px;text-decoration:none;
+          background:linear-gradient(135deg,#f0943312,#dc274308);
+          border:1.5px solid #dc274325;
+          transition:all .25s cubic-bezier(.34,1.56,.64,1);
+          position:relative;overflow:hidden;"
+          onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 30px rgba(220,39,67,.15)';this.style.borderColor='#dc274355'"
+          onmouseleave="this.style.transform='none';this.style.boxShadow='none';this.style.borderColor='#dc274325'">
+          <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+            <div style="width:40px;height:40px;border-radius:12px;
+              background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366);
+              display:flex;align-items:center;justify-content:center;
+              box-shadow:0 4px 12px rgba(220,39,67,.35);flex-shrink:0;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+              </svg>
+            </div>
+            <div style="font-size:10px;font-weight:800;color:#dc2743;
+              background:#dc274315;border-radius:20px;padding:3px 9px;">PHOTOS</div>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:800;color:var(--text);">Instagram</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:1px;">@THUNDERSTUDY_OFFICIAL</div>
+          </div>
+        </a>
+
+        <!-- X / Twitter -->
+        <a href="https://x.com/THUNDERSTUDY_OFFICIAL" target="_blank" rel="noopener" style="
+          display:flex;flex-direction:column;align-items:flex-start;gap:8px;
+          padding:14px;border-radius:16px;text-decoration:none;
+          background:rgba(0,0,0,.04);border:1.5px solid rgba(0,0,0,.1);
+          transition:all .25s cubic-bezier(.34,1.56,.64,1);"
+          onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 30px rgba(0,0,0,.15)';this.style.borderColor='rgba(0,0,0,.3)'"
+          onmouseleave="this.style.transform='none';this.style.boxShadow='none';this.style.borderColor='rgba(0,0,0,.1)'">
+          <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+            <div style="width:40px;height:40px;border-radius:12px;
+              background:linear-gradient(135deg,#111,#333);
+              display:flex;align-items:center;justify-content:center;
+              box-shadow:0 4px 12px rgba(0,0,0,.3);flex-shrink:0;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            </div>
+            <div style="font-size:10px;font-weight:800;color:#111;
+              background:rgba(0,0,0,.08);border-radius:20px;padding:3px 9px;">UPDATES</div>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:800;color:var(--text);">X (Twitter)</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:1px;">@THUNDERSTUDY_OFFICIAL</div>
+          </div>
+        </a>
+
+        <!-- YouTube -->
+        <a href="https://youtube.com/@THUNDERSTUDY_OFFICIAL" target="_blank" rel="noopener" style="
+          display:flex;flex-direction:column;align-items:flex-start;gap:8px;
+          padding:14px;border-radius:16px;text-decoration:none;
+          background:rgba(255,0,0,.05);border:1.5px solid rgba(255,0,0,.15);
+          transition:all .25s cubic-bezier(.34,1.56,.64,1);"
+          onmouseenter="this.style.transform='translateY(-3px)';this.style.boxShadow='0 10px 30px rgba(255,0,0,.15)';this.style.borderColor='rgba(255,0,0,.35)'"
+          onmouseleave="this.style.transform='none';this.style.boxShadow='none';this.style.borderColor='rgba(255,0,0,.15)'">
+          <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+            <div style="width:40px;height:40px;border-radius:12px;
+              background:linear-gradient(135deg,#ff0000,#cc0000);
+              display:flex;align-items:center;justify-content:center;
+              box-shadow:0 4px 12px rgba(255,0,0,.35);flex-shrink:0;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+              </svg>
+            </div>
+            <div style="font-size:10px;font-weight:800;color:#ff0000;
+              background:#ff000015;border-radius:20px;padding:3px 9px;">VIDEOS</div>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:800;color:var(--text);">YouTube</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:1px;">@THUNDERSTUDY_OFFICIAL</div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Full-width feedback button -->
+      <a href="https://t.me/mindmaster_robot" target="_blank" rel="noopener" style="
+        display:flex;align-items:center;justify-content:space-between;gap:12px;
+        padding:14px 18px;border-radius:16px;text-decoration:none;
+        background:linear-gradient(135deg,rgba(79,110,247,.1),rgba(124,58,237,.07));
+        border:1.5px solid rgba(79,110,247,.25);
+        transition:all .2s;"
+        onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(79,110,247,.2)'"
+        onmouseleave="this.style.transform='none';this.style.boxShadow='none'">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:40px;height:40px;border-radius:12px;
+            background:linear-gradient(135deg,#7c3aed,#4f6ef7);
+            display:flex;align-items:center;justify-content:center;
+            box-shadow:0 4px 12px rgba(79,110,247,.35);flex-shrink:0;font-size:20px;">💬</div>
+          <div>
+            <div style="font-size:13px;font-weight:800;color:var(--text);">Feedback & Bug Report</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:1px;">Telegram Bot · @mindmaster_robot</div>
+          </div>
+        </div>
+        <div style="font-size:18px;color:var(--acc);">→</div>
+      </a>
+
+    </div>
+  </div>
+</div>`;
 
   // ── 2. CURRENCY GUIDE ──
   H+=`
@@ -6636,6 +7703,20 @@ function renderSettings(){
   </div>`;
 
   // ── 15. STORAGE (at bottom) ──
+  H+=`
+<div class="settings-section" style="margin-bottom:10px;">
+  <div class="settings-section-hdr" onclick="toggleSettingsSection(this)">
+    <div class="settings-section-hdr-title">🔍 Data Health Check</div>
+    <div class="settings-section-chevron">▾</div>
+  </div>
+  <div class="settings-section-body">
+    <div style="padding-top:14px;">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:10px;">Scan your saved data for any issues or corruption.</div>
+      <button class="btn btn-prim" onclick="runDataHealthCheck()" id="dhc-btn" style="width:100%;justify-content:center;">🔍 Run Health Check</button>
+      <div id="dhc-results" style="margin-top:12px;"></div>
+    </div>
+  </div>
+</div>`;
   H+=`<div id="storage-card-wrap">${renderStorageCard()}</div>`;
 
   document.getElementById('settings-content').innerHTML=H;
@@ -6938,6 +8019,10 @@ function downloadCertPDF(method){
   const place=prompt('Enter Place/City for the certificate:','New Delhi');
   if(place===null)return;
 
+  if(!window.jspdf||!window.jspdf.jsPDF){
+    if(st)st.innerHTML=`<span style="color:var(--red)">❌ PDF library not loaded. Refresh and try again.</span>`;
+    return;
+  }
   if(st)st.innerHTML=`<span style="color:var(--yellow)">⏳ Generating PDF…</span>`;
 
   try{
@@ -7922,7 +9007,7 @@ async function csConfirmRestore() {
     if(modal) modal.remove();
     delete window._csCloudData;
     delete window._csSelectedOption;
-    renderHomeTopbar();
+    if(document.getElementById('home-google-area')) renderHomeTopbar();
     if(document.getElementById('cloud-settings-status')){
       document.getElementById('cloud-settings-status').innerHTML=`<span style="color:var(--green)">✅ Local data uploaded to cloud as primary!</span>`;
     }
@@ -8361,6 +9446,7 @@ function obUpdateProgress(step){
 
 function obFinish(){
   const name=document.getElementById('ob-name').value.trim();
+  if(name.length < 2){ showToast('❌ Please enter your full name','error'); return; }
   const college=document.getElementById('ob-college').value.trim();
   const cls=document.getElementById('ob-class').value.trim();
   const sid=document.getElementById('ob-sid')?.value.trim()||'';
@@ -8463,12 +9549,34 @@ function hideTip(){document.getElementById('tooltip').style.display='none';}
    INIT
 ══════════════════════════════════════════ */
 window.addEventListener('load',()=>{
+
+function updateOnlineStatus(){
+  const banner=document.getElementById('offline-banner');
+  if(banner)banner.classList.toggle('visible',!navigator.onLine);
+}
+window.addEventListener('online',updateOnlineStatus);
+window.addEventListener('offline',updateOnlineStatus);
+updateOnlineStatus();
+
+try {
+  if(localStorage.getItem('ts_ob_done') && getSS().length > 0) {
+    renderHome();
+  } else if(!localStorage.getItem('ts_ob_done')) {
+    startOnboarding();
+  } else {
+    renderHome();
+  }
+} catch(e) {
+  console.error('Home render error:', e);
+  document.getElementById('home-content').innerHTML = '<div style="padding:24px;color:red;">Error: '+e.message+'</div>';
+}
   // Back to top button visibility
 document.querySelector('.main').addEventListener('scroll',function(){
   const btn=document.getElementById('btt-btn');
   if(btn)btn.classList.toggle('visible',this.scrollTop>300);
 },{passive:true});
 syncHistory();
+initDarkMode();
 scheduleAutoCloudSync();
 
 // Restore Google session
@@ -8483,15 +9591,22 @@ if (_gu) {
   }
 }
 
-  fetchLiveNoticesAndExams().then(function(){
-  if(shouldShowOnboarding()){
+// Init app after boot animation clears
+if (shouldShowOnboarding()) {
+  startOnboarding();
+}
+
+// Fetch notices in background
+(window._noticesFetchPromise || fetchLiveNoticesAndExams()).then(function(){
+  window._noticesFetchPromise = null;
+  updateNoticesBadge();
+  // Re-render home if already visible to show notices
+  const home = document.getElementById('home-content');
+  if(home && document.getElementById('page-home').classList.contains('active')){
     renderHome();
-    return;
   }
-  renderHome();
 }).catch(function(){
-  // Still render even if notices fail
-  renderHome();
+  console.log('Notice fetch failed, continuing');
 });
   
   // Auto-refresh notices every 60 seconds
@@ -8516,8 +9631,7 @@ setTimeout(()=>{
 
   // Auto-sync in background on every load
   const allAtt=getAllAtt();
-  if(allAtt.length>0){
-    // Background sync (silent, no UI blocking)
+  if(allAtt.length>0 && navigator.onLine){
     setTimeout(()=>autoSyncBackground(),2000);
 
     // If user hasn't been asked about sync yet, show the modal
@@ -8771,17 +9885,25 @@ function saveIDFromPopup(){
   var isMobile = window.innerWidth <= 768;
 
   if (isMobile) {
-    // Mobile: slide down at 3.6s, then remove from DOM at 4.3s
     setTimeout(function () {
       boot.classList.add('exit-mobile');
     }, 3600);
     setTimeout(function () {
       if (boot && boot.parentNode) boot.parentNode.removeChild(boot);
+      // Re-render home after boot clears
+      var hc = document.getElementById('home-content');
+      if (hc && (!hc.innerHTML || hc.innerHTML.trim() === '' || hc.querySelector('.sk-card'))) {
+        renderHome();
+      }
     }, 4300);
   } else {
-    // Desktop: CSS handles the fade+scale exit at 5.1s
     setTimeout(function () {
       if (boot && boot.parentNode) boot.parentNode.removeChild(boot);
+      // Re-render home after boot clears
+      var hc = document.getElementById('home-content');
+      if (hc && (!hc.innerHTML || hc.innerHTML.trim() === '' || hc.querySelector('.sk-card'))) {
+        renderHome();
+      }
     }, 5700);
   }
 })();
@@ -9085,11 +10207,33 @@ function exitDesktop() {
 }
 // ── CONFETTI ON RANK UP ──
 function launchConfetti(){
+  // Guard: prevent multiple simultaneous confetti instances
+  if(document.getElementById('ts-confetti-wrap')) return;
+  
   const colors=['#4f6ef7','#7c3aed','#f59e0b','#10b981','#f43f5e','#06b6d4','#ec4899'];
   const count=120;
   const container=document.createElement('div');
+  container.id='ts-confetti-wrap';
   container.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:999999;overflow:hidden;';
   document.body.appendChild(container);
+  
+  // Remove any leftover confetti style from previous calls
+  const oldStyle=document.getElementById('ts-confetti-style');
+  if(oldStyle) oldStyle.remove();
+  
+  const style=document.createElement('style');
+  style.id='ts-confetti-style';
+  // Fixed rotation value to avoid new Date math in template literal
+  const endRotation=Math.floor(Math.random()*720);
+  style.textContent=`
+    @keyframes confettiFall{
+      0%{transform:translateY(0) rotate(0deg) scaleX(1);opacity:1;}
+      70%{opacity:1;}
+      100%{transform:translateY(110vh) rotate(${endRotation}deg) scaleX(0.3);opacity:0;}
+    }
+  `;
+  document.head.appendChild(style);
+  
   for(let i=0;i<count;i++){
     const el=document.createElement('div');
     const color=colors[Math.floor(Math.random()*colors.length)];
@@ -9097,7 +10241,6 @@ function launchConfetti(){
     const startX=Math.random()*100;
     const delay=Math.random()*0.8;
     const duration=1.8+Math.random()*1.4;
-    const rotation=Math.random()*720-360;
     const shape=Math.random()>0.5?'50%':'2px';
     el.style.cssText=`
       position:absolute;
@@ -9112,16 +10255,12 @@ function launchConfetti(){
     `;
     container.appendChild(el);
   }
-  const style=document.createElement('style');
-  style.textContent=`
-    @keyframes confettiFall{
-      0%{transform:translateY(0) rotate(0deg) scaleX(1);opacity:1;}
-      70%{opacity:1;}
-      100%{transform:translateY(110vh) rotate(${Math.random()*720}deg) scaleX(0.3);opacity:0;}
-    }
-  `;
-  document.head.appendChild(style);
-  setTimeout(()=>{container.remove();style.remove();},4000);
+  
+  // Cleanup both container and style together
+  setTimeout(()=>{
+    container.remove();
+    style.remove();
+  },4000);
 }
 // ── PULL TO REFRESH (mobile leaderboard) ──
 (function(){
@@ -9474,6 +10613,8 @@ function applyGoogleUserToUI(googleUser) {
 
 function googleLogout() {
   fbAuth.signOut().then(function() {
+  clearTimeout(_cloudSyncTimer);
+    clearInterval(window._cloudAutoSyncInterval);
     localStorage.removeItem('ts_google_user');
 
     const display = document.getElementById('google-user-display');
@@ -9619,6 +10760,14 @@ function renderHomeTopbar() {
           ${sheetDot}
           <span style="font-size:10px;font-weight:700;color:var(--text2);">Sync</span>
         </div>
+        <button onclick="toggleDarkMode();this.textContent=document.body.classList.contains('dark-mode')?'☀️':'🌙';"
+          style="background:var(--card2);border:1.5px solid var(--border);border-radius:50%;
+          width:34px;height:34px;font-size:16px;cursor:pointer;
+          display:flex;align-items:center;justify-content:center;
+          flex-shrink:0;transition:all .2s;font-family:var(--fn);"
+          title="Toggle Dark Mode">
+          ${document.body.classList.contains('dark-mode')?'☀️':'🌙'}
+        </button>
         <button class="btn btn-ghost" onclick="googleLogout()" style="font-size:11px;padding:6px 12px;">Sign Out</button>
       </div>`;
   } else {
@@ -9638,6 +10787,14 @@ function renderHomeTopbar() {
           ${sheetDot}
           <span style="font-size:10px;font-weight:700;color:var(--text2);">Sync</span>
         </div>
+        <button onclick="toggleDarkMode();this.textContent=document.body.classList.contains('dark-mode')?'☀️':'🌙';"
+          style="background:var(--card2);border:1.5px solid var(--border);border-radius:50%;
+          width:34px;height:34px;font-size:16px;cursor:pointer;
+          display:flex;align-items:center;justify-content:center;
+          flex-shrink:0;transition:all .2s;font-family:var(--fn);"
+          title="Toggle Dark Mode">
+          ${document.body.classList.contains('dark-mode')?'☀️':'🌙'}
+        </button>
       </div>`;
   }
 }
@@ -9786,6 +10943,9 @@ async function fetchDailyQuote() {
   // Random fallback on each load
   return fallbacks[Math.floor(Math.random() * fallbacks.length)];
 }
+// PRE-FETCH during boot animation
+window._noticesFetchPromise = fetchLiveNoticesAndExams().catch(()=>{});
+window._quoteFetchPromise = fetchDailyQuote().catch(()=>null);
 
 function buildQuoteCard(quoteObj) {
   if (!quoteObj) return '';
@@ -11875,7 +13035,290 @@ function triggerPWAInstall(){
     modal.addEventListener('click',e=>{if(e.target===modal)modal.remove();});
   }
 }
-</script>
 
+function showShortcutOverlay(){
+  const ex=document.getElementById('shortcut-overlay');if(ex){ex.remove();return;}
+  const ov=document.createElement('div');
+  ov.id='shortcut-overlay';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:16px;';
+  const shortcuts=[
+    ['1–7','Navigate pages (Home→Settings)'],
+    ['← →','Switch tabs (Subjects/Mocks/Analytics)'],
+    ['?','Show/hide this shortcuts overlay'],
+    ['Esc','Close overlays & modals'],
+  ];
+  ov.innerHTML=`<div style="background:var(--card);border-radius:24px;padding:28px;max-width:440px;width:100%;border:1px solid var(--border);animation:mIn .3s cubic-bezier(.34,1.56,.64,1);">
+    <div style="font-size:18px;font-weight:900;margin-bottom:16px;display:flex;align-items:center;gap:8px;">⌨️ Keyboard Shortcuts <span onclick="document.getElementById('shortcut-overlay').remove()" style="margin-left:auto;cursor:pointer;color:var(--text3);font-size:24px;">×</span></div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      ${shortcuts.map(([k,d])=>`<div style="display:flex;align-items:center;gap:14px;padding:10px 13px;background:var(--card2);border-radius:11px;"><kbd style="font-family:var(--mono);font-size:13px;font-weight:800;color:var(--acc);background:rgba(79,110,247,.1);border:1.5px solid rgba(79,110,247,.25);border-radius:7px;padding:3px 10px;white-space:nowrap;">${k}</kbd><span style="font-size:12px;color:var(--text2);">${d}</span></div>`).join('')}
+    </div>
+    <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:14px;">Press <kbd style="font-family:var(--mono);font-size:10px;padding:1px 6px;border-radius:5px;border:1px solid var(--border);">?</kbd> or <kbd style="font-family:var(--mono);font-size:10px;padding:1px 6px;border-radius:5px;border:1px solid var(--border);">Esc</kbd> to close</div>
+  </div>`;
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);
+}
+
+function toggleDonatePopup(){
+  const popup=document.getElementById('donate-popup');
+  if(!popup)return;
+  popup.classList.toggle('visible');
+  // Close when clicking outside
+  if(popup.classList.contains('visible')){
+    setTimeout(()=>{
+      document.addEventListener('click',function closeDonate(e){
+        if(!popup.contains(e.target)&&e.target.id!=='donate-btn'){
+          popup.classList.remove('visible');
+          document.removeEventListener('click',closeDonate);
+        }
+      });
+    },100);
+  }
+}
+
+function toggleSettingsSection(hdr){
+  const body=hdr.nextElementSibling;
+  const chevron=hdr.querySelector('.settings-section-chevron');
+  body.classList.toggle('open');
+  chevron.classList.toggle('open');
+}
+
+function runDataHealthCheck(){
+  const btn=document.getElementById('dhc-btn');
+  const out=document.getElementById('dhc-results');
+  if(btn)btn.textContent='⏳ Checking…';
+  const issues=[],ok=[];
+  // Check profile
+  try{const p=getProfile();if(p.name)ok.push('✅ Profile loaded correctly');else issues.push('⚠️ No name in profile');}catch(e){issues.push('❌ Profile data corrupted');}
+  // Check subjects
+  try{const sv=getSS();if(sv.length>0)ok.push(`✅ ${sv.length} subjects configured`);else issues.push('⚠️ No subjects selected');}catch(e){issues.push('❌ Subjects data corrupted');}
+  // Check test results
+  let resultErrors=0,resultOk=0;
+  getSS().forEach(sId=>{
+    const subj=SUBJECTS_MASTER.find(s=>s.id===sId);if(!subj)return;
+    subj.chapters.forEach(ch=>{
+      const raw=localStorage.getItem(rKey(sId,ch.id));
+      if(!raw)return;
+      try{JSON.parse(raw);resultOk++;}catch(e){resultErrors++;localStorage.removeItem(rKey(sId,ch.id));}
+    });
+  });
+  if(resultErrors>0)issues.push(`❌ ${resultErrors} corrupted result(s) removed`);
+  if(resultOk>0)ok.push(`✅ ${resultOk} test results OK`);
+  // Check localStorage size
+  let total=0;for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);total+=(k.length+(localStorage.getItem(k)||'').length)*2;}
+  const mb=(total/1048576).toFixed(2);
+  if(total>4*1024*1024)issues.push(`⚠️ Storage ${mb}MB — near 5MB limit`);
+  else ok.push(`✅ Storage usage: ${mb}MB — healthy`);
+  // Check RP data
+  try{const rp=getRPData();ok.push(`✅ RP data OK — ${RANK_TIERS[rp.rankIndex]?.name||'Rookie'} rank`);}catch(e){issues.push('❌ RP rank data corrupted — resetting');localStorage.removeItem('ts_rp_data');}
+  if(btn)btn.textContent='🔍 Run Health Check';
+  if(!out)return;
+  out.innerHTML=`
+    <div style="background:${issues.length>0?'rgba(244,63,94,.06)':'rgba(16,185,129,.06)'};border:1.5px solid ${issues.length>0?'rgba(244,63,94,.3)':'rgba(16,185,129,.3)'};border-radius:14px;padding:14px 16px;">
+      <div style="font-size:13px;font-weight:800;margin-bottom:10px;">${issues.length===0?'✅ All systems healthy!':'⚠️ '+issues.length+' issue(s) found'}</div>
+      ${[...issues,...ok].map(m=>`<div style="font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);color:${m.startsWith('✅')?'var(--green)':m.startsWith('❌')?'var(--red)':'var(--yellow)'};">${m}</div>`).join('')}
+    </div>`;
+}
+function toggleGlobalSearch(){
+  const bar=document.getElementById('gsearch-bar');
+  const res=document.getElementById('gsearch-results');
+  bar.classList.toggle('open');
+  if(bar.classList.contains('open')){
+    document.getElementById('gsearch-input')?.focus();
+  }else{
+    if(res)res.style.display='none';
+  }
+}
+
+function runGlobalSearch(q){
+  const res=document.getElementById('gsearch-results');if(!res)return;
+  q=q.trim().toLowerCase();
+  if(!q.length){res.style.display='none';return;}
+  const sv=getSS();const results=[];
+  sv.forEach(sId=>{
+    const subj=SUBJECTS_MASTER.find(s=>s.id===sId);if(!subj)return;
+    subj.chapters.forEach(ch=>{
+      if(ch.name.toLowerCase().includes(q)||subj.name.toLowerCase().includes(q)){
+        const r=lR(sId,ch.id);
+        results.push({type:'chapter',subj,ch,r,sId});
+      }
+    });
+  });
+  if(!results.length){
+    res.style.display='block';
+    res.innerHTML=`<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px;">No results for "${escH(q)}"</div>`;
+    return;
+  }
+  res.style.display='block';
+  res.innerHTML=results.slice(0,12).map(item=>{
+    const p=item.r?item.r.percentage:null;
+    const clr=p!==null?rClr(p):'var(--text3)';
+    return`<div class="gsearch-item" onclick="goPage('subjects');setTimeout(()=>switchSubjTab('${item.sId}'),120);toggleGlobalSearch();">
+      <div style="font-size:20px;flex-shrink:0;">${item.subj.icon}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escH(item.ch.name)}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:1px;">${item.subj.name} · ${TL[item.ch.type]||item.ch.type}</div>
+      </div>
+      ${p!==null?`<div style="font-size:14px;font-weight:900;font-family:var(--mono);color:${clr};">${p.toFixed(0)}%</div>`:
+      `<div style="font-size:11px;color:var(--text3);">Not attempted</div>`}
+    </div>`;
+  }).join('');
+}
+
+// Ctrl+K shortcut
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();toggleGlobalSearch();}
+});
+function buildMonthCalendar(allAtt){
+  const now=new Date();
+  const year=now.getFullYear(),month=now.getMonth();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const firstDay=new Date(year,month,1).getDay();
+  const studyDays=new Set(allAtt.map(d=>{
+    if(!d.date)return null;
+    const dt=new Date(d.date);
+    if(dt.getFullYear()===year&&dt.getMonth()===month)return dt.getDate();
+    return null;
+  }).filter(Boolean));
+  const dayLabels=['S','M','T','W','T','F','S'];
+  let H=`<div style="max-width:280px;margin:0 auto;">
+    <div style="text-align:center;font-size:13px;font-weight:800;margin-bottom:10px;color:var(--text);">${now.toLocaleDateString('en-IN',{month:'long',year:'numeric'})}</div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:5px;">
+      ${dayLabels.map(d=>`<div style="text-align:center;font-size:9px;font-weight:800;color:var(--text3);padding:3px 0;">${d}</div>`).join('')}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;">
+      ${Array(firstDay).fill(0).map(()=>`<div></div>`).join('')}
+      ${Array.from({length:daysInMonth},(_,i)=>{
+        const day=i+1;
+        const isToday=day===now.getDate();
+        const isStudy=studyDays.has(day);
+        const isFuture=day>now.getDate();
+        return`<div style="
+          aspect-ratio:1;border-radius:8px;
+          display:flex;align-items:center;justify-content:center;
+          font-size:11px;font-weight:${isToday?'900':'700'};
+          background:${isToday?'var(--acc)':isStudy?'rgba(79,110,247,.15)':isFuture?'transparent':'var(--card2)'};
+          color:${isToday?'#fff':isStudy?'var(--acc)':isFuture?'var(--text3)':'var(--text2)'};
+          border:${isToday?'2px solid var(--acc)':isStudy?'1.5px solid rgba(79,110,247,.3)':isFuture?'1px dashed var(--border)':'1px solid var(--border)'};
+        ">${day}</div>`;
+      }).join('')}
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;margin-top:10px;justify-content:center;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);">
+        <div style="width:12px;height:12px;border-radius:4px;background:rgba(79,110,247,.15);border:1.5px solid rgba(79,110,247,.3);"></div> Studied
+      </div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);">
+        <div style="width:12px;height:12px;border-radius:4px;background:var(--acc);"></div> Today
+      </div>
+      <div style="font-size:10px;color:var(--text3);">${studyDays.size} day${studyDays.size!==1?'s':''} studied this month</div>
+    </div>
+  </div>`;
+  return H;
+}
+// Footer expand/collapse
+function tsFooterExpand(){
+  var exp = document.getElementById('ts-footer-expanded');
+  var chev = document.getElementById('ts-footer-chevron');
+  var isOpen = exp.style.display === 'block';
+  exp.style.display = isOpen ? 'none' : 'block';
+  chev.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+}
+
+// Show footer after page loads
+function showFooter(){
+  var f = document.getElementById('ts-footer');
+  if(!f) return;
+  f.style.display = 'block';
+}
+
+// Contact popup
+function tsShowContactPopup(){
+  var ex = document.getElementById('ts-contact-popup');
+  if(ex){ ex.remove(); return; }
+  var modal = document.createElement('div');
+  modal.id = 'ts-contact-popup';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:16px;';
+  modal.innerHTML = `
+  <div style="background:var(--card);border-radius:26px;padding:28px;max-width:420px;width:100%;
+    border:1px solid var(--border);animation:mIn .35s cubic-bezier(.34,1.56,.64,1);text-align:center;">
+    <div style="font-size:40px;margin-bottom:10px;">👋</div>
+    <div style="font-size:18px;font-weight:900;margin-bottom:4px;">Get in Touch</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:20px;line-height:1.7;">
+      Reach out to Wondermayank via any platform below
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:16px;">
+      <a href="https://instagram.com/wondermayank" target="_blank" rel="noopener" style="
+        display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:14px;
+        background:linear-gradient(135deg,rgba(240,148,51,.1),rgba(220,39,67,.1));
+        border:1.5px solid rgba(220,39,67,.2);text-decoration:none;transition:all .2s;"
+        onmouseenter="this.style.transform='translateY(-2px)'" 
+        onmouseleave="this.style.transform='none'">
+        <div style="width:38px;height:38px;border-radius:11px;flex-shrink:0;
+          background:linear-gradient(135deg,#f09433,#e6683c,#dc2743);
+          display:flex;align-items:center;justify-content:center;font-size:18px;">📸</div>
+        <div style="text-align:left;">
+          <div style="font-size:13px;font-weight:800;color:var(--text);">Instagram</div>
+          <div style="font-size:11px;color:var(--text3);">@wondermayank</div>
+        </div>
+      </a>
+      <a href="https://t.me/wondermayank_official" target="_blank" rel="noopener" style="
+        display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:14px;
+        background:rgba(0,136,204,.08);border:1.5px solid rgba(0,136,204,.2);
+        text-decoration:none;transition:all .2s;"
+        onmouseenter="this.style.transform='translateY(-2px)'" 
+        onmouseleave="this.style.transform='none'">
+        <div style="width:38px;height:38px;border-radius:11px;flex-shrink:0;
+          background:linear-gradient(135deg,#0088cc,#006699);
+          display:flex;align-items:center;justify-content:center;font-size:18px;">✈️</div>
+        <div style="text-align:left;">
+          <div style="font-size:13px;font-weight:800;color:var(--text);">Telegram</div>
+          <div style="font-size:11px;color:var(--text3);">@wondermayank_official</div>
+        </div>
+      </a>
+      <a href="https://reddit.com/user/wondermayank" target="_blank" rel="noopener" style="
+        display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:14px;
+        background:rgba(255,69,0,.08);border:1.5px solid rgba(255,69,0,.2);
+        text-decoration:none;transition:all .2s;"
+        onmouseenter="this.style.transform='translateY(-2px)'" 
+        onmouseleave="this.style.transform='none'">
+        <div style="width:38px;height:38px;border-radius:11px;flex-shrink:0;
+          background:linear-gradient(135deg,#ff4500,#cc3700);
+          display:flex;align-items:center;justify-content:center;font-size:18px;">🤖</div>
+        <div style="text-align:left;">
+          <div style="font-size:13px;font-weight:800;color:var(--text);">Reddit</div>
+          <div style="font-size:11px;color:var(--text3);">@wondermayank</div>
+        </div>
+      </a>
+      <a href="https://t.me/wondermayank" target="_blank" rel="noopener" style="
+        display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:14px;
+        background:rgba(79,110,247,.08);border:1.5px solid rgba(79,110,247,.2);
+        text-decoration:none;transition:all .2s;"
+        onmouseenter="this.style.transform='translateY(-2px)'" 
+        onmouseleave="this.style.transform='none'">
+        <div style="width:38px;height:38px;border-radius:11px;flex-shrink:0;
+          background:linear-gradient(135deg,#4f6ef7,#7c3aed);
+          display:flex;align-items:center;justify-content:center;font-size:18px;">🤖</div>
+        <div style="text-align:left;">
+          <div style="font-size:13px;font-weight:800;color:var(--text);">Telegram Bot</div>
+          <div style="font-size:11px;color:var(--text3);">@wondermayank</div>
+        </div>
+      </a>
+    </div>
+    <button onclick="document.getElementById('ts-contact-popup').remove()"
+      class="btn btn-ghost" style="width:100%;justify-content:center;padding:11px;">
+      Close
+    </button>
+  </div>`;
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  document.body.appendChild(modal);
+}
+</script>
+<div class="gsearch-bar" id="gsearch-bar">
+  <span style="font-size:18px;flex-shrink:0;">🔍</span>
+  <input class="gsearch-input" id="gsearch-input" placeholder="Search chapters, subjects, results…" 
+    oninput="runGlobalSearch(this.value)" 
+    onkeydown="if(event.key==='Escape')toggleGlobalSearch()">
+  <button onclick="toggleGlobalSearch()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--text3);font-family:var(--fn);">×</button>
+</div>
+<div class="gsearch-results" id="gsearch-results" style="display:none;"></div>
 </body>
 </html>
