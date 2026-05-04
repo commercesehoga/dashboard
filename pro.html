@@ -1,198 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
+<div style="
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  background:linear-gradient(135deg,#4f6ef7 0%,#7c3aed 55%,#ec4899 100%);
+  border-radius:18px;
+  padding:14px 18px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 6px 28px rgba(79,110,247,.35);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+">
+  <div style="position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none;"></div>
+  <div style="position:absolute;left:-20px;bottom:-20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.05);pointer-events:none;"></div>
 
-.pro-banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  background: linear-gradient(135deg, #4f6ef7 0%, #7c3aed 55%, #ec4899 100%);
-  border-radius: 18px;
-  padding: 14px 18px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 6px 28px rgba(79,110,247,.3);
-  animation: bannerIn .5s cubic-bezier(.34,1.56,.64,1) both;
-}
-
-@keyframes bannerIn {
-  from { opacity:0; transform:translateY(-8px) scale(.97); }
-  to   { opacity:1; transform:translateY(0) scale(1); }
-}
-
-/* shimmer overlay */
-.pro-banner::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(100deg, transparent 20%, rgba(255,255,255,.12) 50%, transparent 80%);
-  background-size: 200% 100%;
-  animation: shimmerSlide 2.8s ease-in-out infinite;
-  pointer-events: none;
-}
-@keyframes shimmerSlide {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-/* decorative blobs */
-.pro-banner::after {
-  content: '';
-  position: absolute;
-  right: -30px; top: -30px;
-  width: 120px; height: 120px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.07);
-  pointer-events: none;
-}
-
-.banner-left {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  position: relative;
-  z-index: 1;
-  flex: 1;
-  min-width: 0;
-}
-
-.banner-icon {
-  width: 36px; height: 36px;
-  border-radius: 11px;
-  background: rgba(255,255,255,.18);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,.25);
-  animation: iconPop .6s cubic-bezier(.34,1.56,.64,1) .15s both;
-}
-@keyframes iconPop {
-  from { transform: scale(.5) rotate(-15deg); opacity: 0; }
-  to   { transform: scale(1) rotate(0deg); opacity: 1; }
-}
-
-.banner-text { min-width: 0; }
-.banner-title {
-  font-size: 13px; font-weight: 800;
-  color: #fff; letter-spacing: -.2px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.banner-sub {
-  font-size: 10.5px; color: rgba(255,255,255,.75);
-  font-weight: 500; margin-top: 1px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-
-.banner-links {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  position: relative;
-  z-index: 1;
-  flex-shrink: 0;
-}
-
-.b-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 7px 13px;
-  border-radius: 30px;
-  font-size: 11px;
-  font-weight: 800;
-  text-decoration: none;
-  transition: all .2s cubic-bezier(.34,1.56,.64,1);
-  white-space: nowrap;
-  letter-spacing: .2px;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-}
-.b-btn:hover { transform: translateY(-2px) scale(1.06); }
-.b-btn:active { transform: scale(.96); }
-
-.b-btn.insta {
-  background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-  color: #fff;
-  box-shadow: 0 3px 12px rgba(220,39,67,.4);
-}
-.b-btn.tg {
-  background: #0088cc;
-  color: #fff;
-  box-shadow: 0 3px 12px rgba(0,136,204,.4);
-}
-.b-btn.web {
-  background: rgba(255,255,255,.95);
-  color: #4f6ef7;
-  box-shadow: 0 3px 12px rgba(0,0,0,.15);
-}
-
-/* icon svgs inline sizing */
-.b-btn svg { flex-shrink: 0; }
-
-@media (max-width: 480px) {
-  .pro-banner { padding: 12px 14px; gap: 10px; }
-  .banner-title { font-size: 12px; }
-  .banner-sub { font-size: 10px; }
-  .b-btn { padding: 6px 10px; font-size: 10.5px; }
-  .b-btn span { display: none; }
-}
-</style>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800;900&display=swap" rel="stylesheet">
-</head>
-<body>
-
-<div class="pro-banner">
-  <div class="banner-left">
-    <div class="banner-icon">
-      <!-- lightning bolt / star icon -->
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="rgba(255,255,255,.25)" stroke="#fff"/>
-      </svg>
+  <div style="display:flex;align-items:center;gap:11px;position:relative;z-index:1;flex:1;min-width:0;">
+    <div style="width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(255,255,255,.3)" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
     </div>
-    <div class="banner-text">
-      <div class="banner-title">⚡ Connect with Wondermayank</div>
-      <div class="banner-sub">Follow for updates, tips &amp; exclusive content</div>
+    <div style="min-width:0;">
+      <div style="font-size:13px;font-weight:800;color:#fff;letter-spacing:-.2px;">⚡ Connect with Wondermayank</div>
+      <div style="font-size:10.5px;color:rgba(255,255,255,.75);font-weight:500;margin-top:2px;">Follow for updates, tips &amp; exclusive content</div>
     </div>
   </div>
 
-  <div class="banner-links">
-    <!-- Instagram -->
-    <a class="b-btn insta" href="https://instagram.com/wondermayank" target="_blank" rel="noopener" title="Instagram">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="5"/>
-        <circle cx="12" cy="12" r="4"/>
-        <circle cx="17.5" cy="6.5" r="1" fill="#fff" stroke="none"/>
-      </svg>
-      <span>Instagram</span>
+  <div style="display:flex;align-items:center;gap:7px;position:relative;z-index:1;flex-shrink:0;">
+
+    <a href="https://instagram.com/wondermayank" target="_blank" rel="noopener"
+      style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:30px;font-size:11px;font-weight:800;color:#fff;text-decoration:none;background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);box-shadow:0 3px 12px rgba(220,39,67,.45);white-space:nowrap;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="#fff" stroke="none"/></svg>
+      Instagram
     </a>
 
-    <!-- Telegram -->
-    <a class="b-btn tg" href="https://t.me/wondermayank_official" target="_blank" rel="noopener" title="Telegram">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21.5 4.5L2.5 10.5l7 2.5M21.5 4.5l-7 15-4-7.5M21.5 4.5l-12 8"/>
-      </svg>
-      <span>Telegram</span>
+    <a href="https://t.me/wondermayank_official" target="_blank" rel="noopener"
+      style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:30px;font-size:11px;font-weight:800;color:#fff;text-decoration:none;background:#0088cc;box-shadow:0 3px 12px rgba(0,136,204,.45);white-space:nowrap;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 4.5L2.5 10.5l7 2.5M21.5 4.5l-7 15-4-7.5M21.5 4.5l-12 8"/></svg>
+      Telegram
     </a>
 
-    <!-- Website -->
-    <a class="b-btn web" href="https://wondermayank.github.io" target="_blank" rel="noopener" title="Website">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4f6ef7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="2" y1="12" x2="22" y2="12"/>
-        <path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/>
-      </svg>
-      <span>Website</span>
+    <a href="https://wondermayank.github.io" target="_blank" rel="noopener"
+      style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:30px;font-size:11px;font-weight:800;color:#4f6ef7;text-decoration:none;background:rgba(255,255,255,.95);box-shadow:0 3px 12px rgba(0,0,0,.15);white-space:nowrap;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4f6ef7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
+      Website
     </a>
+
   </div>
 </div>
-
-</body>
-</html>
