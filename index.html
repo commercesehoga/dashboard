@@ -32,6 +32,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
 <style>
 
 /* ── TS SVG ICON SYSTEM ── */
@@ -2462,6 +2463,49 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const fbDb = firebase.firestore();
 const fbAuth = firebase.auth();
+    /* ══════════════════════════════════════════
+   PUSH NOTIFICATION — FCM Token Setup
+══════════════════════════════════════════ */
+const TS_VAPID_KEY = "BHtAaNeesR8gp26BN2yFc8Jr00aTJaoMFpby0auIXZMTUCs6qGXRxNcwOQ6Bb7uw1KYGMs-GooQzrCoIDP_7IT8";
+
+const fbMessaging = firebase.messaging();
+
+async function tsInitPush() {
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
+  try {
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') return;
+    const reg = await navigator.serviceWorker.ready;
+    const token = await fbMessaging.getToken({
+      vapidKey: TS_VAPID_KEY,
+      serviceWorkerRegistration: reg
+    });
+    if (!token) return;
+    const uid = localStorage.getItem('ts_student_id')
+             || localStorage.getItem('studentId')
+             || 'anon_' + Date.now();
+    await fbDb.collection('fcm_tokens').doc(uid).set({
+      token:     token,
+      uid:       uid,
+      name:      localStorage.getItem('ts_name') || localStorage.getItem('studentName') || 'Student',
+      updatedAt: new Date().toISOString(),
+      platform:  /Android|iPhone|iPad/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
+    }, { merge: true });
+    console.log('[TS Push] Token saved ✓');
+  } catch (err) {
+    console.warn('[TS Push] Error:', err.message);
+  }
+}
+
+fbMessaging.onMessage(function(payload) {
+  const title = (payload.notification && payload.notification.title) || 'Thunderstudy';
+  const body  = (payload.notification && payload.notification.body)  || '';
+  showToast(`<svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg> <strong>${title}</strong>: ${body}`, 'info', 6000);
+});
+
+window.addEventListener('load', function() {
+  setTimeout(tsInitPush, 3000);
+});
 const fbProvider = new firebase.auth.GoogleAuthProvider();
 
 /* ══════════════════════════════════════════
