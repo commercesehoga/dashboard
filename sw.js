@@ -1,4 +1,4 @@
-const CACHE_NAME = 'thunderstudy-v11'; // bump this every update
+const CACHE_NAME = 'thunderstudy-v12'; // bump this every update
 const CACHE_FIRST = [
   './',
   './index.html',
