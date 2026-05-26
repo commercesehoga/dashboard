@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
     
@@ -1562,6 +1561,7 @@ body.dark-mode .sc-x{background:#1c1c2e;}
 }
 
 </style>
+<script>window.TS_PORTAL="master";</script>
 </head>
 <body>
   
@@ -2188,7 +2188,7 @@ if(i === stepData.length - 1){
 <!-- Firebase Google Sign-In Button -->
 <div style="margin-bottom:16px;">
   <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Sign in with Google</div>
-  <button onclick="firebaseGoogleLogin()" id="firebase-google-btn" style="
+  <button onclick="window.location.href='https://commercesehoga.github.io/login/?portal=master'" id="firebase-google-btn" style="
     width:100%;display:flex;align-items:center;justify-content:center;gap:12px;
     padding:12px 16px;border-radius:12px;border:1.5px solid #dadce0;
     background:#fff;font-size:14px;font-weight:700;cursor:pointer;
@@ -2304,6 +2304,21 @@ if(i === stepData.length - 1){
 <div class="modal-ov" id="profile-modal">
   <div class="modal-box">
     <div class="modal-title"><span><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>️ Edit Profile</span><span class="modal-close" onclick="closeModal('profile-modal')">×</span></div>
+    <!-- LOCKED FIELDS (set on login page only) -->
+    <div style="background:rgba(79,110,247,.06);border:1.5px dashed rgba(79,110,247,.2);border-radius:12px;padding:12px 14px;margin-bottom:14px;">
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text3);margin-bottom:8px;">🔒 Permanent (set at login — cannot change)</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:120px;">
+          <div style="font-size:10px;font-weight:700;color:var(--text3);margin-bottom:3px;">STUDENT ID</div>
+          <div id="pf-sid-display" style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--acc);letter-spacing:.3px;">—</div>
+        </div>
+        <div style="flex:1;min-width:120px;">
+          <div style="font-size:10px;font-weight:700;color:var(--text3);margin-bottom:3px;">REGISTRATION NO</div>
+          <div id="pf-reg-display" style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--acc);letter-spacing:.3px;">—</div>
+        </div>
+      </div>
+    </div>
+    <!-- EDITABLE FIELDS -->
     <div class="form-row"><div class="form-lbl">Full Name</div><input class="form-inp" id="pf-name" placeholder="Your name"></div>
     <div class="form-row"><div class="form-lbl">Class / Batch</div><input class="form-inp" id="pf-class" placeholder="e.g. Class 12, 2025-26"></div>
     <div class="form-row"><div class="form-lbl">Target College</div><input class="form-inp" id="pf-college" placeholder="e.g. Delhi University, Christ..."></div>
@@ -2487,7 +2502,7 @@ async function tsInitPush() {
     await fbDb.collection('fcm_tokens').doc(uid).set({
       token:     token,
       uid:       uid,
-      name:      localStorage.getItem('ts_name') || localStorage.getItem('studentName') || 'Student',
+      name:      localStorage.getItem('ts_name') || localStorage.getItem('studentName') || localStorage.getItem('cbtUserName') || 'Student',
       updatedAt: new Date().toISOString(),
       platform:  /Android|iPhone|iPad/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
     }, { merge: true });
@@ -2511,7 +2526,7 @@ const fbProvider = new firebase.auth.GoogleAuthProvider();
 /* ══════════════════════════════════════════
    CLOUD SYNC — Firebase Firestore
 ══════════════════════════════════════════ */
-const CLOUD_SYNC_KEYS_PREFIX = ['ts_', 'thunderstudy_'];
+const CLOUD_SYNC_KEYS_PREFIX = ['ts_', 'thunderstudy_']; // unified: covers all platform result keys
 const CLOUD_SYNC_EXCLUDE = ['ts_rp_processed', 'ts_rp_init', 'ts_sync_asked', 'ts_ob_done'];
 const CLOUD_SYNC_DEBOUNCE_MS = 8000;
 let _cloudSyncTimer = null;
@@ -2651,7 +2666,10 @@ async function applyCloudData(data) {
   if (data['cbtUserName']) localStorage.setItem('cbtUserName', data['cbtUserName']);
   if (data['ts_subs']) localStorage.setItem('ts_subs', data['ts_subs']);
   localStorage.setItem('ts_ob_done', '1');
-  // Phase 2: test results in background after 500ms
+ 
+  // Cascade onboarding to all portals
+  localStorage.setItem('ssc_ob_done','1');localStorage.setItem('tsb_ob_done','1');localStorage.setItem('jn_ob_done','1');
+  if(!localStorage.getItem('ts_reg_no')){const y=new Date().getFullYear();const l=String.fromCharCode(65+Math.floor(Math.random()*26));localStorage.setItem('ts_reg_no','REG-'+y+'-'+l+Math.floor(1000+Math.random()*9000));} // Phase 2: test results in background after 500ms
   setTimeout(() => {
     Object.entries(data).forEach(([k, v]) => {
       if (k.startsWith('_')) return;
@@ -4503,6 +4521,26 @@ function lR(s,c){
 function lH(s,c){try{return JSON.parse(localStorage.getItem(hKey(s,c))||'[]');}catch(e){return[];}}
 function getSS(){try{return JSON.parse(localStorage.getItem('ts_subs')||'[]');}catch(e){return[];}}
 function saveSS(a){localStorage.setItem('ts_subs',JSON.stringify(a));}
+
+// ═══════════════════════════════════════
+//  LOGIN GUARD — redirects to login if no profile
+//  Student ID & Reg No are set ONLY on login page
+// ═══════════════════════════════════════
+(function tsLoginGuard(){
+  function tsIsLoggedIn(){
+    const sid = localStorage.getItem('ts_student_id');
+    const reg = localStorage.getItem('ts_reg_no');
+    const p   = (function(){try{return JSON.parse(localStorage.getItem('ts_profile')||'{}');}catch{return {};}})();
+    const name = p.name || localStorage.getItem('cbtUserName') || localStorage.getItem('ts_name') || '';
+    return !!(sid && reg && name);
+  }
+  if(!tsIsLoggedIn()){
+    const isLocal = window.location.protocol === 'file:';
+    const loginUrl = isLocal ? 'login.html?portal=dashboard' : 'https://commercesehoga.github.io/login/?portal=dashboard';
+    window.location.replace(loginUrl);
+  }
+})();
+
 function getProfile(){try{return JSON.parse(localStorage.getItem('ts_profile')||'{}');}catch(e){return{};}}
 function syncHistory(){
   SUBJECTS_MASTER.forEach(subj=>{
@@ -5747,7 +5785,231 @@ function exportPDF(){
   sv.forEach(sId=>{const subj=SUBJECTS_MASTER.find(s=>s.id===sId);if(!subj)return;subj.chapters.forEach(ch=>{const r=lR(sId,ch.id);if(!r)return;const clr=r.percentage>=75?'#10b981':r.percentage>=50?'#4f6ef7':r.percentage>=35?'#f59e0b':'#f43f5e';rows+=`<tr><td>${subj.icon} ${subj.name}</td><td>${ch.name}</td><td>${TL[ch.type]||ch.type}</td><td style="color:${clr};font-weight:700">${r.percentage.toFixed(1)}%</td><td>${r.score}/${r.maxScore}</td><td>${r.correct}<svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> ${r.incorrect}<svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td><td>${new Date(r.date).toLocaleDateString('en-IN')}</td></tr>`;});});
   const subjRows=sv.map(sId=>{const subj=SUBJECTS_MASTER.find(s=>s.id===sId);if(!subj)return'';const att=[];subj.chapters.forEach(ch=>{const r=lR(sId,ch.id);if(r)att.push(r);});const pct=att.length?att.reduce((s,d)=>s+d.score,0)/att.reduce((s,d)=>s+d.maxScore,0)*100:0;const clr=pct>=75?'#10b981':pct>=50?'#4f6ef7':pct>=35?'#f59e0b':'#f43f5e';return`<tr><td>${subj.icon} ${subj.name}</td><td>${att.length}/${subj.chapters.length}</td><td style="color:${clr};font-weight:700">${pct.toFixed(1)}%</td><td>${att.reduce((s,d)=>s+d.correct,0)}</td><td>${att.reduce((s,d)=>s+d.incorrect,0)}</td></tr>`;}).join('');
   const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Thunderstudy | CBT</title><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Segoe UI',sans-serif;color:#1a1d2e;background:#fff;padding:28px;}.header{background:linear-gradient(135deg,#4f6ef7,#7c3aed);color:#fff;padding:24px 28px;border-radius:14px;margin-bottom:20px;}.header h1{font-size:23px;margin-bottom:3px;}.header p{opacity:.8;font-size:12px;}.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}.stat{background:#f7f8fd;border:1px solid #e8ecf4;border-radius:11px;padding:14px 18px;flex:1;min-width:110px;text-align:center;}.stat .val{font-size:20px;font-weight:800;color:#4f6ef7;}.stat .lbl{font-size:10px;color:#9298b5;text-transform:uppercase;margin-top:3px;}h2{font-size:13px;font-weight:800;margin:18px 0 8px;border-bottom:2px solid #e8ecf4;padding-bottom:5px;}table{width:100%;border-collapse:collapse;font-size:11px;}th{background:#4f6ef7;color:#fff;padding:7px 9px;text-align:left;font-size:9px;text-transform:uppercase;}td{padding:7px 9px;border-bottom:1px solid #e8ecf4;}.btn{background:#4f6ef7;color:#fff;border:none;padding:9px 20px;border-radius:24px;cursor:pointer;font-size:12px;font-weight:700;margin-bottom:18px;}@media print{.btn{display:none;}.header{-webkit-print-color-adjust:exact;print-color-adjust:exact;}th{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}</style></head><body><button class="btn" onclick="window.print()"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Print / Save PDF</button><div class="header"><h1><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Thunderstudy Progress Report</h1><p>${prof.name||'Student'} · ${today} · ${rank.icon} ${rank.name} Rank</p></div><div class="stats"><div class="stat"><div class="val">${allAtt.length}</div><div class="lbl">Tests</div></div><div class="stat"><div class="val">${op}%</div><div class="lbl">Overall</div></div><div class="stat"><div class="val">${tS}/${tM}</div><div class="lbl">Score</div></div></div><h2><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Subject Summary</h2><table><thead><tr><th>Subject</th><th>Done</th><th>Avg %</th><th>Correct</th><th>Wrong</th></tr></thead><tbody>${subjRows}</tbody></table><h2><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> All Attempts</h2><table><thead><tr><th>Subject</th><th>Chapter</th><th>Type</th><th>%</th><th>Score</th><th>C/W</th><th>Date</th></tr></thead><tbody>${rows||'<tr><td colspan="7" style="text-align:center;color:#9298b5;padding:16px">No results yet</td></tr>'}</tbody></table></body></html>`);
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Thunderstudy | CBT</title><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Segoe UI',sans-serif;color:#1a1d2e;background:#fff;padding:28px;}.header{background:linear-gradient(135deg,#4f6ef7,#7c3aed);color:#fff;padding:24px 28px;border-radius:14px;margin-bottom:20px;}.header h1{font-size:23px;margin-bottom:3px;}.header p{opacity:.8;font-size:12px;}.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}.stat{background:#f7f8fd;border:1px solid #e8ecf4;border-radius:11px;padding:14px 18px;flex:1;min-width:110px;text-align:center;}.stat .val{font-size:20px;font-weight:800;color:#4f6ef7;}.stat .lbl{font-size:10px;color:#9298b5;text-transform:uppercase;margin-top:3px;}h2{font-size:13px;font-weight:800;margin:18px 0 8px;border-bottom:2px solid #e8ecf4;padding-bottom:5px;}table{width:100%;border-collapse:collapse;font-size:11px;}th{background:#4f6ef7;color:#fff;padding:7px 9px;text-align:left;font-size:9px;text-transform:uppercase;}td{padding:7px 9px;border-bottom:1px solid #e8ecf4;}.btn{background:#4f6ef7;color:#fff;border:none;padding:9px 20px;border-radius:24px;cursor:pointer;font-size:12px;font-weight:700;margin-bottom:18px;}@media print{.btn{display:none;}.header{-webkit-print-color-adjust:exact;print-color-adjust:exact;}th{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}</style></head><body><button class="btn" onclick="window.print()"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Print / Save PDF</button><div class="header"><h1><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Thunderstudy Progress Report</h1><p>${prof.name||'Student'} · ${today} · ${rank.icon} ${rank.name} Rank</p></div><div class="stats"><div class="stat"><div class="val">${allAtt.length}</div><div class="lbl">Tests</div></div><div class="stat"><div class="val">${op}%</div><div class="lbl">Overall</div></div><div class="stat"><div class="val">${tS}/${tM}</div><div class="lbl">Score</div></div></div><h2><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Subject Summary</h2><table><thead><tr><th>Subject</th><th>Done</th><th>Avg %</th><th>Correct</th><th>Wrong</th></tr></thead><tbody>${subjRows}</tbody></table><h2><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> All Attempts</h2><table><thead><tr><th>Subject</th><th>Chapter</th><th>Type</th><th>%</th><th>Score</th><th>C/W</th><th>Date</th></tr></thead><tbody>${rows||'<tr><td colspan="7" style="text-align:center;color:#9298b5;padding:16px">No results yet</td></tr>'}</tbody></table>
+<!-- TS Google Sign-In Button (shared across portals) -->
+<style>
+.ts-gsignin-btn{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:30px;border:1.5px solid #dadce0;background:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.08);white-space:nowrap;}
+.ts-gsignin-btn:hover{box-shadow:0 4px 16px rgba(0,0,0,.14);transform:translateY(-1px);}
+.ts-guser-chip{display:inline-flex;align-items:center;gap:8px;padding:5px 13px 5px 5px;border-radius:30px;border:1.5px solid var(--border,#e2e8f0);background:var(--card,#fff);font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;}
+.ts-guser-chip:hover{box-shadow:0 4px 14px rgba(0,0,0,.12);}
+.ts-guser-avatar{width:26px;height:26px;border-radius:50%;object-fit:cover;background:linear-gradient(135deg,#6366f1,#a855f7);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:11px;overflow:hidden;flex-shrink:0;}
+
+/* Profile Card Modal */
+#ts-profile-card-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+#ts-profile-card-overlay.open{display:flex;}
+#ts-profile-card{background:#0f172a;color:#f8fafc;border-radius:24px;padding:0;max-width:360px;width:90%;border:1px solid rgba(255,255,255,.1);box-shadow:0 24px 80px rgba(0,0,0,.6);animation:pcIn .35s cubic-bezier(.34,1.56,.64,1) both;overflow:hidden;font-family:'Plus Jakarta Sans','Outfit',sans-serif;}
+@keyframes pcIn{from{transform:scale(.85) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.ts-pc-header{background:linear-gradient(135deg,#1e1b4b,#312e81);padding:24px 20px 18px;position:relative;}
+.ts-pc-avatar{width:64px;height:64px;border-radius:20px;border:3px solid rgba(255,255,255,.2);overflow:hidden;background:linear-gradient(135deg,#6366f1,#a855f7);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;color:#fff;margin-bottom:12px;}
+.ts-pc-name{font-size:18px;font-weight:900;letter-spacing:-.5px;margin-bottom:2px;}
+.ts-pc-email{font-size:11px;opacity:.6;font-family:'DM Mono',monospace;}
+.ts-pc-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.1);border:none;color:#fff;width:30px;height:30px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;}
+.ts-pc-close:hover{background:rgba(255,255,255,.2);}
+.ts-pc-body{padding:18px 20px;}
+.ts-pc-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.ts-pc-row:last-child{border-bottom:none;}
+.ts-pc-icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.ts-pc-label{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;opacity:.5;margin-bottom:2px;}
+.ts-pc-val{font-size:13px;font-weight:800;}
+.ts-pc-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px;}
+.ts-pc-stat{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px;text-align:center;}
+.ts-pc-stat-num{font-size:18px;font-weight:900;font-family:'DM Mono',monospace;}
+.ts-pc-stat-lbl{font-size:9px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;opacity:.5;margin-top:2px;}
+.ts-pc-sync-btn{width:100%;margin-top:14px;padding:11px;border-radius:12px;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;border:none;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;}
+.ts-pc-sync-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(99,102,241,.4);}
+.ts-pc-sync-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.ts-pc-logout{width:100%;margin-top:8px;padding:10px;border-radius:12px;background:rgba(244,63,94,.1);color:#f43f5e;border:1.5px solid rgba(244,63,94,.25);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+.ts-pc-logout:hover{background:rgba(244,63,94,.2);}
+</style>
+
+<!-- Profile Card Modal HTML -->
+<div id="ts-profile-card-overlay">
+  <div id="ts-profile-card">
+    <div class="ts-pc-header">
+      <button class="ts-pc-close" onclick="tsPCClose()">×</button>
+      <div class="ts-pc-avatar" id="ts-pc-av">S</div>
+      <div class="ts-pc-name" id="ts-pc-name">Student</div>
+      <div class="ts-pc-email" id="ts-pc-email"></div>
+    </div>
+    <div class="ts-pc-body">
+      <div class="ts-pc-row">
+        <div class="ts-pc-icon" style="background:rgba(99,102,241,.15);">🪪</div>
+        <div><div class="ts-pc-label">Student ID</div><div class="ts-pc-val" id="ts-pc-sid">—</div></div>
+      </div>
+      <div class="ts-pc-row">
+        <div class="ts-pc-icon" style="background:rgba(16,185,129,.12);">📋</div>
+        <div><div class="ts-pc-label">Registration No</div><div class="ts-pc-val" id="ts-pc-reg">—</div></div>
+      </div>
+      <div class="ts-pc-row">
+        <div class="ts-pc-icon" style="background:rgba(245,158,11,.12);">🎓</div>
+        <div><div class="ts-pc-label">Class</div><div class="ts-pc-val" id="ts-pc-class">—</div></div>
+      </div>
+      <div class="ts-pc-stats">
+        <div class="ts-pc-stat">
+          <div class="ts-pc-stat-num" id="ts-pc-hp" style="color:#7c3aed;">0</div>
+          <div class="ts-pc-stat-lbl">❤️ HP</div>
+        </div>
+        <div class="ts-pc-stat">
+          <div class="ts-pc-stat-num" id="ts-pc-xp" style="color:#f59e0b;">0</div>
+          <div class="ts-pc-stat-lbl">⚡ XP</div>
+        </div>
+        <div class="ts-pc-stat">
+          <div class="ts-pc-stat-num" id="ts-pc-rp" style="color:#10b981;">0</div>
+          <div class="ts-pc-stat-lbl">🏅 RP</div>
+        </div>
+      </div>
+      <button class="ts-pc-sync-btn" id="ts-pc-sync-btn" onclick="tsPCSync()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        Sync to Google Cloud
+      </button>
+      <button class="ts-pc-logout" onclick="tsGoogleRedirectLogout()">Sign Out & Switch Account</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   TS GOOGLE SIGN-IN — shared across portals
+   Clicking the button:
+   • If NOT logged into ThunderStudy → redirect to login page
+   • If logged in → show profile card with HP/XP/RP
+═══════════════════════════════════════════════════ */
+function tsGetGoogleUser(){try{return JSON.parse(localStorage.getItem('ts_google_user')||'null');}catch{return null;}}
+function tsIsLoggedIn(){return !!(localStorage.getItem('ts_student_id')||localStorage.getItem('ts_reg_no')||localStorage.getItem('cbtUserName'));}
+
+function tsGetProfileStats(){
+  const sid   = localStorage.getItem('ts_student_id')||'—';
+  const reg   = localStorage.getItem('ts_reg_no')||'—';
+  const prof  = (function(){try{return JSON.parse(localStorage.getItem('ts_profile')||'{}');}catch{return{};}}());
+  const cls   = prof.class||prof.cls||localStorage.getItem('ts_class')||'—';
+  const name  = prof.name||localStorage.getItem('cbtUserName')||localStorage.getItem('ts_name')||'Student';
+  // HP
+  let hp=0;try{hp=(JSON.parse(localStorage.getItem('ts_hp')||'{}')).total||0;}catch{}
+  // XP — sum from various result keys
+  let xp=0;
+  ['ts_results','ts_test_results','banking_results','ssc_results','jee_results','cuet_results'].forEach(k=>{
+    try{const r=JSON.parse(localStorage.getItem(k)||'[]');if(Array.isArray(r))xp+=r.reduce((s,x)=>s+10+Math.round((x.percentage||0)/2),0);}catch{}
+  });
+  // RP
+  let rp=0;try{rp=(JSON.parse(localStorage.getItem('ts_rp_data')||'{}')).rp||0;}catch{}
+  return {sid,reg,cls,name,hp,xp,rp};
+}
+
+function tsShowProfileCard(){
+  if(!tsIsLoggedIn()){
+    // Not logged in → go to login page
+    const portal=window.TS_PORTAL||'login';
+    window.location.href='https://commercesehoga.github.io/login/?portal='+portal;
+    return;
+  }
+  const gu=tsGetGoogleUser();
+  const st=tsGetProfileStats();
+  // Fill card
+  const avEl=document.getElementById('ts-pc-av');
+  if(gu&&gu.picture){
+    avEl.innerHTML=`<img src="${gu.picture}" style="width:100%;height:100%;object-fit:cover;">`;
+  } else {
+    avEl.textContent=(st.name[0]||'S').toUpperCase();
+  }
+  document.getElementById('ts-pc-name').textContent=st.name;
+  document.getElementById('ts-pc-email').textContent=gu?gu.email:'';
+  document.getElementById('ts-pc-sid').textContent=st.sid;
+  document.getElementById('ts-pc-reg').textContent=st.reg;
+  document.getElementById('ts-pc-class').textContent=st.cls;
+  document.getElementById('ts-pc-hp').textContent=st.hp;
+  document.getElementById('ts-pc-xp').textContent=st.xp;
+  document.getElementById('ts-pc-rp').textContent=st.rp;
+  document.getElementById('ts-profile-card-overlay').classList.add('open');
+}
+
+function tsPCClose(){document.getElementById('ts-profile-card-overlay').classList.remove('open');}
+document.addEventListener('click',function(e){if(e.target===document.getElementById('ts-profile-card-overlay'))tsPCClose();});
+
+async function tsPCSync(){
+  const btn=document.getElementById('ts-pc-sync-btn');
+  const gu=tsGetGoogleUser();
+  if(!gu){
+    window.location.href='https://commercesehoga.github.io/login/?portal='+(window.TS_PORTAL||'login');
+    return;
+  }
+  btn.disabled=true;
+  btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin .7s linear infinite"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> Syncing…';
+  if(!document.querySelector('style#ts-spin-kf')){
+    const s=document.createElement('style');s.id='ts-spin-kf';s.textContent='@keyframes spin{to{transform:rotate(360deg)}}';
+    document.head.appendChild(s);
+  }
+  try{
+    // Check Firebase is available
+    if(typeof firebase!=='undefined'&&firebase.apps&&firebase.apps.length){
+      const db=firebase.firestore();
+      const st=tsGetProfileStats();
+      const uid=gu.uid;
+      const payload={
+        uid,name:gu.name,email:gu.email,picture:gu.picture||'',
+        studentId:st.sid,regNo:st.reg,class:st.cls,
+        hp:st.hp,xp:st.xp,rp:st.rp,
+        portal:window.TS_PORTAL||'unknown',
+        syncedAt:firebase.firestore.FieldValue.serverTimestamp()
+      };
+      await db.collection('ts_cloud_sync').doc(uid).set(payload,{merge:true});
+      btn.innerHTML='✅ Synced!';
+      setTimeout(()=>{btn.disabled=false;btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> Sync to Google Cloud';},2000);
+    } else {
+      throw new Error('Firebase not available');
+    }
+  }catch(e){
+    btn.disabled=false;
+    btn.innerHTML='❌ Sync Failed — Retry';
+    setTimeout(()=>{btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> Sync to Google Cloud';},3000);
+  }
+}
+
+function tsGoogleRedirectLogout(){
+  tsPCClose();
+  window.location.href='https://commercesehoga.github.io/login/?portal='+(window.TS_PORTAL||'login');
+}
+
+function tsRenderGoogleBtn(containerId){
+  const el=document.getElementById(containerId);
+  if(!el)return;
+  const gu=tsGetGoogleUser();
+  const loggedIn=tsIsLoggedIn();
+  if(loggedIn&&gu){
+    const initials=(gu.name||'S')[0].toUpperCase();
+    const firstName=(gu.name||'').split(' ')[0];
+    el.innerHTML=`<button class="ts-guser-chip" onclick="tsShowProfileCard()" title="View profile & sync">
+      <div class="ts-guser-avatar" id="ts-topbar-av-${containerId}">${initials}</div>
+      <span style="font-size:12px;font-weight:800;max-width:90px;overflow:hidden;text-overflow:ellipsis;">${firstName}</span>
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>`;
+    if(gu.picture){
+      const img=new Image();
+      img.onload=()=>{const a=document.getElementById('ts-topbar-av-'+containerId);if(a)a.innerHTML=`<img src="${gu.picture}" style="width:100%;height:100%;object-fit:cover;">`; };
+      img.src=gu.picture;
+    }
+  } else if(loggedIn){
+    // logged in but no google user
+    const name=localStorage.getItem('cbtUserName')||localStorage.getItem('ts_name')||'Student';
+    el.innerHTML=`<button class="ts-guser-chip" onclick="tsShowProfileCard()" title="View profile">
+      <div class="ts-guser-avatar">${(name[0]||'S').toUpperCase()}</div>
+      <span style="font-size:12px;font-weight:800;">${name.split(' ')[0]}</span>
+    </button>`;
+  } else {
+    el.innerHTML=`<button class="ts-gsignin-btn" onclick="tsShowProfileCard()">
+      <svg width="15" height="15" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      </svg>
+      Sign in with Google
+    </button>`;
+  }
+}
+
+</script>
+
+</body></html>`);
   w.document.close();
 }
 
@@ -9952,6 +10214,11 @@ function openProfileModal(){
   document.getElementById('pf-name').value=p.name||'';
   document.getElementById('pf-class').value=p.class||'';
   document.getElementById('pf-college').value=p.college||'';
+  // Show locked fields (read-only)
+  const sidEl=document.getElementById('pf-sid-display');
+  const regEl=document.getElementById('pf-reg-display');
+  if(sidEl) sidEl.textContent=localStorage.getItem('ts_student_id')||'—';
+  if(regEl) regEl.textContent=localStorage.getItem('ts_reg_no')||'—';
   const goals=p.goals||{};
   document.getElementById('goal-sliders').innerHTML=sv.length?sv.map(sId=>{
     const s=SUBJECTS_MASTER.find(x=>x.id===sId);if(!s)return'';
@@ -9968,9 +10235,23 @@ function openProfileModal(){
 function saveProfile(){
   const sv=getSS(),goals={};
   sv.forEach(sId=>{const el=document.getElementById(`g-${sId}`);if(el)goals[sId]=parseInt(el.value);});
-  const p={name:document.getElementById('pf-name').value.trim(),class:document.getElementById('pf-class').value.trim(),college:document.getElementById('pf-college').value.trim(),goals,cuetTarget:getCuetTarget()};
+  // Preserve locked Student ID and Reg No — only update name, class, college, goals
+  const existing=getProfile();
+  const p={
+    ...existing,
+    name:document.getElementById('pf-name').value.trim()||existing.name,
+    class:document.getElementById('pf-class').value.trim()||existing.class,
+    college:document.getElementById('pf-college').value.trim()||existing.college,
+    goals,
+    cuetTarget:getCuetTarget(),
+    // Keep locked fields
+    studentId:localStorage.getItem('ts_student_id')||existing.studentId,
+    regNo:localStorage.getItem('ts_reg_no')||existing.regNo,
+  };
   localStorage.setItem('ts_profile',JSON.stringify(p));
-  if(p.name)localStorage.setItem('cbtUserName',p.name);
+  if(p.name){localStorage.setItem('cbtUserName',p.name);localStorage.setItem('ts_name',p.name);}
+  // Also write legacy compat keys
+  localStorage.setItem('cbtUserName',p.name||'');
   closeModal('profile-modal');
   showToast('<svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Profile saved!');
   renderHome();
@@ -11231,28 +11512,24 @@ function renderHomeTopbar() {
   if (gu) {
     area.innerHTML = `
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-        <img src="${gu.picture}" width="30" height="30"
-          style="border-radius:50%;border:2px solid var(--acc);flex-shrink:0;"
-          onerror="this.style.display='none'">
-        <div style="font-size:12px;font-weight:800;color:var(--text);">${escH(gu.name.split(' ')[0])}</div>
-        <div style="display:flex;align-items:center;gap:5px;background:var(--card2);border:1px solid var(--border);
-          border-radius:30px;padding:4px 10px;cursor:pointer;gap:6px;"
+        <button class="ts-guser-chip" onclick="tsShowProfileCard()" title="View profile & sync">
+          <div class="ts-guser-avatar" id="ts-master-av">${escH((gu.name||'S')[0].toUpperCase())}</div>
+          <span style="font-size:12px;font-weight:800;">${escH(gu.name.split(' ')[0])}</span>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div style="display:flex;align-items:center;gap:5px;background:var(--card2);border:1px solid var(--border);border-radius:30px;padding:4px 10px;cursor:pointer;"
           onclick="openLiveSyncModal()" title="Sync Status">
-          ${cloudDot}
-          ${sheetDot}
+          ${cloudDot}${sheetDot}
           <span style="font-size:10px;font-weight:700;color:var(--text2);">Sync</span>
         </div>
         <button onclick="toggleDarkMode();this.textContent=document.body.classList.contains('dark-mode')?'☀️':'🌙';" style="background:var(--card2);border:1.5px solid var(--border);border-radius:50%;width:34px;height:34px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-family:var(--fn);" title="Toggle Dark Mode">${document.body.classList.contains('dark-mode')?'☀️':'🌙'}</button>
-        <button class="btn btn-ghost" onclick="googleLogout()" style="font-size:11px;padding:6px 12px;">Sign Out</button>
       </div>`;
+    if(gu.picture){const img=new Image();img.onload=()=>{const a=document.getElementById('ts-master-av');if(a)a.innerHTML=`<img src="${gu.picture}" style="width:100%;height:100%;object-fit:cover;">`};img.src=gu.picture;}
   } else {
     area.innerHTML = `
       <div style="display:flex;align-items:center;gap:8px;">
-        <button onclick="firebaseGoogleLogin()" style="
-          display:flex;align-items:center;gap:8px;padding:7px 14px;
-          border-radius:30px;border:1.5px solid #dadce0;background:#fff;
-          font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fn);">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="16">
+        <button onclick="window.location.href='https://commercesehoga.github.io/login/?portal=master'" class="ts-gsignin-btn" style="padding:7px 14px;font-size:12px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
           Sign in
         </button>
         <div style="display:flex;align-items:center;gap:5px;background:var(--card2);border:1px solid var(--border);
