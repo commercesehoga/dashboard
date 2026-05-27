@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="en">
     
@@ -16,7 +17,19 @@
 </script>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>⚡ ThunderStudy | Multi-Platform Exam Dashboard</title>
+<meta name="description" content="ThunderStudy is a free multi-exam preparation dashboard for CUET, JEE/NEET, CLAT, CAT, NCERT, SSC and Banking with mocks, PYQs, analytics, notes, goals and progress tracking.">
+<meta name="keywords" content="ThunderStudy, CUET mocks, JEE mocks, NEET mocks, CLAT preparation, CAT preparation, NCERT notes, SSC mocks, Banking mocks, free exam preparation, Commerce Se Hoga">
+<link rel="canonical" href="https://commercesehoga.github.io/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ThunderStudy | Multi-Exam Preparation Dashboard">
+<meta property="og:description" content="Prepare for CUET, JEE/NEET, CLAT, CAT, NCERT, SSC and Banking from one free dashboard.">
+<meta property="og:url" content="https://commercesehoga.github.io/">
+<meta property="og:image" content="https://commercesehoga.github.io/favicon.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ThunderStudy | Multi-Exam Preparation Dashboard">
+<meta name="twitter:description" content="One dashboard for CUET, JEE/NEET, CLAT, CAT, NCERT, SSC and Banking preparation.">
+<meta name="twitter:image" content="https://commercesehoga.github.io/favicon.svg">
+<title>⚡ ThunderStudy | CUET JEE NEET CLAT CAT NCERT SSC Banking Dashboard</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogIlRodW5kZXJzdHVkeSIsICJzaG9ydF9uYW1lIjogIlRodW5kZXJzdHVkeSIsICJzdGFydF91cmwiOiAiLiIsICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLCAiYmFja2dyb3VuZF9jb2xvciI6ICIjMGYxNzJhIiwgInRoZW1lX2NvbG9yIjogIiM0ZjZlZjciLCAiZGVzY3JpcHRpb24iOiAiVGh1bmRlcnN0dWR5IENCVCBQbGF0Zm9ybSIsICJpY29ucyI6IFtdfQ==">
 <meta name="theme-color" content="#4f6ef7">
@@ -1613,7 +1626,7 @@ body.dark-mode .sc-x{background:#1c1c2e;}
 .qa-btn{display:block;width:100%;padding:8px;border-radius:10px;text-align:center;font-size:11px;font-weight:800;text-decoration:none;transition:filter .15s;border:none;cursor:pointer;font-family:var(--fn);}
 .qa-btn:hover{filter:brightness(1.1);}
 
-/* StudyHub Panel */
+/* NCERT Panel */
 .sh-panel{background:var(--card);border:1.5px solid rgba(245,158,11,.25);border-radius:20px;padding:18px 20px;margin-bottom:18px;background:linear-gradient(135deg,rgba(245,158,11,.04),rgba(249,115,22,.02));}
 .sh-panel-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
 .sh-purchase-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card2);border-radius:12px;margin-bottom:8px;transition:all .2s;cursor:pointer;text-decoration:none;color:var(--text);}
@@ -1713,7 +1726,7 @@ body.dark-mode .sc-x{background:#1c1c2e;}
           <span style="padding:3px 9px;border-radius:20px;font-size:9px;font-weight:800;background:rgba(91,78,232,.1);color:#5B4EE8;font-family:'Outfit',sans-serif;">SSC</span>
           <span style="padding:3px 9px;border-radius:20px;font-size:9px;font-weight:800;background:rgba(13,148,136,.1);color:#0d9488;font-family:'Outfit',sans-serif;">Banking</span>
           <span style="padding:3px 9px;border-radius:20px;font-size:9px;font-weight:800;background:rgba(236,72,153,.1);color:#ec4899;font-family:'Outfit',sans-serif;">JEE/NEET</span>
-          <span style="padding:3px 9px;border-radius:20px;font-size:9px;font-weight:800;background:rgba(245,158,11,.1);color:#f59e0b;font-family:'Outfit',sans-serif;">StudyHub</span>
+          <span style="padding:3px 9px;border-radius:20px;font-size:9px;font-weight:800;background:rgba(245,158,11,.1);color:#f59e0b;font-family:'Outfit',sans-serif;">NCERT</span>
         </div>
       </div>
 
@@ -1868,6 +1881,7 @@ body.dark-mode .sc-x{background:#1c1c2e;}
     <div class="nav-item" onclick="goPage('subjects')"><span class="nav-icon"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></span> All Subjects</div>
     <div class="nav-item" onclick="goPage('mocks')"><span class="nav-icon"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span> All Mocks</div>
     <div class="nav-item" onclick="goPage('analytics')"><span class="nav-icon"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span> Analytics<span class="nav-badge green">NEW</span></div>
+        <div class="nav-item" onclick="goPage('ai')"><span class="nav-icon"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2"/><circle cx="9" cy="14" r="1.5"/><circle cx="15" cy="14" r="1.5"/><path d="M12 8V4"/><path d="M8 4h8"/></svg></span> AI Coach<span class="nav-badge green">5/wk</span></div>
     <div class="nav-item" onclick="goPage('notes')"><span class="nav-icon"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span> Notes</div>
 <div class="nav-item" id="nav-notices-item" onclick="showAllNoticesModal()">
   <span class="nav-icon"><svg class="ts-svg-icon" data-icon="bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></span> Notices
@@ -1903,7 +1917,7 @@ body.dark-mode .sc-x{background:#1c1c2e;}
 
   <div class="page" id="page-scoreboard">
     <div class="topbar">
-      <div><div class="page-title"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="18" y="3" width="4" height="18"/><rect x="10" y="8" width="4" height="13"/><rect x="2" y="13" width="4" height="8"/></svg> All Scores</div><div class="page-sub">Cross-platform performance overview — CUET · SSC · Banking · JEE/NEET</div></div>
+      <div><div class="page-title"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="18" y="3" width="4" height="18"/><rect x="10" y="8" width="4" height="13"/><rect x="2" y="13" width="4" height="8"/></svg> All Scores</div><div class="page-sub">Cross-platform performance overview — CUET · JEE/NEET · CLAT · CAT · NCERT · SSC · Banking</div></div>
       <div class="topbar-right"><button class="btn btn-ghost" onclick="exportPDF()"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Export PDF</button></div>
     </div>
     <div id="scoreboard-content"></div>
@@ -1930,7 +1944,12 @@ body.dark-mode .sc-x{background:#1c1c2e;}
     </div>
     <div id="analytics-content"></div>
   </div>
-
+  <div class="page" id="page-ai">
+    <div class="topbar">
+      <div><div class="page-title"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2"/><circle cx="9" cy="14" r="1.5"/><circle cx="15" cy="14" r="1.5"/><path d="M12 8V4"/><path d="M8 4h8"/></svg> AI Coach</div><div class="page-sub">5 AI messages per week - dashboard-aware study help</div></div>
+    </div>
+    <div id="ai-content"></div>
+  </div>
   <!-- NOTES PAGE -->
   <div class="page" id="page-notes">
     <div class="topbar">
@@ -2022,7 +2041,7 @@ body.dark-mode .sc-x{background:#1c1c2e;}
             </div>
           </div>
           <div style="font-size:11px;color:var(--text3);line-height:1.7;margin-bottom:12px;">
-            The best free exam preparation platform — CUET, SSC, Banking, JEE &amp; NEET — with chapter-wise mocks, analytics, leaderboard and more.
+            The best free exam preparation platform — CUET, JEE/NEET, CLAT, CAT, NCERT, SSC &amp; Banking — with chapter-wise mocks, analytics, leaderboard and more.
           </div>
           <!-- Platform badges -->
           <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;">
@@ -2030,7 +2049,9 @@ body.dark-mode .sc-x{background:#1c1c2e;}
             <span style="padding:3px 8px;border-radius:20px;font-size:9px;font-weight:800;background:rgba(91,78,232,.1);color:#5B4EE8;border:1px solid rgba(91,78,232,.2);">SSC</span>
             <span style="padding:3px 8px;border-radius:20px;font-size:9px;font-weight:800;background:rgba(13,148,136,.1);color:#0d9488;border:1px solid rgba(13,148,136,.2);">Banking</span>
             <span style="padding:3px 8px;border-radius:20px;font-size:9px;font-weight:800;background:rgba(236,72,153,.1);color:#ec4899;border:1px solid rgba(236,72,153,.2);">JEE/NEET</span>
-            <span style="padding:3px 8px;border-radius:20px;font-size:9px;font-weight:800;background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.2);">StudyHub</span>
+            <span style="padding:3px 8px;border-radius:20px;font-size:9px;font-weight:800;background:rgba(139,92,246,.1);color:#8b5cf6;border:1px solid rgba(139,92,246,.2);">CLAT</span>
+            <span style="padding:3px 8px;border-radius:20px;font-size:9px;font-weight:800;background:rgba(249,115,22,.1);color:#f97316;border:1px solid rgba(249,115,22,.2);">CAT</span>
+            <span style="padding:3px 8px;border-radius:20px;font-size:9px;font-weight:800;background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.2);">NCERT</span>
           </div>
           <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:7px;">Contact</div>
           <div style="display:flex;flex-wrap:wrap;gap:6px;">
@@ -2050,7 +2071,7 @@ body.dark-mode .sc-x{background:#1c1c2e;}
               style="font-size:12px;font-weight:600;color:var(--text2);text-decoration:none;display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:8px;transition:all .2s;"
               onmouseenter="this.style.background='rgba(79,110,247,.07)';this.style.color='#4f6ef7'"
               onmouseleave="this.style.background='transparent';this.style.color='var(--text2)'">
-              <span style="width:8px;height:8px;border-radius:50%;background:#4f6ef7;flex-shrink:0;"></span> ThunderStudy Dashboard
+              <span style="width:8px;height:8px;border-radius:50%;background:#4f6ef7;flex-shrink:0;"></span> CUET Mocks
             </a>
             <a href="https://commercesehoga.github.io/ssc" target="_blank" rel="noopener"
               style="font-size:12px;font-weight:600;color:var(--text2);text-decoration:none;display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:8px;transition:all .2s;"
@@ -2070,11 +2091,23 @@ body.dark-mode .sc-x{background:#1c1c2e;}
               onmouseleave="this.style.background='transparent';this.style.color='var(--text2)'">
               <span style="width:8px;height:8px;border-radius:50%;background:#ec4899;flex-shrink:0;"></span> JEE &amp; NEET Mocks
             </a>
-            <a href="https://commercesehoga.github.io/studyhub" target="_blank" rel="noopener"
+            <a href="https://commercesehoga.github.io/clat" target="_blank" rel="noopener"
+              style="font-size:12px;font-weight:600;color:var(--text2);text-decoration:none;display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:8px;transition:all .2s;"
+              onmouseenter="this.style.background='rgba(139,92,246,.07)';this.style.color='#8b5cf6'"
+              onmouseleave="this.style.background='transparent';this.style.color='var(--text2)'">
+              <span style="width:8px;height:8px;border-radius:50%;background:#8b5cf6;flex-shrink:0;"></span> CLAT Prep
+            </a>
+            <a href="https://commercesehoga.github.io/cat" target="_blank" rel="noopener"
+              style="font-size:12px;font-weight:600;color:var(--text2);text-decoration:none;display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:8px;transition:all .2s;"
+              onmouseenter="this.style.background='rgba(249,115,22,.07)';this.style.color='#f97316'"
+              onmouseleave="this.style.background='transparent';this.style.color='var(--text2)'">
+              <span style="width:8px;height:8px;border-radius:50%;background:#f97316;flex-shrink:0;"></span> CAT Prep
+            </a>
+            <a href="https://commercesehoga.github.io/ncert" target="_blank" rel="noopener"
               style="font-size:12px;font-weight:600;color:var(--text2);text-decoration:none;display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:8px;transition:all .2s;"
               onmouseenter="this.style.background='rgba(245,158,11,.07)';this.style.color='#f59e0b'"
               onmouseleave="this.style.background='transparent';this.style.color='var(--text2)'">
-              <span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;flex-shrink:0;"></span> StudyHub (HP Store)
+              <span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;flex-shrink:0;"></span> NCERT Resources
             </a>
             <a href="https://commercesehoga.blogspot.com" target="_blank" rel="noopener"
               style="font-size:12px;font-weight:600;color:var(--text2);text-decoration:none;display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:8px;transition:all .2s;"
@@ -2174,7 +2207,6 @@ body.dark-mode .sc-x{background:#1c1c2e;}
   <div class="ob-box">
     <div class="ob-progress">
       <div class="ob-prog-dot done" id="ob-dot-1"></div>
-      <div class="ob-prog-dot" id="ob-dot-2"></div>
       <div class="ob-prog-dot" id="ob-dot-3"></div>
     </div>
     <!-- REPLACE existing ob-step-1 div with this: -->
@@ -2229,7 +2261,7 @@ body.dark-mode .sc-x{background:#1c1c2e;}
     </div>
     <div style="font-size:10px;color:var(--text3);margin-top:4px;">Your unique 5-digit Student ID (00000–99999). Click Generate to get one.</div>
   </div>
-<button class="ob-btn ob-btn-prim" id="ob-next-1" onclick="obNext(2)" disabled>Continue →</button>
+<button class="ob-btn ob-btn-prim" id="ob-next-1" onclick="obNext(3)" disabled>Continue →</button>
   <div style="position:relative;margin:12px 0 0;"><div style="position:absolute;inset:0;display:flex;align-items:center;"><div style="flex:1;border-top:1px solid var(--border);"></div><span style="padding:0 12px;font-size:11px;color:var(--text3);background:var(--card);">OR</span><div style="flex:1;border-top:1px solid var(--border);"></div></div></div>
   <div style="margin-top:12px;">
     <div style="font-size:11px;font-weight:700;color:var(--text3);text-align:center;margin-bottom:9px;">Already used Thunderstudy before?</div>
@@ -2242,21 +2274,9 @@ body.dark-mode .sc-x{background:#1c1c2e;}
     <div id="ob-import-status" style="font-size:12px;font-weight:600;margin-top:8px;text-align:center;min-height:18px;"></div>
   </div>
 </div>
-    <div class="ob-step" id="ob-step-2">
-      <div class="ob-icon"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
-      <div class="ob-title">Pick Your Subjects</div>
-      <div class="ob-sub">Each subject = <strong>250 marks</strong> in CUET. Select all subjects you're appearing for.</div>
-      <div class="ob-subj-grid" id="ob-subj-grid"></div>
-      <div id="ob-marks-preview" style="display:none;" class="ob-marks-total">
-        <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Your CUET Total</div>
-        <div><span class="ob-marks-num" id="ob-marks-num">0</span><span class="ob-marks-denom">&thinsp;marks possible</span></div>
-        <div style="font-size:11px;color:var(--text3);margin-top:4px;" id="ob-subj-count-label">0 subjects selected</div>
-      </div>
-      <button class="ob-btn ob-btn-prim" id="ob-next-2" onclick="obNext(3)" disabled>Set My Target →</button>
-    </div>
     <div class="ob-step" id="ob-step-3">
       <div class="ob-icon"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
-      <div class="ob-title">Set Your CUET Target</div>
+      <div class="ob-title">Set Your Exam Target</div>
       <div class="ob-sub" id="ob-target-sub">How many marks do you want to score?</div>
       <div class="ob-marks-total" style="margin-bottom:14px;">
         <div style="font-size:10px;font-weight:700;color:var(--text3);margin-bottom:5px;">YOUR TARGET</div>
@@ -2318,6 +2338,9 @@ body.dark-mode .sc-x{background:#1c1c2e;}
           {id:'jee_main',name:'JEE Main',    color:'#ec4899'},
           {id:'jee_adv', name:'JEE Adv',     color:'#db2777'},
           {id:'neet',    name:'NEET',        color:'#f59e0b'},
+          {id:'clat',    name:'CLAT',        color:'#8b5cf6'},
+          {id:'cat',     name:'CAT',         color:'#f97316'},
+          {id:'ncert',   name:'NCERT',       color:'#16a34a'},
         ].map(e=>`<div id="pf-exam-${e.id}" onclick="toggleExamChip('${e.id}','${e.color}')" style="
           padding:6px 13px;border-radius:30px;font-size:11px;font-weight:800;cursor:pointer;
           border:1.5px solid ${e.color}44;background:${e.color}0d;color:${e.color};
@@ -2325,7 +2348,7 @@ body.dark-mode .sc-x{background:#1c1c2e;}
       </div>
     </div>
     <div style="margin-bottom:16px;">
-      <div class="form-lbl" style="margin-bottom:9px;"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Target % Per Subject (CUET)</div>
+      <div class="form-lbl" style="margin-bottom:9px;"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Target % Per Subject</div>
       <div id="goal-sliders"></div>
     </div>
     <button class="btn btn-prim" onclick="saveProfile()" style="width:100%"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Profile</button>
@@ -2344,7 +2367,7 @@ body.dark-mode .sc-x{background:#1c1c2e;}
 <!-- CUET TARGET MODAL -->
 <div class="modal-ov" id="ct-modal">
   <div class="modal-box">
-    <div class="modal-title"><span><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Change CUET Target</span><span class="modal-close" onclick="closeModal('ct-modal')">×</span></div>
+    <div class="modal-title"><span><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Change Exam Target</span><span class="modal-close" onclick="closeModal('ct-modal')">×</span></div>
     <div id="ct-modal-body"></div>
   </div>
 </div>
@@ -2528,7 +2551,7 @@ const fbProvider = new firebase.auth.GoogleAuthProvider();
 /* ══════════════════════════════════════════
    CLOUD SYNC — Firebase Firestore
 ══════════════════════════════════════════ */
-const CLOUD_SYNC_KEYS_PREFIX = ['ts_', 'thunderstudy_'];
+const CLOUD_SYNC_KEYS_PREFIX = ['ts_', 'thunderstudy_', 'ssc_', 'jn_', 'tsb_', 'banking_', 'jee_', 'neet_'];
 const CLOUD_SYNC_EXCLUDE = ['ts_rp_processed', 'ts_rp_init', 'ts_sync_asked', 'ts_ob_done'];
 const CLOUD_SYNC_DEBOUNCE_MS = 8000;
 let _cloudSyncTimer = null;
@@ -2558,7 +2581,8 @@ function buildCloudPayload() {
 const CLOUD_CRITICAL_KEYS = [
   'ts_profile','ts_student_id','ts_hp','ts_rp_data',
   'ts_bonus_xp','ts_subs','cbtUserName','ts_ob_done',
-  'ts_hp_sections','ts_hp_certs','ts_promos_used','ts_rp_processed'
+  'ts_hp_sections','ts_hp_certs','ts_promos_used','ts_rp_processed',
+  'ssc_exams','ssc_ob_done','jn_exams','jn_ob_done','tsb_ob_done'
 ];
 // Phase 0: identity-only keys — synced once, cached locally
 const CLOUD_ID_KEYS = ['ts_profile','ts_student_id','cbtUserName'];
@@ -2735,7 +2759,7 @@ async function checkCloudConflictAndSignIn(user) {
   const cloudSID = cloudData['ts_student_id'] || '';
   let cloudTestCount = 0;
   Object.keys(cloudData).forEach(k => {
-    if (k.startsWith('thunderstudy_result_')) cloudTestCount++;
+    if (k.startsWith('thunderstudy_result_')||k.startsWith('thunderstudy_sscresult_')||k.startsWith('thunderstudy_jee_neetresult_')||k.startsWith('tsb_')||k.startsWith('banking_result_')) cloudTestCount++;
   });
 
   const isSamePerson = (localName && cloudName &&
@@ -2785,6 +2809,7 @@ function showConflictModal(user, cloudData, info) {
   const existing = document.getElementById('cloud-conflict-modal');
   if (existing) existing.remove();
 
+  localStorage.setItem('ts_cloud_result_count', String(info.cloudTestCount||0));
   const cloudDate = info.cloudSavedAt
     ? new Date(info.cloudSavedAt).toLocaleString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
     : 'Unknown';
@@ -3534,7 +3559,7 @@ function showFullMockClaim(sId,subj,hpGain){
       <div style="font-size:11px;color:var(--text3);margin-top:3px;">Added to your account!</div>
     </div>
     <div style="display:flex;gap:9px;">
-      <a href="https://commercesehoga.github.io/studyhub/" target="_blank" class="btn btn-prim" style="flex:1;justify-content:center;padding:12px;font-size:13px;"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Get Free Books</a>
+      <a href="https://commercesehoga.github.io/ncert/" target="_blank" class="btn btn-prim" style="flex:1;justify-content:center;padding:12px;font-size:13px;"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Get Free Books</a>
       <button onclick="document.getElementById('fm-claim-modal').remove()" class="btn btn-ghost" style="flex:1;justify-content:center;padding:12px;font-size:13px;"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Awesome!</button>
     </div>
   </div>`;
@@ -4630,9 +4655,11 @@ function exportData(){
   const data={};
   for(let i=0;i<localStorage.length;i++){
     const k=localStorage.key(i);
-    if(k.startsWith('thunderstudy_')||k.startsWith('ts_')||k==='cbtUserName')
+    if(k.startsWith('thunderstudy_')||k.startsWith('ts_')||k.startsWith('ssc_')||k.startsWith('jn_')||k.startsWith('tsb_')||k.startsWith('banking_')||k.startsWith('jee_')||k.startsWith('neet_')||k==='cbtUserName'||k==='studentName'||k==='studentId')
       data[k]=localStorage.getItem(k);
   }
+  const normalizedResults = (typeof getCPNormalizedResults === 'function' ? getCPNormalizedResults() : []);
+  data['_normalized_results']=JSON.stringify(normalizedResults);
   // Enhanced metadata
   const prof=getProfile();
   const allAtt=getAllAtt();
@@ -4649,13 +4676,14 @@ function exportData(){
     college:prof.college||'',
     class:prof.class||'',
     subjects:getSS(),
-    totalTests:allAtt.length,
+    totalTests:(normalizedResults.length||allAtt.length),
     totalScore:allAtt.reduce((s,d)=>s+d.score,0),
     totalHP:hp.total,
     totalXP:xp,
     currentRank:RANK_TIERS[rpData.rankIndex]?.name||'Rookie',
     exportedFrom:'thunderstudy-dashboard',
     exportedAt:new Date().toISOString(),
+    platformSummary: typeof getPlatformSetupStatus === 'function' ? getPlatformSetupStatus() : {},
   });
 
   const fname=`thunderstudy_allplatforms_backup_${(prof.name||'student').replace(/\s+/g,'_')}_${sid?sid+'_':''}_${new Date().toISOString().split('T')[0]}.json`;
@@ -4663,7 +4691,7 @@ function exportData(){
   a.download=fname;
   a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
   a.click();
-  showToast(`<svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Backup saved — ${allAtt.length} results, ${Object.keys(data).length} keys`,'success',3000);
+  showToast(`<svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Backup saved — ${normalizedResults.length||allAtt.length} results, ${Object.keys(data).length} keys`,'success',3000);
 }
 function importData(file){
   if(!file)return;
@@ -4682,7 +4710,7 @@ function importData(file){
 
       // Count importable keys
       const importable=Object.entries(data).filter(([k])=>
-        k.startsWith('thunderstudy_')||k.startsWith('ts_')||k==='cbtUserName'
+        k.startsWith('thunderstudy_')||k.startsWith('ts_')||k.startsWith('ssc_')||k.startsWith('jn_')||k.startsWith('tsb_')||k.startsWith('banking_')||k.startsWith('jee_')||k.startsWith('neet_')||k==='cbtUserName'||k==='studentName'||k==='studentId'
       );
 
       if(!importable.length)throw new Error('No Thunderstudy data found in this file');
@@ -4778,13 +4806,13 @@ document.addEventListener('keydown',(e)=>{
     if(e.key==='ArrowRight'&&idx<sv.length-1)switchMockSubj(sv[idx+1]);
     else if(e.key==='ArrowLeft'&&idx>0)switchMockSubj(sv[idx-1]);
   } else if(activePage==='page-analytics'){
-    const tabs=['weak','history','retake','tod','report'];
+    const tabs=['overview','trends','heatmap','coverage','weakest','weekly','ai'];
     const idx=tabs.indexOf(currentAnalyticsTab);
     if(e.key==='ArrowRight'&&idx<tabs.length-1)showAnalyticsSection(tabs[idx+1]);
     else if(e.key==='ArrowLeft'&&idx>0)showAnalyticsSection(tabs[idx-1]);
   }
   // Number shortcuts 1-7
-  const pages=['home','scoreboard','subjects','mocks','analytics','rank','settings'];
+  const pages=['home','scoreboard','subjects','mocks','analytics','notes','settings'];
   const n=parseInt(e.key)-1;
   if(!isNaN(n)&&n>=0&&n<pages.length)goPage(pages[n]);
   if(e.key==='?'&&!e.shiftKey){showShortcutOverlay();return;}
@@ -4807,10 +4835,10 @@ document.querySelectorAll('.dock-item').forEach(d=>d.classList.remove('active'))
     // pages not in main dock (mocks, settings) — no dock item highlights
   }
   destroyCharts();
-  const map={home:renderHome,scoreboard:renderScoreboard,subjects:renderSubjects,mocks:renderMocks,analytics:renderAnalyticsCrossPlat,settings:renderSettings,notes:renderNotes};
+  const map={home:renderHome,scoreboard:renderScoreboard,subjects:renderSubjects,mocks:renderMocks,analytics:renderAnalyticsCrossPlat,ai:renderAIPage,settings:renderSettings,notes:renderNotes};
   if(map[id]){
   // Show skeleton first
-  const contentId={home:'home-content',scoreboard:'scoreboard-content',subjects:'subjects-content',mocks:'mocks-content',analytics:'analytics-content',rank:'rank-content',settings:'settings-content',notes:'notes-content'}[id];
+  const contentId={home:'home-content',scoreboard:'scoreboard-content',subjects:'subjects-content',mocks:'mocks-content',analytics:'analytics-content',ai:'ai-content',rank:'rank-content',settings:'settings-content',notes:'notes-content'}[id];
   if(contentId){
     const el=document.getElementById(contentId);
     if(el){
@@ -4838,13 +4866,15 @@ if(!sv.length){
     const existingGU = getGoogleUser();
     const isSignedIn = !!fbAuth.currentUser || !!existingGU;
     document.getElementById('home-content').innerHTML=`
-    <div style="min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px;">
+    <div style="min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px 16px;">
+      ${buildChooseExamGrid()}
+      ${buildSmartDashboardSections()}
 
       <!-- Hero Logo -->
       <div style="text-align:center;margin-bottom:28px;animation:fadeUp .5s ease both;">
         <div style="width:72px;height:72px;background:linear-gradient(135deg,#4f6ef7,#7c3aed);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 16px;box-shadow:0 12px 32px rgba(79,110,247,.38);"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
         <div style="font-size:28px;font-weight:900;color:var(--text);letter-spacing:-.5px;margin-bottom:6px;">Welcome to <span style="color:#4f6ef7">Thunder</span><span style="color:#7c3aed">study</span></div>
-        <div style="font-size:13px;color:var(--text3);line-height:1.7;max-width:320px;margin:0 auto;">Your all-in-one exam preparation dashboard. Track scores, analytics &amp; more — across CUET, SSC, Banking, JEE &amp; NEET.</div>
+        <div style="font-size:13px;color:var(--text3);line-height:1.7;max-width:320px;margin:0 auto;">Your all-in-one exam preparation dashboard. Track scores, analytics &amp; more — across CUET, JEE/NEET, CLAT, CAT, NCERT, SSC &amp; Banking.</div>
       </div>
 
       <!-- MAIN CARD -->
@@ -4891,7 +4921,7 @@ if(!sv.length){
           <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">
             <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card2);border-radius:14px;">
               <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,rgba(79,110,247,.15),rgba(124,58,237,.1));display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
-              <div><div style="font-size:13px;font-weight:700;">Add your CUET subjects</div><div style="font-size:11px;color:var(--text3);margin-top:1px;">Choose up to 5 subjects you're preparing</div></div>
+              <div><div style="font-size:13px;font-weight:700;">Choose your exam subjects</div><div style="font-size:11px;color:var(--text3);margin-top:1px;">Choose subjects or sections for your target exam</div></div>
             </div>
             <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card2);border-radius:14px;">
               <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,rgba(16,185,129,.15),rgba(6,182,212,.1));display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
@@ -4954,7 +4984,7 @@ if(!sv.length){
   const examLabels2={cuet:'CUET',ssc:'SSC',banking:'Banking',jee:'JEE',neet:'NEET'};
   const roleText=(prof.targetExams||[]).length>0
     ? (prof.targetExams||[]).map(e=>examLabels2[e]||e).join(' · ') + ' Aspirant'
-    : (prof.college || 'ThunderStudy Dashboard');
+    : (prof.college || 'CUET Mocks');
   document.getElementById('sb-role-disp').textContent=roleText;
   document.getElementById('home-greeting').innerHTML=`<svg class="ts-svg-icon" viewBox="0 0 24 24" fill="#ec4899" stroke="#ec4899" stroke-width="1"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> Hello, ${uname}!`;
   // Add dark mode toggle to mobile home topbar
@@ -4999,7 +5029,7 @@ if(nextExam&&topbarRight){
   const examStr = targetExams.length ? targetExams.map(e=>examLabels[e]||e).join(' · ') : 'Multi-Platform Dashboard';
   document.getElementById('home-sub').innerHTML=`${new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'})} · ${rank.icon} ${rank.name} · ${examStr}`;
   const heroFtr=document.getElementById('hero-footer-aspirant');
-  if(heroFtr){const el2={cuet:'CUET',ssc:'SSC',banking:'Banking',jee:'JEE',neet:'NEET'};heroFtr.textContent=targetExams.length?targetExams.map(e=>el2[e]||e).join(' · ')+' Aspirant':'ThunderStudy Dashboard';}
+  if(heroFtr){const el2={cuet:'CUET',ssc:'SSC',banking:'Banking',jee:'JEE',neet:'NEET'};heroFtr.textContent=targetExams.length?targetExams.map(e=>el2[e]||e).join(' · ')+' Aspirant':'CUET Mocks';}
  const goals=prof.goals||{};let H='';
 
 /* ══════════════════════════════════════════
@@ -5296,7 +5326,7 @@ H+=`<div class="ts-hero">
  
   <div class="ts-stats-grid">
     <div class="ts-stat-cell"><div class="ts-stat-icon"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="ts-stat-v" style="color:#3b82f6">${getCPAllResults().length||allAtt.length}</div><div class="ts-stat-l">All Tests</div></div>
-    <div class="ts-stat-cell"><div class="ts-stat-icon"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div class="ts-stat-v" style="color:#6366f1">${Object.keys(PLATFORMS).filter(p=>p!=='studyhub'&&getCPAllResults().filter(r=>r.platform===p).length>0).length||sv.length}</div><div class="ts-stat-l">Platforms</div></div>
+    <div class="ts-stat-cell"><div class="ts-stat-icon"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div class="ts-stat-v" style="color:#6366f1">${Object.keys(PLATFORMS).filter(p=>getCPAllResults().filter(r=>r.platform===p).length>0).length||sv.length}</div><div class="ts-stat-l">Platforms</div></div>
     <div class="ts-stat-cell"><div class="ts-stat-icon"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div class="ts-stat-v" style="color:#8b5cf6">${totalXP}</div><div class="ts-stat-l">XP Earned</div></div>
     <div class="ts-stat-cell"><div class="ts-stat-icon"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 01-7 7 7 7 0 01-3.5-.88"/></svg></div><div class="ts-stat-v" style="color:#f97316">${streak}</div><div class="ts-stat-l">Streak</div></div>
     <div class="ts-stat-cell"><div class="ts-stat-icon"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div><div class="ts-stat-v" style="color:#10b981">${(()=>{const cp=getCPAllResults();return cp.length>0?(cp.reduce((s,r)=>s+(r.percentage||0),0)/cp.length).toFixed(1):overallP.toFixed(1)})()}%</div><div class="ts-stat-l">Avg Score</div></div>
@@ -5306,7 +5336,7 @@ H+=`<div class="ts-hero">
   </div>
  
   <div class="ts-hero-footer">
-    <div class="ts-footer-aspirant" id="hero-footer-aspirant">ThunderStudy Dashboard</div>
+    <div class="ts-footer-aspirant" id="hero-footer-aspirant">CUET Mocks</div>
   </div>
 </div>`;
 H+=`<div class="badge-grid-wrap" style="margin-bottom:18px;">
@@ -5409,8 +5439,8 @@ H+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin
   </div>
 </a>
 
-<!-- CARD 2: StudyHub -->
-<a href="https://commercesehoga.github.io/studyhub" target="_blank" style="
+<!-- CARD 2: NCERT -->
+<a href="https://commercesehoga.github.io/ncert" target="_blank" style="
   border-radius:20px;overflow:hidden;display:flex;flex-direction:column;
   text-decoration:none;background:linear-gradient(145deg,#022c22 0%,#064e3b 100%);
   box-shadow:0 4px 20px rgba(4,78,60,.4);
@@ -5441,7 +5471,7 @@ H+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin
       </div>
       <div>
         <div style="font-size:8.5px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#6ee7b7;margin-bottom:2px;">Free Resources</div>
-        <div style="font-size:15px;font-weight:900;color:#fff;letter-spacing:-.3px;line-height:1;">StudyHub</div>
+        <div style="font-size:15px;font-weight:900;color:#fff;letter-spacing:-.3px;line-height:1;">NCERT</div>
       </div>
     </div>
 
@@ -5587,18 +5617,7 @@ H+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin
   document.getElementById('home-content').innerHTML=H;
   fetchProBanner();
   setTimeout(()=>showFooter(), 500);
-  // Show donate popup once per session if no active notices
-  setTimeout(()=>{
-    const notices=getAdminNotices().filter(n=>n.active);
-    if(!notices.length&&!sessionStorage.getItem('ts_donate_shown')){
-      sessionStorage.setItem('ts_donate_shown','1');
-      const popup=document.getElementById('donate-popup');
-      if(popup){
-        popup.classList.add('visible');
-        setTimeout(()=>popup.classList.remove('visible'),6000);
-      }
-    }
-  },3000);
+  // Donate popup is manual only from Support Us, so first-time users are not interrupted.
 
 (window._quoteFetchPromise || fetchDailyQuote()).then(q => {
   window._quoteFetchPromise = null;
@@ -5737,7 +5756,7 @@ function renderScoreboard(){
     {pid:'ssc',name:'SSC',color:'#5B4EE8',url:'https://commercesehoga.github.io/ssc/'},
     {pid:'banking',name:'Banking',color:'#0d9488',url:'https://commercesehoga.github.io/banking/'},
     {pid:'jee',name:'JEE/NEET',color:'#ec4899',url:'https://commercesehoga.github.io/jee-neet/'},
-    {pid:'studyhub',name:'StudyHub',color:'#f59e0b',url:'https://commercesehoga.github.io/studyhub/'},
+    {pid:'ncert',name:'NCERT',color:'#f59e0b',url:'https://commercesehoga.github.io/ncert/'},
   ];
   pltDefs.forEach(p=>{
     const pRes=allCPRes.filter(r=>r.platform===p.pid);
@@ -5839,7 +5858,7 @@ function exportPDF(){
   sv.forEach(sId=>{const subj=SUBJECTS_MASTER.find(s=>s.id===sId);if(!subj)return;subj.chapters.forEach(ch=>{const r=lR(sId,ch.id);if(!r)return;const clr=r.percentage>=75?'#10b981':r.percentage>=50?'#4f6ef7':r.percentage>=35?'#f59e0b':'#f43f5e';rows+=`<tr><td>${subj.icon} ${subj.name}</td><td>${ch.name}</td><td>${TL[ch.type]||ch.type}</td><td style="color:${clr};font-weight:700">${r.percentage.toFixed(1)}%</td><td>${r.score}/${r.maxScore}</td><td>${r.correct}<svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> ${r.incorrect}<svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td><td>${new Date(r.date).toLocaleDateString('en-IN')}</td></tr>`;});});
   const subjRows=sv.map(sId=>{const subj=SUBJECTS_MASTER.find(s=>s.id===sId);if(!subj)return'';const att=[];subj.chapters.forEach(ch=>{const r=lR(sId,ch.id);if(r)att.push(r);});const pct=att.length?att.reduce((s,d)=>s+d.score,0)/att.reduce((s,d)=>s+d.maxScore,0)*100:0;const clr=pct>=75?'#10b981':pct>=50?'#4f6ef7':pct>=35?'#f59e0b':'#f43f5e';return`<tr><td>${subj.icon} ${subj.name}</td><td>${att.length}/${subj.chapters.length}</td><td style="color:${clr};font-weight:700">${pct.toFixed(1)}%</td><td>${att.reduce((s,d)=>s+d.correct,0)}</td><td>${att.reduce((s,d)=>s+d.incorrect,0)}</td></tr>`;}).join('');
   const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Thunderstudy | CBT</title><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Segoe UI',sans-serif;color:#1a1d2e;background:#fff;padding:28px;}.header{background:linear-gradient(135deg,#4f6ef7,#7c3aed);color:#fff;padding:24px 28px;border-radius:14px;margin-bottom:20px;}.header h1{font-size:23px;margin-bottom:3px;}.header p{opacity:.8;font-size:12px;}.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}.stat{background:#f7f8fd;border:1px solid #e8ecf4;border-radius:11px;padding:14px 18px;flex:1;min-width:110px;text-align:center;}.stat .val{font-size:20px;font-weight:800;color:#4f6ef7;}.stat .lbl{font-size:10px;color:#9298b5;text-transform:uppercase;margin-top:3px;}h2{font-size:13px;font-weight:800;margin:18px 0 8px;border-bottom:2px solid #e8ecf4;padding-bottom:5px;}table{width:100%;border-collapse:collapse;font-size:11px;}th{background:#4f6ef7;color:#fff;padding:7px 9px;text-align:left;font-size:9px;text-transform:uppercase;}td{padding:7px 9px;border-bottom:1px solid #e8ecf4;}.btn{background:#4f6ef7;color:#fff;border:none;padding:9px 20px;border-radius:24px;cursor:pointer;font-size:12px;font-weight:700;margin-bottom:18px;}@media print{.btn{display:none;}.header{-webkit-print-color-adjust:exact;print-color-adjust:exact;}th{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}</style></head><body><button class="btn" onclick="window.print()"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Print / Save PDF</button><div class="header"><h1><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Thunderstudy Progress Report</h1><p>${prof.name||'Student'} · ${today} · ${rank.icon} ${rank.name} Rank</p></div><div class="stats"><div class="stat"><div class="val">${allAtt.length}</div><div class="lbl">Tests</div></div><div class="stat"><div class="val">${op}%</div><div class="lbl">Overall</div></div><div class="stat"><div class="val">${tS}/${tM}</div><div class="lbl">Score</div></div></div><h2><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Subject Summary</h2><table><thead><tr><th>Subject</th><th>Done</th><th>Avg %</th><th>Correct</th><th>Wrong</th></tr></thead><tbody>${subjRows}</tbody></table><h2><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> All Attempts</h2><table><thead><tr><th>Subject</th><th>Chapter</th><th>Type</th><th>%</th><th>Score</th><th>C/W</th><th>Date</th></tr></thead><tbody>${rows||'<tr><td colspan="7" style="text-align:center;color:#9298b5;padding:16px">No results yet</td></tr>'}</tbody></table></body></html>`);
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>⚡ ThunderStudy | CUET JEE NEET CLAT CAT NCERT SSC Banking Dashboard</title><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Segoe UI',sans-serif;color:#1a1d2e;background:#fff;padding:28px;}.header{background:linear-gradient(135deg,#4f6ef7,#7c3aed);color:#fff;padding:24px 28px;border-radius:14px;margin-bottom:20px;}.header h1{font-size:23px;margin-bottom:3px;}.header p{opacity:.8;font-size:12px;}.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}.stat{background:#f7f8fd;border:1px solid #e8ecf4;border-radius:11px;padding:14px 18px;flex:1;min-width:110px;text-align:center;}.stat .val{font-size:20px;font-weight:800;color:#4f6ef7;}.stat .lbl{font-size:10px;color:#9298b5;text-transform:uppercase;margin-top:3px;}h2{font-size:13px;font-weight:800;margin:18px 0 8px;border-bottom:2px solid #e8ecf4;padding-bottom:5px;}table{width:100%;border-collapse:collapse;font-size:11px;}th{background:#4f6ef7;color:#fff;padding:7px 9px;text-align:left;font-size:9px;text-transform:uppercase;}td{padding:7px 9px;border-bottom:1px solid #e8ecf4;}.btn{background:#4f6ef7;color:#fff;border:none;padding:9px 20px;border-radius:24px;cursor:pointer;font-size:12px;font-weight:700;margin-bottom:18px;}@media print{.btn{display:none;}.header{-webkit-print-color-adjust:exact;print-color-adjust:exact;}th{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}</style></head><body><button class="btn" onclick="window.print()"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Print / Save PDF</button><div class="header"><h1><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Thunderstudy Progress Report</h1><p>${prof.name||'Student'} · ${today} · ${rank.icon} ${rank.name} Rank</p></div><div class="stats"><div class="stat"><div class="val">${allAtt.length}</div><div class="lbl">Tests</div></div><div class="stat"><div class="val">${op}%</div><div class="lbl">Overall</div></div><div class="stat"><div class="val">${tS}/${tM}</div><div class="lbl">Score</div></div></div><h2><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Subject Summary</h2><table><thead><tr><th>Subject</th><th>Done</th><th>Avg %</th><th>Correct</th><th>Wrong</th></tr></thead><tbody>${subjRows}</tbody></table><h2><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> All Attempts</h2><table><thead><tr><th>Subject</th><th>Chapter</th><th>Type</th><th>%</th><th>Score</th><th>C/W</th><th>Date</th></tr></thead><tbody>${rows||'<tr><td colspan="7" style="text-align:center;color:#9298b5;padding:16px">No results yet</td></tr>'}</tbody></table></body></html>`);
   w.document.close();
 }
 
@@ -5915,11 +5934,11 @@ function renderSubjects(){
   });
 
   const SUBJ_NAMES={
-    bs:'Business Studies',eco:'Economics',pol:'Political Science',
+    bs:'Business Studies',bst:'Business Studies',eco:'Economics',pol:'Political Science',
     psy:'Psychology',cs:'Computer Science',pe:'Physical Education',acc:'Accountancy',
     quant:'Quantitative Aptitude',english:'English Language',
     reasoning:'General Intelligence',gk:'General Awareness',
-    banking_awareness:'Banking Awareness',
+    banking_awareness:'Banking Awareness',overall:'Overall',
     phy:'Physics',chem:'Chemistry',bio:'Biology',math:'Mathematics'
   };
 
@@ -6002,7 +6021,7 @@ function renderSubjects(){
     </div></div>
     <div>`;
   recent.forEach(r=>{
-    const name=SUBJ_NAMES[r.subjId]||r.subjId||'Test';
+    const name=(typeof getCPResultTitle==='function'?getCPResultTitle(r):(SUBJ_NAMES[r.subjId]||r.subjId||'Test'));
     const pct=r.percentage||0;
     const clr=pct>=60?'#10b981':pct>=40?'#f59e0b':'#f43f5e';
     const d=r.date?new Date(r.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}):'—';
@@ -7034,17 +7053,17 @@ function buildChCard(d, sId) {
 ══════════════════════════════════════════ */
 function renderMocks(){
   const container=document.getElementById('mocks-content');
-  const pltKeys=['cuet','ssc','banking','jee','studyhub'];
-  const pltNames={cuet:'CUET',ssc:'SSC',banking:'Banking',jee:'JEE/NEET',studyhub:'StudyHub'};
-  const pltColors={cuet:'#4f6ef7',ssc:'#5B4EE8',banking:'#0d9488',jee:'#ec4899',studyhub:'#f59e0b'};
-  const pltUrls={cuet:'https://commercesehoga.github.io/cuet/',ssc:'https://commercesehoga.github.io/ssc/',banking:'https://commercesehoga.github.io/banking/',jee:'https://commercesehoga.github.io/jee-neet/',studyhub:'https://commercesehoga.github.io/studyhub/'};
-  const pltTaglines={cuet:'Chapter-wise mocks, PYQs & full mocks for CUET UG',ssc:'CGL, CHSL, MTS & GD tier-wise practice tests',banking:'IBPS PO/Clerk, SBI PO/Clerk full mock series',jee:'JEE Main, Advanced & NEET chapter-wise tests',studyhub:'Premium notes, mock PDFs & HP store'};
+  const pltKeys=['cuet','jee','clat','cat','ncert','ssc','banking'];
+  const pltNames={cuet:'CUET',jee:'JEE/NEET',clat:'CLAT',cat:'CAT',ncert:'NCERT',ssc:'SSC',banking:'Banking'};
+  const pltColors={cuet:'#4f6ef7',jee:'#ec4899',clat:'#8b5cf6',cat:'#f97316',ncert:'#16a34a',ssc:'#5B4EE8',banking:'#0d9488'};
+  const pltUrls={cuet:'https://commercesehoga.github.io/cuet/',jee:'https://commercesehoga.github.io/jee-neet/',clat:'https://commercesehoga.github.io/clat/',cat:'https://commercesehoga.github.io/cat/',ncert:'https://commercesehoga.github.io/ncert/',ssc:'https://commercesehoga.github.io/ssc/',banking:'https://commercesehoga.github.io/banking/'};
+  const pltTaglines={cuet:'Chapter-wise mocks, PYQs & full mocks for CUET UG',jee:'JEE Main, Advanced & NEET chapter-wise tests',clat:'Legal aptitude, GK and reasoning practice',cat:'VARC, DILR and QA practice',ncert:'NCERT notes and chapter practice',ssc:'CGL, CHSL, MTS & GD tier-wise practice tests',banking:'IBPS PO/Clerk, SBI PO/Clerk full mock series'};
   const pltSections={
     cuet:[{name:'Business Studies',icon:'💼',count:30},{name:'Economics',icon:'📊',count:25},{name:'Political Science',icon:'🏛',count:20},{name:'Psychology',icon:'🧠',count:18},{name:'Accountancy',icon:'🧾',count:22},{name:'Computer Science',icon:'💻',count:15},{name:'Physical Education',icon:'🏃',count:12}],
     ssc:[{name:'Quantitative Aptitude',icon:'🔢',count:40},{name:'English Language',icon:'📝',count:35},{name:'General Intelligence',icon:'🧩',count:30},{name:'General Awareness',icon:'🌍',count:25}],
     banking:[{name:'Quantitative Aptitude',icon:'🔢',count:35},{name:'English Language',icon:'📝',count:30},{name:'Reasoning Ability',icon:'🧩',count:32},{name:'Banking Awareness',icon:'🏦',count:28}],
     jee:[{name:'Physics',icon:'⚛️',count:40},{name:'Chemistry',icon:'🧪',count:38},{name:'Mathematics',icon:'📐',count:42},{name:'Biology',icon:'🌿',count:36}],
-    studyhub:[{name:'CUET Notes',icon:'📋',count:15},{name:'SSC Study Material',icon:'📂',count:12},{name:'Banking Notes',icon:'📖',count:10},{name:'Mock PDFs',icon:'📄',count:20}]
+    ncert:[{name:'NCERT Notes',icon:'📋',count:15},{name:'SSC Study Material',icon:'📂',count:12},{name:'Banking Notes',icon:'📖',count:10},{name:'Mock PDFs',icon:'📄',count:20}]
   };
 
   if(!window._currentMocksPlt) window._currentMocksPlt='cuet';
@@ -7181,6 +7200,7 @@ function renderAnalytics(){
   {id:'report',label:'<svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg> Weekly',hint:'5'},
   {id:'coverage',label:'<svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l9-18 9 18H3z"/><line x1="12" y1="12" x2="12" y2="21"/></svg> Coverage',hint:'6'},
   {id:'insights',label:'<svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="13" rx="2"/><circle cx="9" cy="14" r="1.5"/><circle cx="15" cy="14" r="1.5"/><path d="M9 19h6M12 8V4M8 4h8"/></svg> Insights',hint:'7'},
+  {id:'ai',label:'AI Coach',hint:'8'},
 ];
   let H=`<div class="analytics-tabs">${tabs.map(t=>`<div class="analytics-tab ${t.id===currentAnalyticsTab?'active':''}" onclick="showAnalyticsSection('${t.id}')">${t.label}<span class="kbd-hint">${t.hint}</span></div>`).join('')}</div><div id="analytics-section"></div>`;
   document.getElementById('analytics-content').innerHTML=H;
@@ -7199,6 +7219,7 @@ else if(tab==='tod')renderTimeOfDay(sec);
 else if(tab==='report')renderWeeklyReport(sec);
 else if(tab==='coverage')renderCoverageAnalysis(sec);
 else if(tab==='insights')renderAIInsights(sec);
+else if(tab==='ai')renderThunderStudyAI(sec);
 }
 
 /* ── WEAK CHAPTERS ── */
@@ -7428,90 +7449,33 @@ function renderTimeOfDay(container){
 
 /* ── WEEKLY REPORT CARD ── */
 function renderWeeklyReport(container){
-  const allAtt=getAllAtt(),sv=getSS();
-  // Build 6-week data
-  const weeks=[];
+  const all=(typeof getCPNormalizedResults==='function'?getCPNormalizedResults():getAllAtt().map(d=>({platform:'cuet',platformName:'CUET',subject:d.subjectName||d.subjectId,testName:d.ci?.name||d.chapterId,percentage:d.percentage||0,date:d.date,score:d.score,maxScore:d.maxScore,key:d.subjectId+'_'+d.chapterId})));
   const now=new Date();
-  for(let i=5;i>=0;i--){
-    const wStart=new Date(now);wStart.setDate(wStart.getDate()-wStart.getDay()-i*7);
-    const wEnd=new Date(wStart);wEnd.setDate(wEnd.getDate()+6);
-    const wAtts=allAtt.filter(d=>{if(!d.date)return false;const dt=new Date(d.date);return dt>=wStart&&dt<=wEnd;});
-    const avgPct=wAtts.length?wAtts.reduce((s,d)=>s+d.percentage,0)/wAtts.length:0;
-    const label=i===0?'This Week':i===1?'Last Week':`${wStart.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})}`;
-    weeks.push({label,start:wStart,end:wEnd,tests:wAtts.length,avgPct,correct:wAtts.reduce((s,d)=>s+d.correct,0),wrong:wAtts.reduce((s,d)=>s+d.incorrect,0),subjects:[...new Set(wAtts.map(d=>d.subjectId))].length});
-  }
-  const thisWeek=weeks[5],lastWeek=weeks[4];
-  // Debug: force recalc using local date strings
-  const todayLocal = new Date();
-  const weekStartLocal = new Date(todayLocal);
-  weekStartLocal.setHours(0,0,0,0);
-  weekStartLocal.setDate(weekStartLocal.getDate() - weekStartLocal.getDay());
-  const weekEndLocal = new Date(weekStartLocal);
-  weekEndLocal.setDate(weekEndLocal.getDate()+6);
-  weekEndLocal.setHours(23,59,59,999);
-  // Re-filter thisWeek using local dates
-  const thisWeekAtts = allAtt.filter(d=>{
-    if(!d.date) return false;
-    const dt = new Date(d.date);
-    return dt >= weekStartLocal && dt <= weekEndLocal;
-  });
-  thisWeek.tests = thisWeekAtts.length;
-  thisWeek.avgPct = thisWeekAtts.length ? thisWeekAtts.reduce((s,d)=>s+d.percentage,0)/thisWeekAtts.length : 0;
-  thisWeek.correct = thisWeekAtts.reduce((s,d)=>s+d.correct,0);
-  thisWeek.wrong = thisWeekAtts.reduce((s,d)=>s+d.incorrect,0);
-  thisWeek.subjects = [...new Set(thisWeekAtts.map(d=>d.subjectId))].length;
-  const trendChange=thisWeekAtts.length>0&&lastWeek.tests>0?thisWeek.avgPct-lastWeek.avgPct:null;
-  let H=``;
-  // This week summary
-  H+=`<div class="card card-p" style="margin-bottom:16px;background:linear-gradient(135deg,rgba(79,110,247,.07),rgba(124,58,237,.04));border:1.5px solid rgba(79,110,247,.2);">
-    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:10px;"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg> THIS WEEK'S REPORT CARD</div>
-    <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;">
-      <div style="flex:1;min-width:120px;">
-        <div style="font-size:36px;font-weight:900;font-family:var(--mono);color:${thisWeek.tests>0?rClr(thisWeek.avgPct):'var(--text3)'};">${thisWeek.tests>0?thisWeek.avgPct.toFixed(1)+'%':'—'}</div>
-        <div style="font-size:12px;color:var(--text3);margin-top:3px;">Average Score</div>
-      </div>
-      <div style="display:flex;gap:14px;flex-wrap:wrap;">
-        <div style="text-align:center;"><div style="font-size:22px;font-weight:800;font-family:var(--mono);color:var(--acc)">${thisWeek.tests}</div><div style="font-size:10px;color:var(--text3);">Tests</div></div>
-        <div style="text-align:center;"><div style="font-size:22px;font-weight:800;font-family:var(--mono);color:var(--green)">${thisWeek.correct}</div><div style="font-size:10px;color:var(--text3);">Correct</div></div>
-        <div style="text-align:center;"><div style="font-size:22px;font-weight:800;font-family:var(--mono);color:var(--red)">${thisWeek.wrong}</div><div style="font-size:10px;color:var(--text3);">Wrong</div></div>
-        <div style="text-align:center;"><div style="font-size:22px;font-weight:800;font-family:var(--mono);color:var(--yellow)">${thisWeek.subjects}</div><div style="font-size:10px;color:var(--text3);">Subjects</div></div>
-      </div>
-      ${trendChange!==null?`<div style="text-align:center;"><div style="font-size:22px;font-weight:900;font-family:var(--mono);color:${trendChange>=0?'var(--green)':'var(--red)'};">${trendChange>=0?'↑':'↓'}${Math.abs(trendChange).toFixed(1)}%</div><div style="font-size:10px;color:var(--text3);">vs last week</div></div>`:''}
-    </div>
-  </div>`;
-
-  // Subject breakdown this week
-  H+=`<div class="card card-p" style="margin-bottom:16px;"><div class="sec-hdr"><div class="sec-title"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> This Week by Subject</div></div>`;
-const hasThisWeek=thisWeekAtts.length>0;
-  if(!hasThisWeek){H+=`<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;">No tests this week yet. Start studying! <svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 3a3 3 0 00-3 3l-7 7.5V18a2 2 0 004 0v-2.5L18 9a3 3 0 000-6z"/><line x1="6" y1="22" x2="6" y2="18"/></svg></div>`;}
-  else{
-    sv.forEach(sId=>{
-      const subj=SUBJECTS_MASTER.find(s=>s.id===sId);if(!subj)return;
-      const wAtts=allAtt.filter(d=>d.subjectId===sId&&d.date&&new Date(d.date)>=weekStartLocal&&new Date(d.date)<=weekEndLocal);
-      if(!wAtts.length)return;
-      const avg=wAtts.reduce((s,d)=>s+d.percentage,0)/wAtts.length,clr=rClr(avg);
-      H+=`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
-        <div style="font-size:18px">${subj.icon}</div>
-        <div style="flex:1;min-width:100px;"><div style="font-size:13px;font-weight:700;">${subj.name}</div><div style="font-size:10px;color:var(--text3);">${wAtts.length} test${wAtts.length!==1?'s':''}</div></div>
-        <div style="width:100px;"><div style="height:5px;background:var(--card2);border-radius:4px;overflow:hidden;"><div style="height:100%;width:${avg}%;background:${clr};border-radius:4px;"></div></div></div>
-        <div style="font-size:15px;font-weight:800;font-family:var(--mono);color:${clr};min-width:46px;text-align:right;">${avg.toFixed(0)}%</div>
-      </div>`;
-    });
-  }
+  const weekStart=new Date(now);weekStart.setHours(0,0,0,0);weekStart.setDate(weekStart.getDate()-weekStart.getDay());
+  const weekEnd=new Date(weekStart);weekEnd.setDate(weekEnd.getDate()+6);weekEnd.setHours(23,59,59,999);
+  const prevStart=new Date(weekStart);prevStart.setDate(prevStart.getDate()-7);
+  const prevEnd=new Date(weekStart);prevEnd.setMilliseconds(-1);
+  const inRange=(r,a,b)=>{const d=new Date(r.date||0);return !isNaN(d)&&d>=a&&d<=b;};
+  const thisWeek=all.filter(r=>inRange(r,weekStart,weekEnd));
+  const lastWeek=all.filter(r=>inRange(r,prevStart,prevEnd));
+  const avg=a=>a.length?a.reduce((s,r)=>s+Number(r.percentage||0),0)/a.length:0;
+  const twAvg=avg(thisWeek), lwAvg=avg(lastWeek), change=lastWeek.length?twAvg-lwAvg:null;
+  const streak=calcStreak(all.map(r=>({date:r.date,percentage:r.percentage||0})));
+  function topPlatform(rows,dir){const m={};rows.forEach(r=>{const k=r.platform||'unknown';(m[k]||(m[k]=[])).push(Number(r.percentage||0));});const arr=Object.entries(m).map(([k,a])=>({id:k,name:(PLATFORMS[k]||{}).name||k,avg:a.reduce((x,y)=>x+y,0)/a.length,count:a.length}));arr.sort((a,b)=>dir==='low'?a.avg-b.avg:b.avg-a.avg);return arr[0]||null;}
+  function weakSubject(rows){const m={};rows.forEach(r=>{const k=r.subjectId||r.subject||'overall';(m[k]||(m[k]=[])).push(Number(r.percentage||0));});const arr=Object.entries(m).map(([k,a])=>({id:k,name:typeof getCPSubjectName==='function'?getCPSubjectName(k):k,avg:a.reduce((x,y)=>x+y,0)/a.length,count:a.length}));arr.sort((a,b)=>a.avg-b.avg);return arr[0]||null;}
+  const strong=topPlatform(thisWeek,'high')||topPlatform(all,'high');
+  const weak=weakSubject(thisWeek)||weakSubject(all);
+  const nextTests=Math.max(3,thisWeek.length+2);
+  const targetText=weak?`Next week: attempt ${nextTests} tests and focus on ${weak.name}. Aim for ${Math.min(95,Math.max(60,Math.round((weak.avg||0)+10)))}%+ there.`:`Next week: attempt ${nextTests} tests across at least 2 platforms.`;
+  let H=`<div class="card card-p" style="margin-bottom:16px;background:linear-gradient(135deg,rgba(79,110,247,.07),rgba(124,58,237,.04));border:1.5px solid rgba(79,110,247,.2);"><div style="font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:12px;">Weekly Report Card</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;"><div><div style="font-size:30px;font-weight:900;font-family:var(--mono);color:var(--acc);">${thisWeek.length}</div><div style="font-size:11px;color:var(--text3);font-weight:700;">Tests Attempted</div></div><div><div style="font-size:30px;font-weight:900;font-family:var(--mono);color:${twAvg>=60?'var(--green)':twAvg>=40?'var(--yellow)':'var(--red)'};">${thisWeek.length?twAvg.toFixed(1)+'%':'--'}</div><div style="font-size:11px;color:var(--text3);font-weight:700;">Average Score</div></div><div><div style="font-size:30px;font-weight:900;font-family:var(--mono);color:${change===null?'var(--text3)':change>=0?'var(--green)':'var(--red)'};">${change===null?'--':(change>=0?'+':'')+change.toFixed(1)+'%'}</div><div style="font-size:11px;color:var(--text3);font-weight:700;">Score Change</div></div><div><div style="font-size:30px;font-weight:900;font-family:var(--mono);color:var(--orange);">${streak}</div><div style="font-size:11px;color:var(--text3);font-weight:700;">Day Streak</div></div></div></div>`;
+  H+=`<div class="grid-2" style="margin-bottom:16px;"><div class="card card-p"><div class="sec-title" style="margin-bottom:10px;">Strongest Platform</div><div style="font-size:24px;font-weight:900;color:${strong?(PLATFORMS[strong.id]||{}).color||'var(--green)':'var(--text3)'};">${strong?strong.name:'No data'}</div><div style="font-size:12px;color:var(--text3);margin-top:4px;">${strong?strong.avg.toFixed(1)+'% avg · '+strong.count+' tests':'Attempt tests this week to unlock this.'}</div></div><div class="card card-p"><div class="sec-title" style="margin-bottom:10px;">Weakest Subject</div><div style="font-size:24px;font-weight:900;color:${weak?'var(--red)':'var(--text3)'};">${weak?weak.name:'No data'}</div><div style="font-size:12px;color:var(--text3);margin-top:4px;">${weak?weak.avg.toFixed(1)+'% avg · '+weak.count+' tests':'Attempt tests this week to unlock this.'}</div></div></div>`;
+  H+=`<div class="card card-p" style="margin-bottom:16px;border:1.5px solid rgba(16,185,129,.2);background:rgba(16,185,129,.04);"><div class="sec-title" style="margin-bottom:8px;">Suggested Target For Next Week</div><div style="font-size:14px;font-weight:800;color:var(--text);line-height:1.55;">${targetText}</div></div>`;
+  H+=`<div class="card card-p"><div class="sec-hdr"><div class="sec-title">This Week Activity</div></div>`;
+  if(!thisWeek.length){H+=`<div style="font-size:13px;color:var(--text3);text-align:center;padding:20px;">No tests this week yet. Your report will fill automatically after your next attempt.</div>`;}
+  else{thisWeek.slice(0,10).forEach(r=>{const p=PLATFORMS[r.platform]||{color:'#4f6ef7',name:r.platformName||r.platform};const pct=Number(r.percentage||0);H+=`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--border);"><div style="width:32px;height:32px;border-radius:10px;background:${p.color}16;color:${p.color};display:flex;align-items:center;justify-content:center;font-weight:900;">${(p.name||'P')[0]}</div><div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escH(r.platformName+' - '+r.subject+' - '+r.testName)}</div><div style="font-size:10px;color:var(--text3);">${new Date(r.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short'})}</div></div><div style="font-size:15px;font-weight:900;font-family:var(--mono);color:${pct>=60?'var(--green)':pct>=40?'var(--yellow)':'var(--red)'};">${pct.toFixed(0)}%</div></div>`;});}
   H+=`</div>`;
-  
-H+=`<div class="card card-p" style="margin-top:16px;"><div class="sec-hdr"><div class="sec-title"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="2"/><circle cx="12" cy="14" r="3"/><path d="M8 7V5a1 1 0 011-1h6a1 1 0 011 1v2"/></svg> Shareable Weekly Card</div><button onclick="generateShareCard()" class="btn btn-prim" style="font-size:11px;padding:7px 14px;"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="2"/><circle cx="12" cy="14" r="3"/><path d="M8 7V5a1 1 0 011-1h6a1 1 0 011 1v2"/></svg> Generate</button></div><div id="share-card-preview" style="font-size:12px;color:var(--text3);">Click Generate to create a shareable screenshot card of your weekly performance.</div></div>`;
-  H+=`<div class="card card-p" style="margin-top:16px;"><div class="sec-hdr"><div class="sec-title"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> 6-Week Score Trend</div></div><div style="height:180px;"><canvas id="weekly-chart"></canvas></div></div>`;
   container.innerHTML=H;
-  setTimeout(()=>{
-    const wc=document.getElementById('weekly-chart');
-    if(wc){
-      const colors=weeks.map(w=>w.tests>0?rClr(w.avgPct)+'cc':'rgba(148,163,184,.3)');
-      CI['wc']=new Chart(wc.getContext('2d'),{type:'bar',data:{labels:weeks.map(w=>w.label),datasets:[{data:weeks.map(w=>w.tests>0?+w.avgPct.toFixed(1):0),backgroundColor:colors,borderRadius:6,borderWidth:0},{type:'line',data:weeks.map(w=>w.tests>0?+w.avgPct.toFixed(1):null),borderColor:'#4f6ef7',backgroundColor:'rgba(79,110,247,.1)',pointBackgroundColor:'#4f6ef7',pointRadius:4,borderWidth:2,tension:.35,fill:true,spanGaps:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#9298b5',font:{size:10}}},y:{min:0,max:100,grid:{color:'rgba(0,0,0,.05)'},ticks:{color:'#9298b5',font:{size:10},callback:v=>v+'%'}}}}});
-    }
-  },100);
 }
-
 /* ══════════════════════════════════════════
    CLASS RANK PAGE
 ══════════════════════════════════════════ */
@@ -8370,7 +8334,7 @@ function renderSettings(){
     {pid:'ssc',     name:'SSC',      color:'#5B4EE8', url:'https://commercesehoga.github.io/ssc/'},
     {pid:'banking', name:'Banking',  color:'#0d9488', url:'https://commercesehoga.github.io/banking/'},
     {pid:'jee',     name:'JEE/NEET', color:'#ec4899', url:'https://commercesehoga.github.io/jee-neet/'},
-    {pid:'studyhub',name:'StudyHub', color:'#f59e0b', url:'https://commercesehoga.github.io/studyhub/'},
+    {pid:'ncert',name:'NCERT', color:'#f59e0b', url:'https://commercesehoga.github.io/ncert/'},
   ];
   H+=`
   <div class="card card-p" style="margin-bottom:14px;">
@@ -8381,7 +8345,7 @@ function renderSettings(){
     <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
     ${pltDefs2.map(p => {
       const pRes = cpAllRes.filter(r => r.platform === p.pid);
-      const count = p.pid === 'studyhub'
+      const count = false
         ? (() => { try { return JSON.parse(localStorage.getItem('sh_purchases')||'[]').length; } catch(e){ return 0; }})()
         : pRes.length;
       const avg = pRes.length > 0 ? pRes.reduce((s,r) => s + (r.percentage||0), 0) / pRes.length : 0;
@@ -8392,9 +8356,9 @@ function renderSettings(){
         </div>
         <div style="flex:1;min-width:0;">
           <div style="font-size:12px;font-weight:800;color:var(--text);">${p.name}</div>
-          <div style="font-size:10px;color:var(--text3);">${hasData ? (p.pid==='studyhub' ? count+' purchases' : count+' tests · avg '+avg.toFixed(0)+'%') : 'No data yet'}</div>
+          <div style="font-size:10px;color:var(--text3);">${hasData ? (false ? count+' purchases' : count+' tests · avg '+avg.toFixed(0)+'%') : 'No data yet'}</div>
         </div>
-        ${hasData ? `<div style="font-size:13px;font-weight:900;font-family:var(--mono);color:${p.color};">${p.pid==='studyhub'?count:avg.toFixed(0)+'%'}</div>` : ''}
+        ${hasData ? `<div style="font-size:13px;font-weight:900;font-family:var(--mono);color:${p.color};">${false?count:avg.toFixed(0)+'%'}</div>` : ''}
         <a href="${p.url}" target="_self" style="font-size:10px;font-weight:800;color:${p.color};text-decoration:none;padding:5px 11px;border-radius:20px;border:1.5px solid ${p.color}28;background:${p.color}0a;white-space:nowrap;flex-shrink:0;transition:all .2s;"
           onmouseenter="this.style.background='${p.color}18'" onmouseleave="this.style.background='${p.color}0a'">
           ${hasData ? 'Open →' : 'Start →'}
@@ -9347,7 +9311,7 @@ function showPromoHint(){
       <text x="1100" y="380" text-anchor="end" font-size="14" fill="rgba(255,255,255,0.65)">By Thunderstudy</text>
     </svg>
     <div style="display:flex;gap:9px;">
-      <a href="https://commercesehoga.github.io/studyhub/" target="_blank" class="btn btn-prim" style="flex:1;justify-content:center;padding:12px;font-size:13px;"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Get the Books</a>
+      <a href="https://commercesehoga.github.io/ncert/" target="_blank" class="btn btn-prim" style="flex:1;justify-content:center;padding:12px;font-size:13px;"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Get the Books</a>
       <button onclick="this.closest('[style*=fixed]').remove()" class="btn btn-ghost" style="flex:1;justify-content:center;padding:12px;font-size:13px;">Got it!</button>
     </div>
   </div>`;
@@ -9688,7 +9652,7 @@ async function cloudFetchFromSettings() {
   let cloudTestCount = 0;
   let cloudSubjects = [];
   if(cloudData){
-    Object.keys(cloudData).forEach(k=>{ if(k.startsWith('thunderstudy_result_')) cloudTestCount++; });
+    Object.keys(cloudData).forEach(k=>{ if(k.startsWith('thunderstudy_result_')||k.startsWith('thunderstudy_sscresult_')||k.startsWith('thunderstudy_jee_neetresult_')||k.startsWith('tsb_')||k.startsWith('banking_result_')) cloudTestCount++; });
     try { cloudSubjects = JSON.parse(cloudData['ts_subs']||'[]'); } catch(e){}
   }
   const cloudSavedAt = cloudData?.['_savedAt']
@@ -10025,7 +9989,7 @@ function renderCuetTargetCard(containerEl,allAtt,sv){
   let html=`<div class="cuet-target-card">
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
       <div>
-        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> CUET Target Tracker</div>
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Exam Target Tracker</div>
         <div style="font-size:20px;font-weight:900;margin-top:4px;font-family:var(--mono);line-height:1.2;">
           <span style="color:${statusColor}">${projected}</span>
           <span style="font-size:11px;color:var(--text3);"> projected / </span>
@@ -10084,7 +10048,7 @@ function openCuetTargetEditor(){
   const presets=obGetPresets(total);
   const curTarget=ct.targetMarks||Math.round(total*.85);
   let html=`<div style="text-align:center;margin-bottom:14px;">
-    <div style="font-size:10px;color:var(--text3);font-weight:700;margin-bottom:4px;">YOUR CUET TARGET</div>
+    <div style="font-size:10px;color:var(--text3);font-weight:700;margin-bottom:4px;">YOUR EXAM TARGET</div>
     <div style="font-size:30px;font-weight:900;font-family:var(--mono);"><span id="ct-disp" style="color:var(--acc)">${curTarget}</span><span style="color:var(--text3);font-size:15px;"> / ${total}</span></div>
   </div>
   <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:8px;">Quick Presets</div>
@@ -10241,17 +10205,9 @@ function startOnboarding(){
     setTimeout(() => applyGoogleUserToUI(existingGU), 50);
   }
 
+  // Subject selection is skipped on the common multi-platform onboarding.
   const grid=document.getElementById('ob-subj-grid');
-  let html='';
-  SUBJECTS_MASTER.forEach(s=>{
-    html+=`<div class="ob-subj-card" id="ob-sc-${s.id}" onclick="obToggleSubj('${s.id}')">
-      <div class="ob-subj-icon">${s.icon}</div>
-      <div class="ob-subj-name">${s.name}</div>
-      <div class="ob-subj-marks">250 marks</div>
-      <div class="ob-subj-check"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-    </div>`;
-  });
-  grid.innerHTML=html;
+  if(grid) grid.innerHTML='';
   document.getElementById('ob-overlay').classList.add('open');
   obValidate1();obUpdateProgress(1);
 }
@@ -10284,7 +10240,7 @@ else{
 
 function obNext(step){
   if(step===3){
-    const total=_obSelSubjs.length*250;
+    const total=_obSelSubjs.length ? _obSelSubjs.length*250 : 1000;
     const presets=obGetPresets(total);
     let html='';
     presets.forEach(p=>{html+=`<div class="ob-preset" id="ob-preset-${p.val}" onclick="obSelectPreset(${p.val},${total})"><div class="ob-preset-val">${p.val}</div><div class="ob-preset-lbl">${p.label}</div></div>`;});
@@ -10293,7 +10249,7 @@ function obNext(step){
     _obTargetMarks=defTarget;
     document.getElementById('ob-total-disp').textContent=defTarget;
     document.getElementById('ob-total-denom').textContent=` / ${total}`;
-    document.getElementById('ob-target-sub').textContent=`You have ${_obSelSubjs.length} subject${_obSelSubjs.length>1?'s':''} → ${total} total marks. What's your target?`;
+    document.getElementById('ob-target-sub').textContent=_obSelSubjs.length ? `You have ${_obSelSubjs.length} subject${_obSelSubjs.length>1?'s':''} → ${total} total marks. What's your target?` : `Set a general target score for your exam preparation.`;
     const slider=document.getElementById('ob-target-slider');
     slider.max=total;slider.min=0;slider.step=25;slider.value=defTarget;
     document.getElementById('ob-slider-val').textContent=defTarget;
@@ -10329,7 +10285,7 @@ function obSliderChange(val){
   document.getElementById('ob-total-disp').textContent=val;
   document.getElementById('ob-slider-val').textContent=val;
   document.querySelectorAll('.ob-preset').forEach(el=>el.classList.remove('sel'));
-  const total=_obSelSubjs.length*250;
+  const total=_obSelSubjs.length ? _obSelSubjs.length*250 : 1000;
   obGetPresets(total).forEach(p=>{if(p.val===val){const el=document.getElementById('ob-preset-'+p.val);if(el)el.classList.add('sel');}});
 }
 
@@ -10343,12 +10299,13 @@ function obFinish(){
   const college=document.getElementById('ob-college').value.trim();
   const cls=document.getElementById('ob-class').value.trim();
   const sid=document.getElementById('ob-sid')?.value.trim()||'';
-  const total=_obSelSubjs.length*250;
-  const p={name,college,class:cls,goals:{},cuetTarget:{totalMarks:total,targetMarks:_obTargetMarks,subjectCount:_obSelSubjs.length}};
+  const defaultSubjs=SUBJECTS_MASTER.map(s=>s.id);
+  const total=1000;
+  const p={name,college,class:cls,goals:{},examTarget:{totalMarks:total,targetMarks:_obTargetMarks},cuetTarget:{totalMarks:total,targetMarks:_obTargetMarks,subjectCount:0}};
   localStorage.setItem('ts_profile',JSON.stringify(p));
   if(name) localStorage.setItem('cbtUserName',name);
   if(sid) localStorage.setItem('ts_student_id',sid);
-  saveSS(_obSelSubjs);
+  saveSS(defaultSubjs);
   localStorage.setItem('ts_ob_done','1');
   document.getElementById('ob-overlay').classList.remove('open');
   renderHome();
@@ -14309,12 +14266,15 @@ function tsFooterExpand(){
    CROSS-PLATFORM DATA LAYER
 ══════════════════════════════════════════ */
 
+const PLATFORM_ORDER = ['cuet','jee','clat','cat','ncert','ssc','banking'];
 const PLATFORMS = {
-  cuet:    { name:'CUET',    color:'#4f6ef7', url:'https://commercesehoga.github.io/cuet/',     subjs:['bs','eco','pol','psy','cs','pe','acc'] },
-  ssc:     { name:'SSC',     color:'#5B4EE8', url:'https://commercesehoga.github.io/ssc/',      subjs:['quant','english','reasoning','gk'] },
-  banking: { name:'Banking', color:'#0d9488', url:'https://commercesehoga.github.io/banking/',  subjs:['quant','english','reasoning','banking_awareness'] },
-  jee:     { name:'JEE/NEET',color:'#ec4899', url:'https://commercesehoga.github.io/jee-neet/',subjs:['phy','chem','bio','math'] },
-  studyhub:{ name:'StudyHub',color:'#f59e0b', url:'https://commercesehoga.github.io/studyhub/',subjs:[] }
+  cuet:    { name:'CUET',     icon:'🎓', color:'#4f6ef7', url:'https://commercesehoga.github.io/cuet/',      tagline:'CUET UG mocks, PYQs and analytics',       subjs:['bs','eco','pol','psy','cs','pe','acc'] },
+  jee:     { name:'JEE/NEET', icon:'⚛️', color:'#ec4899', url:'https://commercesehoga.github.io/jee-neet/', subjs:['phy','chem','bio','math'],                 tagline:'JEE Main, Advanced and NEET practice' },
+  clat:    { name:'CLAT',     icon:'⚖️', color:'#8b5cf6', url:'https://commercesehoga.github.io/clat/',     subjs:['english','legal','logical','gk','quant'],  tagline:'Legal aptitude, GK and reasoning practice' },
+  cat:     { name:'CAT',      icon:'📈', color:'#f97316', url:'https://commercesehoga.github.io/cat/',      subjs:['varc','dilr','qa'],                       tagline:'VARC, DILR and QA practice' },
+  ncert:   { name:'NCERT',    icon:'📚', color:'#16a34a', url:'https://commercesehoga.github.io/ncert/',    subjs:['class11','class12','science','commerce'], tagline:'NCERT notes and chapter practice' },
+  ssc:     { name:'SSC',      icon:'🧩', color:'#5B4EE8', url:'https://commercesehoga.github.io/ssc/',      subjs:['quant','english','reasoning','gk'],        tagline:'SSC CGL, CHSL, MTS and GD practice' },
+  banking: { name:'Banking',  icon:'🏦', color:'#0d9488', url:'https://commercesehoga.github.io/banking/',  subjs:['quant','english','reasoning','banking_awareness'], tagline:'IBPS, SBI and banking awareness mocks' }
 };
 
 const EXAM_DATES = {
@@ -14325,6 +14285,9 @@ const EXAM_DATES = {
   banking_sbi_po:   '2026-07-01',
   jee_main:         '2027-01-15',
   neet:             '2026-05-04',
+  clat:             '2026-12-01',
+  cat:              '2026-11-29',
+  ncert:            '2026-03-01',
 };
 
 const NOTES_SUBJECTS = {
@@ -14337,31 +14300,118 @@ const NOTES_SUBJECTS = {
 
 function getCPAllResults() {
   const results = [];
-  // CUET + JEE: thunderstudy_result_{subjectId}_{chapterId}
+  const seen = new Set();
+  const SSC_EXAM_IDS = ['cgl','chsl','mts','gd','cpo','je','steno','sel'];
+  const BANK_EXAM_IDS = ['ibps_po','ibps_clerk','sbi_po','sbi_clerk','rrb_po','rrb_clerk','rbi_grade_b','rbi_assistant','nabard','banking','bank'];
+  const JN_SUBJECT_IDS = ['phy','physics','che','chem','chemistry','bio','biology','mat','math','maths','jee','neet'];
+  const SSC_SUBJECT_IDS = ['ga','gk','quant','english','eng','reasoning','reas','technical'];
+  const BANK_SUBJECT_IDS = ['banking_awareness','banking','computer_awareness','financial_awareness','bank_ga'];
+
+  function safeJSON(raw){ try { return raw ? JSON.parse(raw) : null; } catch(e) { return null; } }
+  function num(v){ const n = Number(v); return Number.isFinite(n) ? n : 0; }
+  function normalizeSubj(s){
+    s = String(s || '').toLowerCase();
+    if (s === 'bst' || s === 'bs') return 'bst';
+    if (s === 'che' || s === 'chemistry') return 'chem';
+    if (s === 'mat' || s === 'maths') return 'math';
+    if (s === 'ga') return 'gk';
+    if (s === 'eng') return 'english';
+    if (s === 'reas') return 'reasoning';
+    return s || 'overall';
+  }
+  function pctFrom(v){
+    if (v.percentage !== undefined) return num(v.percentage);
+    if (v.percent !== undefined) return num(v.percent);
+    if (v.pct !== undefined) return num(v.pct);
+    const score = num(v.score), max = num(v.maxScore || v.total || v.max || v.questions);
+    return max > 0 ? (score / max) * 100 : 0;
+  }
+  function add(key, platform, subjId, chapterId, value, extra){
+    if (!value || typeof value !== 'object' || seen.has(key)) return;
+    const pct = Math.max(0, Math.min(100, pctFrom(value)));
+    const score = value.score !== undefined ? value.score : (value.marks !== undefined ? value.marks : '');
+    const maxScore = value.maxScore || value.total || value.max || value.questions || '';
+    results.push({
+      key,
+      platform,
+      subjId: normalizeSubj(value.subjId || value.subjectId || value.subject || subjId),
+      chapterId: value.chapterId || value.mockId || value.testId || chapterId || '',
+      percentage: pct,
+      score,
+      maxScore,
+      date: value.date || value.ts || value.time || value.savedAt || value.createdAt || new Date(0).toISOString(),
+      ...value,
+      ...(extra || {})
+    });
+    seen.add(key);
+  }
+  function classify(examOrSubj, mockId, val){
+    const first = String(examOrSubj || '').toLowerCase();
+    const mock = String(mockId || '').toLowerCase();
+    const hinted = String((val && (val.platform || val.portal || val.exam || val.examId || val.examName)) || '').toLowerCase();
+    if (hinted.includes('bank') || BANK_EXAM_IDS.includes(first) || BANK_SUBJECT_IDS.includes(first)) return 'banking';
+    if (hinted.includes('jee') || hinted.includes('neet') || JN_SUBJECT_IDS.includes(first) || mock.startsWith('jee') || mock.startsWith('neet')) return 'jee';
+    if (hinted.includes('ssc') || SSC_EXAM_IDS.includes(first) || SSC_SUBJECT_IDS.includes(first)) return 'ssc';
+    return 'cuet';
+  }
+  function subjectFrom(examOrSubj, mockId, platform){
+    const first = String(examOrSubj || '').toLowerCase();
+    const mock = String(mockId || '').toLowerCase();
+    if (platform === 'jee') return normalizeSubj(first);
+    if (platform === 'cuet') return normalizeSubj(first);
+    if (mock.startsWith('ga') || mock.includes('_ga')) return 'gk';
+    if (mock.startsWith('quant') || mock.includes('_quant')) return 'quant';
+    if (mock.startsWith('eng') || mock.includes('_eng')) return 'english';
+    if (mock.startsWith('reas') || mock.includes('_reas')) return 'reasoning';
+    if (mock.includes('bank')) return 'banking_awareness';
+    return platform === 'banking' ? 'overall' : normalizeSubj(first);
+  }
+
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
     if (!k) continue;
-    try {
-      if (k.startsWith('thunderstudy_result_')) {
-        const val = JSON.parse(localStorage.getItem(k));
-        if (!val) continue;
-        const parts = k.replace('thunderstudy_result_','').split('_');
-        const subjId = parts[0];
-        const chapterId = parts.slice(1).join('_');
-        let platform = 'cuet';
-        if (['phy','chem','bio','math'].includes(subjId)) platform = 'jee';
-        else if (['quant','english','reasoning','gk'].includes(subjId)) platform = 'ssc';
-        results.push({ key: k, platform, subjId, chapterId, ...val });
-      } else if (k.startsWith('tsb_r_') || k.startsWith('tsb_fm_')) {
-        const val = JSON.parse(localStorage.getItem(k));
-        if (!val) continue;
-        results.push({ key: k, platform: 'banking', ...val });
-      }
-    } catch(e) {}
+    const val = safeJSON(localStorage.getItem(k));
+    if (!val) continue;
+
+    if (k.startsWith('thunderstudy_jee_neetresult_')) {
+      const parts = k.replace('thunderstudy_jee_neetresult_','').split('_');
+      add(k, 'jee', parts[0], parts.slice(1).join('_'), val);
+    } else if (k.startsWith('thunderstudy_jnmock_')) {
+      const parts = k.replace('thunderstudy_jnmock_','').split('_');
+      add(k, 'jee', parts[0] || 'overall', parts.slice(1).join('_'), val);
+    } else if (k.startsWith('thunderstudy_sscresult_') || k.startsWith('ssc_result_')) {
+      const prefix = k.startsWith('thunderstudy_sscresult_') ? 'thunderstudy_sscresult_' : 'ssc_result_';
+      const parts = k.replace(prefix,'').split('_');
+      const examId = parts[0];
+      const mockId = parts.slice(1).join('_');
+      const platform = classify(examId, mockId, val);
+      add(k, platform, subjectFrom(examId, mockId, platform), mockId, val, { examId, mockId });
+    } else if (k.startsWith('thunderstudy_result_')) {
+      const parts = k.replace('thunderstudy_result_','').split('_');
+      const first = parts[0];
+      const rest = parts.slice(1).join('_');
+      const platform = classify(first, rest, val);
+      add(k, platform, subjectFrom(first, rest, platform), rest, val, { examId:first, mockId:rest });
+    } else if (k.startsWith('tsb_r_') || k.startsWith('tsb_fm_') || k.startsWith('banking_result_') || k.startsWith('thunderstudy_bankingresult_')) {
+      const parts = k.replace(/^tsb_r_|^tsb_fm_|^banking_result_|^thunderstudy_bankingresult_/,'').split('_');
+      add(k, 'banking', subjectFrom(parts[0], parts.slice(1).join('_'), 'banking'), parts.slice(1).join('_'), val);
+    }
   }
-  return results;
+
+  ['ts_results','ts_test_results','cuet_results','ssc_results','banking_results','jee_results','neet_results'].forEach(storeKey => {
+    const arr = safeJSON(localStorage.getItem(storeKey));
+    if (!Array.isArray(arr)) return;
+    arr.forEach((val, idx) => {
+      const platform = storeKey.includes('banking') ? 'banking' : storeKey.includes('ssc') ? 'ssc' : (storeKey.includes('jee') || storeKey.includes('neet')) ? 'jee' : storeKey.includes('cuet') ? 'cuet' : classify(val.examId || val.subjId || val.subject, val.mockId || val.chapterId, val);
+      add(storeKey + '_' + idx, platform, val.subjId || val.subjectId || val.subject || 'overall', val.chapterId || val.mockId || val.testId || idx, val);
+    });
+  });
+
+  return results.sort((a,b) => new Date(b.date || 0) - new Date(a.date || 0));
 }
 
+const _baseGetCPAllResults=getCPAllResults;
+getCPAllResults=function(){const rows=_baseGetCPAllResults();const m={};rows.forEach(r=>{const id=[r.platform||'x',r.subjId||'overall',r.chapterId||r.mockId||r.testId||'test'].join('|');(m[id]||(m[id]=[])).push(r);});return Object.values(m).flatMap(g=>g.sort((a,b)=>new Date(b.date||0)-new Date(a.date||0)).slice(0,2)).sort((a,b)=>new Date(b.date||0)-new Date(a.date||0));};
 function getPlatformStats(platform) {
   let count = 0, totalPct = 0, lastDate = null, bestPct = 0;
   const results = getCPAllResults().filter(r => r.platform === platform);
@@ -14373,12 +14423,6 @@ function getPlatformStats(platform) {
     const d = r.date ? new Date(r.date) : null;
     if (d && (!lastDate || d > lastDate)) lastDate = d;
   });
-  if (platform === 'studyhub') {
-    try {
-      const purchases = JSON.parse(localStorage.getItem('sh_purchases') || '[]');
-      count = purchases.length;
-    } catch(e) { count = 0; }
-  }
   return { count, avgPct: count > 0 ? totalPct / count : 0, lastDate, bestPct };
 }
 
@@ -14395,7 +14439,6 @@ function getCPAvgScore() {
 
 function getCPActiveExams() {
   return Object.keys(PLATFORMS).filter(p => {
-    if (p === 'studyhub') return false;
     return getPlatformStats(p).count > 0;
   }).length;
 }
@@ -14403,7 +14446,6 @@ function getCPActiveExams() {
 function getMostActivePlatform() {
   let best = null, bestDate = null;
   Object.keys(PLATFORMS).forEach(p => {
-    if (p === 'studyhub') return;
     const s = getPlatformStats(p);
     if (s.lastDate && (!bestDate || s.lastDate > bestDate)) {
       bestDate = s.lastDate;
@@ -14415,12 +14457,39 @@ function getMostActivePlatform() {
 
 function getLeastActivePlatform() {
   // Platform with lowest avg score among those with results
-  const active = Object.keys(PLATFORMS).filter(p => p !== 'studyhub' && getPlatformStats(p).count > 0);
+  const active = Object.keys(PLATFORMS).filter(p => getPlatformStats(p).count > 0);
   if (!active.length) return null;
   active.sort((a, b) => getPlatformStats(a).avgPct - getPlatformStats(b).avgPct);
   return active[0];
 }
 
+function buildChooseExamGrid() {
+  const order = (typeof PLATFORM_ORDER !== 'undefined' ? PLATFORM_ORDER : Object.keys(PLATFORMS));
+  let H = `<section id="choose-exam" style="width:100%;margin:0 0 22px;">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap;">
+      <div>
+        <div style="font-size:11px;font-weight:900;color:var(--text3);text-transform:uppercase;letter-spacing:.9px;margin-bottom:4px;">Choose Exam</div>
+        <div style="font-size:18px;font-weight:900;color:var(--text);letter-spacing:-.3px;">Start from your target platform</div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);font-weight:700;">CUET · JEE/NEET · CLAT · CAT · NCERT · SSC · Banking</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;">`;
+  order.forEach(pid => {
+    const p = PLATFORMS[pid];
+    if (!p) return;
+    H += `<a href="${p.url}" target="_self" style="text-decoration:none;background:var(--card);border:1.5px solid ${p.color}33;border-radius:16px;padding:14px;display:flex;align-items:center;gap:12px;min-height:86px;box-shadow:0 4px 18px ${p.color}12;transition:transform .18s,box-shadow .18s,border-color .18s;"
+      onmouseenter="this.style.transform='translateY(-3px)';this.style.borderColor='${p.color}';this.style.boxShadow='0 10px 28px ${p.color}26'"
+      onmouseleave="this.style.transform='none';this.style.borderColor='${p.color}33';this.style.boxShadow='0 4px 18px ${p.color}12'">
+      <div style="width:42px;height:42px;border-radius:13px;background:${p.color}16;color:${p.color};display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0;">${p.icon || '⚡'}</div>
+      <div style="min-width:0;">
+        <div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:3px;">${p.name}</div>
+        <div style="font-size:10.5px;line-height:1.45;color:var(--text3);font-weight:600;">${p.tagline || 'Open platform'}</div>
+      </div>
+    </a>`;
+  });
+  H += `</div></section>`;
+  return H;
+}
 /* ── PLATFORM SWITCHER PILLS ── */
 function buildPlatformSwitcher() {
   const mostActive = getMostActivePlatform();
@@ -14443,7 +14512,6 @@ function buildGoalRings() {
   let H = '<div class="goal-ring-row">';
   const r = 22, circ = 2 * Math.PI * r;
   Object.entries(PLATFORMS).forEach(([pid, pdata]) => {
-    if (pid === 'studyhub') return;
     const stats = getPlatformStats(pid);
     const pct = Math.min(100, stats.count > 0 ? Math.min(100, stats.avgPct) : 0);
     const offset = circ - (pct / 100) * circ;
@@ -14519,11 +14587,11 @@ function buildCPStatsRow() {
 
 /* ── QUICK ACCESS GRID ── */
 function buildQuickAccessGrid() {
-  const platformList = Object.entries(PLATFORMS).filter(([p]) => p !== 'studyhub');
+  const platformList = Object.entries(PLATFORMS);
   let H = '<div class="sec-hdr"><div class="sec-title"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Platform Quick Access</div></div><div class="qa-grid">';
   platformList.forEach(([pid, pdata]) => {
     const stats = getPlatformStats(pid);
-    const taglines = { cuet:'Chapter-wise CUET Mocks', ssc:'SSC CGL/CHSL Practice', banking:'IBPS & SBI Prep', jee:'JEE & NEET Tests' };
+    const taglines = { cuet:'Chapter-wise CUET Mocks', jee:'JEE & NEET Tests', clat:'CLAT Legal & GK Practice', cat:'CAT VARC/DILR/QA', ncert:'NCERT Notes & Practice', ssc:'SSC CGL/CHSL Practice', banking:'IBPS & SBI Prep' };
     const lastAct = stats.lastDate ? stats.lastDate.toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) : 'Not started';
     const avgPct = stats.avgPct.toFixed(0);
     H += `<div class="qa-card" onclick="window.open('${pdata.url}','_self')">
@@ -14550,8 +14618,8 @@ function buildQuickAccessGrid() {
   return H;
 }
 
-/* ── STUDYHUB PANEL ── */
-function buildStudyHubPanel() {
+/* ── NCERT PANEL ── */
+function buildNCERTPanel() {
   let purchases = [], csPurchases = {};
   try { purchases = JSON.parse(localStorage.getItem('sh_purchases') || '[]'); } catch(e) {}
   try { csPurchases = JSON.parse(localStorage.getItem('sh_cs_purchases') || '{}'); } catch(e) {}
@@ -14561,7 +14629,7 @@ function buildStudyHubPanel() {
       <div style="width:38px;height:38px;border-radius:11px;background:rgba(245,158,11,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
       </div>
-      <div style="flex:1;"><div style="font-size:14px;font-weight:800;">StudyHub</div><div style="font-size:10px;color:var(--text3);">Your Purchases</div></div>
+      <div style="flex:1;"><div style="font-size:14px;font-weight:800;">NCERT</div><div style="font-size:10px;color:var(--text3);">Your Purchases</div></div>
       <div style="display:flex;align-items:center;gap:5px;background:rgba(124,58,237,.1);border-radius:20px;padding:4px 10px;">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="#7c3aed" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
         <span style="font-size:11px;font-weight:800;color:#7c3aed;">${hp} HP</span>
@@ -14570,15 +14638,15 @@ function buildStudyHubPanel() {
   if (!purchases.length && !Object.keys(csPurchases).length) {
     H += `<div style="text-align:center;padding:22px 16px;">
       <div style="font-size:13px;font-weight:700;color:var(--text3);margin-bottom:10px;">No purchases yet</div>
-      <a href="https://commercesehoga.github.io/studyhub/" class="btn btn-prim" style="display:inline-flex;justify-content:center;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Visit StudyHub
+      <a href="https://commercesehoga.github.io/ncert/" class="btn btn-prim" style="display:inline-flex;justify-content:center;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> Visit NCERT
       </a>
     </div>`;
   } else {
     purchases.slice(0, 4).forEach(item => {
       const name = typeof item === 'string' ? item : (item.name || item.title || JSON.stringify(item));
       const date = item.date ? new Date(item.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) : '';
-      H += `<a class="sh-purchase-item" href="https://commercesehoga.github.io/studyhub/" target="_self">
+      H += `<a class="sh-purchase-item" href="https://commercesehoga.github.io/ncert/" target="_self">
         <div style="width:32px;height:32px;border-radius:9px;background:rgba(245,158,11,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
         </div>
@@ -14587,7 +14655,7 @@ function buildStudyHubPanel() {
       </a>`;
     });
     if (purchases.length > 4) {
-      H += `<div style="text-align:center;font-size:11px;color:var(--text3);margin-top:6px;">+${purchases.length - 4} more · <a href="https://commercesehoga.github.io/studyhub/" style="color:var(--acc);font-weight:700;">View all</a></div>`;
+      H += `<div style="text-align:center;font-size:11px;color:var(--text3);margin-top:6px;">+${purchases.length - 4} more · <a href="https://commercesehoga.github.io/ncert/" style="color:var(--acc);font-weight:700;">View all</a></div>`;
     }
   }
   H += '</div>';
@@ -14655,13 +14723,12 @@ function renderAnalyticsCrossPlat() {
 
   // ── A: Tests Per Platform Bar Chart ──
   let byPlatform = {};
-  Object.keys(PLATFORMS).forEach(p => { if(p!=='studyhub') byPlatform[p] = 0; });
+  Object.keys(PLATFORMS).forEach(p => { byPlatform[p] = 0; });
   allResults.forEach(r => { if (byPlatform.hasOwnProperty(r.platform)) byPlatform[r.platform]++; });
 
   // ── B: Last 10 tests per platform for trend ──
   let platformTrends = {};
   Object.keys(PLATFORMS).forEach(p => {
-    if(p==='studyhub') return;
     const res = allResults.filter(r => r.platform === p).sort((a,b) => new Date(a.date||0) - new Date(b.date||0)).slice(-10);
     platformTrends[p] = res;
   });
@@ -14722,7 +14789,12 @@ function renderAnalyticsCrossPlat() {
       <div class="analytics-tab" onclick="cpAnalyticsTab('weakest',this)">
         <svg class="ts-svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Weakest
       </div>
-    </div>
+          <div class="analytics-tab" onclick="cpAnalyticsTab('weekly',this)">
+        <svg class="ts-svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M8 11h8M8 15h5"/></svg> Weekly
+      </div>
+      <div class="analytics-tab" onclick="cpAnalyticsTab('ai',this)">
+        <svg class="ts-svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2"/><circle cx="9" cy="14" r="1.5"/><circle cx="15" cy="14" r="1.5"/><path d="M12 8V4"/><path d="M8 4h8"/></svg> AI Coach
+      </div>    </div>
     <div id="cp-analytics-panel"></div>
   </div>`;
 
@@ -14837,12 +14909,16 @@ function cpAnalyticsTab(tab, btn) {
       wH = `<div style="border-radius:var(--r2);overflow:hidden;border:1.5px solid var(--border);">${wH}</div>`;
     }
     panel.innerHTML = `<div class="card card-p"><div class="sec-title" style="margin-bottom:14px;">Top 5 Weakest Areas</div>${wH}</div>`;
+  } else if (tab === 'weekly') {
+    renderWeeklyReport(panel);
+  } else if (tab === 'ai') {
+    renderThunderStudyAI(panel);
   }
 }
 
 /* ── NOTES PAGE ── */
 let _notesDebounce = null;
-const NOTES_PLATFORMS = ['ssc','cuet','jee','neet','banking'];
+const NOTES_PLATFORMS = ['cuet','jee','neet','clat','cat','ncert','ssc','banking'];
 let _currentNotesPlt = 'cuet';
 
 /* ── Notes URL map ──────────────────────────────────────────
@@ -14887,8 +14963,8 @@ const NOTES_URL_MAP = {
   },
 };
 
-const NOTES_PLT_COLORS = { cuet:'#4f6ef7', ssc:'#5B4EE8', banking:'#0d9488', jee:'#ec4899', neet:'#f59e0b' };
-const NOTES_PLT_NAMES  = { cuet:'CUET', ssc:'SSC', banking:'Banking', jee:'JEE', neet:'NEET' };
+const NOTES_PLT_COLORS = { cuet:'#4f6ef7', jee:'#ec4899', neet:'#f59e0b', clat:'#8b5cf6', cat:'#f97316', ncert:'#16a34a', ssc:'#5B4EE8', banking:'#0d9488' };
+const NOTES_PLT_NAMES  = { cuet:'CUET', jee:'JEE', neet:'NEET', clat:'CLAT', cat:'CAT', ncert:'NCERT', ssc:'SSC', banking:'Banking' };
 const NOTES_PLT_URLS   = {
   cuet:    'https://commercesehoga.github.io/cuet/',
   ssc:     'https://commercesehoga.github.io/ssc/',
@@ -15002,6 +15078,97 @@ function setNotesPlt(p) { _currentNotesPlt = p; renderNotes(); }
 
 /* ── INJECT CROSS-PLATFORM HERO UPGRADES INTO renderHome ── */
 /* Patch: we wrap the hero-end injection */
+
+/* SMART CROSS-PLATFORM DASHBOARD UPGRADES */
+function getCPSubjectName(id){
+  const map={bs:'Business Studies',bst:'Business Studies',eco:'Economics',pol:'Political Science',psy:'Psychology',cs:'Computer Science',pe:'Physical Education',acc:'Accountancy',eng:'English',english:'English Language',gat:'General Test',phy:'Physics',chem:'Chemistry',che:'Chemistry',bio:'Biology',mat:'Mathematics',math:'Mathematics',quant:'Quantitative Aptitude',gk:'General Awareness',ga:'General Awareness',reasoning:'Reasoning',reas:'Reasoning',technical:'Technical',banking_awareness:'Banking Awareness',overall:'Overall'};
+  return map[String(id||'').toLowerCase()] || String(id||'Test').replace(/[_-]+/g,' ').replace(/\b\w/g,m=>m.toUpperCase());
+}
+function getCPMockName(r){
+  const raw=String((r&& (r.chapterId||r.mockId||r.testId))||''), low=raw.toLowerCase(), subject=getCPSubjectName(r&&r.subjId);
+  if(!raw)return subject;
+  if(low.startsWith('t2full'))return 'Tier II Full Mock '+raw.replace(/\D/g,'');
+  if(low.startsWith('full'))return 'Full Mock '+raw.replace(/\D/g,'');
+  if(low.startsWith('image_'))return getCPSubjectName(low.replace('image_',''))+' Image Mock';
+  if(low.startsWith('sp'))return 'Special Mock '+raw.replace(/\D/g,'');
+  const num=(raw.match(/\d+/)||[''])[0];
+  if(low.startsWith('quant'))return 'Quant Chapter '+num;
+  if(low.startsWith('ga')||low.startsWith('gk'))return 'General Awareness Chapter '+num;
+  if(low.startsWith('eng'))return 'English Chapter '+num;
+  if(low.startsWith('reas'))return 'Reasoning Chapter '+num;
+  if(low.includes('pyq'))return subject+' PYQ '+(raw.match(/\d{2,4}/)||[''])[0];
+  return raw.replace(/[_-]+/g,' ').replace(/\b\w/g,m=>m.toUpperCase());
+}
+function getCPResultTitle(r){const p=PLATFORMS[r.platform]||{name:r.platform||'Platform'};return p.name+' - '+getCPSubjectName(r.subjId)+' - '+getCPMockName(r);}
+function getCPNormalizedResults(){return getCPAllResults().map(r=>({platform:r.platform||'unknown',platformName:(PLATFORMS[r.platform]||{}).name||r.platform||'Platform',exam:r.examId||r.exam||r.platform||'',subjectId:r.subjId||'',subject:getCPSubjectName(r.subjId),testId:r.chapterId||r.mockId||r.testId||'',testName:getCPMockName(r),score:r.score||'',maxScore:r.maxScore||r.total||r.max||'',percentage:Number(r.percentage||0),date:r.date||'',key:r.key||''}));}
+function getCPWeakSubject(platform){const res=getCPAllResults().filter(r=>r.platform===platform),map={};res.forEach(r=>{const s=r.subjId||'overall';(map[s]||(map[s]=[])).push(Number(r.percentage||0));});const rows=Object.entries(map).map(([id,a])=>({id,name:getCPSubjectName(id),avg:a.reduce((x,y)=>x+y,0)/a.length,count:a.length})).filter(x=>x.count>0);rows.sort((a,b)=>a.avg-b.avg);return rows[0]||null;}
+function getPlatformSetupStatus(){let ssc=[],jn=[],prof={};try{ssc=JSON.parse(localStorage.getItem('ssc_exams')||'[]')}catch(e){}try{jn=JSON.parse(localStorage.getItem('jn_exams')||'[]')}catch(e){}try{prof=JSON.parse(localStorage.getItem('ts_profile')||'{}')}catch(e){}return {profile:!!(prof.name||localStorage.getItem('cbtUserName')),cuet:getSS().length>0,ssc:ssc.length>0||!!localStorage.getItem('ssc_ob_done'),banking:!!localStorage.getItem('tsb_ob_done')||getPlatformStats('banking').count>0,jee:jn.length>0||!!localStorage.getItem('jn_ob_done')||getPlatformStats('jee').count>0};}
+function buildSmartPlatformCards(){let H='<div class="sec-hdr"><div class="sec-title">Platform Snapshot</div></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:18px;">';Object.entries(PLATFORMS).filter(([pid])=>['cuet','ssc','banking','jee'].includes(pid)).forEach(([pid,p])=>{const st=getPlatformStats(pid),weak=getCPWeakSubject(pid),last=st.lastDate?st.lastDate.toLocaleDateString('en-IN',{day:'2-digit',month:'short'}):'No attempt',tone=st.count?(st.avgPct>=60?'#10b981':st.avgPct>=40?'#f59e0b':'#f43f5e'):p.color;H+=`<div style="background:var(--card);border:1.5px solid ${p.color}30;border-radius:18px;padding:16px;box-shadow:0 6px 22px ${p.color}12;"><div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;"><div style="width:40px;height:40px;border-radius:12px;background:${p.color}17;color:${p.color};display:flex;align-items:center;justify-content:center;font-size:20px;">${p.icon||'⚡'}</div><div style="flex:1;min-width:0;"><div style="font-size:14px;font-weight:900;color:var(--text);">${p.name}</div><div style="font-size:10px;color:var(--text3);">${st.count?'Continue practice':'Ready to start'}</div></div><div style="font-size:20px;font-weight:900;font-family:var(--mono);color:${tone};">${st.count?st.avgPct.toFixed(0)+'%':'--'}</div></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;"><div><div style="font-size:15px;font-weight:900;color:var(--text);font-family:var(--mono);">${st.count}</div><div style="font-size:9px;color:var(--text3);font-weight:800;text-transform:uppercase;">Tests</div></div><div><div style="font-size:15px;font-weight:900;color:var(--text);font-family:var(--mono);">${st.bestPct.toFixed(0)}%</div><div style="font-size:9px;color:var(--text3);font-weight:800;text-transform:uppercase;">Best</div></div><div><div style="font-size:11px;font-weight:900;color:var(--text);">${last}</div><div style="font-size:9px;color:var(--text3);font-weight:800;text-transform:uppercase;">Last</div></div></div><div style="font-size:11px;color:var(--text3);min-height:32px;margin-bottom:12px;line-height:1.45;">${weak?`Weak area: <strong style="color:${tone};">${weak.name}</strong> (${weak.avg.toFixed(0)}%)`:'Attempt a test to unlock weak-area tracking.'}</div><a href="${p.url}" target="_self" style="display:flex;align-items:center;justify-content:center;text-decoration:none;border-radius:12px;padding:10px 12px;background:${p.color};color:#fff;font-size:12px;font-weight:900;">${st.count?'Continue Practice':'Start Platform'}</a></div>`;});return H+'</div>';}
+function buildUnifiedActivity(){const res=getCPAllResults().slice(0,8);if(!res.length)return '<div class="card card-p" style="margin-bottom:18px;"><div class="sec-title" style="margin-bottom:8px;">Recent Activity</div><div style="font-size:12px;color:var(--text3);">No saved attempts yet. Start any platform and your latest scores will appear here.</div></div>';let H='<div class="card" style="margin-bottom:18px;overflow:hidden;"><div style="padding:16px 18px 8px;"><div class="sec-title">Recent Activity</div></div>';res.forEach(r=>{const p=PLATFORMS[r.platform]||{name:r.platform,color:'#4f6ef7'},pct=Number(r.percentage||0),d=r.date?new Date(r.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}):'--';H+=`<div style="display:flex;align-items:center;gap:11px;padding:11px 18px;border-top:1px solid var(--border);"><div style="width:34px;height:34px;border-radius:11px;background:${p.color}15;color:${p.color};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;">${(p.name||'P')[0]}</div><div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escH(getCPResultTitle(r))}</div><div style="font-size:10px;color:var(--text3);">${d} - ${escH(r.key||'')}</div></div><div style="font-size:16px;font-weight:900;font-family:var(--mono);color:${pct>=60?'#10b981':pct>=40?'#f59e0b':'#f43f5e'};">${pct.toFixed(0)}%</div></div>`;});return H+'</div>';}
+function buildWeakAreaEngine(){const rows=Object.keys(PLATFORMS).map(pid=>{const w=getCPWeakSubject(pid),st=getPlatformStats(pid);return w?{pid,w,st}:null;}).filter(Boolean).sort((a,b)=>a.w.avg-b.w.avg).slice(0,3);if(!rows.length)return '<div class="card card-p" style="margin-bottom:18px;"><div class="sec-title" style="margin-bottom:8px;">Focus Suggestions</div><div style="font-size:12px;color:var(--text3);">Take a few tests and I will surface your weakest subjects automatically.</div></div>';let H='<div class="card card-p" style="margin-bottom:18px;"><div class="sec-hdr"><div class="sec-title">Focus Suggestions</div></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;">';rows.forEach(x=>{const p=PLATFORMS[x.pid];H+=`<a href="${p.url}" target="_self" style="text-decoration:none;background:${p.color}0d;border:1.5px solid ${p.color}26;border-radius:14px;padding:13px;"><div style="font-size:11px;font-weight:900;color:${p.color};margin-bottom:5px;">${p.name}</div><div style="font-size:13px;font-weight:900;color:var(--text);">${x.w.name}</div><div style="font-size:11px;color:var(--text3);margin-top:4px;">Avg ${x.w.avg.toFixed(0)}% across ${x.w.count} tests</div></a>`;});return H+'</div></div>';}
+function buildSetupStatus(){const st=getPlatformSetupStatus(),items=[['profile','Profile'],['cuet','CUET Subjects'],['ssc','SSC Exams'],['banking','Banking'],['jee','JEE/NEET']];let H='<div class="card card-p" style="margin-bottom:18px;"><div class="sec-title" style="margin-bottom:12px;">Setup Status</div><div style="display:flex;gap:8px;flex-wrap:wrap;">';items.forEach(([k,label])=>{const ok=!!st[k];H+=`<span style="display:inline-flex;align-items:center;gap:6px;border-radius:20px;padding:7px 11px;font-size:11px;font-weight:900;background:${ok?'rgba(16,185,129,.1)':'rgba(245,158,11,.1)'};color:${ok?'#10b981':'#f59e0b'};border:1px solid ${ok?'rgba(16,185,129,.25)':'rgba(245,158,11,.25)'};">${ok?'✓':'!'} ${label}</span>`;});return H+'</div></div>';}
+function buildSmartEmptyStates(){const missing=Object.entries(PLATFORMS).filter(([pid])=>['cuet','ssc','banking','jee'].includes(pid)&&getPlatformStats(pid).count===0);if(!missing.length)return '';let H='<div class="sec-hdr"><div class="sec-title">Start Missing Platforms</div></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:18px;">';missing.forEach(([pid,p])=>{H+=`<a href="${p.url}" target="_self" style="text-decoration:none;background:var(--card);border:1.5px dashed ${p.color}55;border-radius:16px;padding:14px;display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;border-radius:11px;background:${p.color}16;color:${p.color};display:flex;align-items:center;justify-content:center;">${p.icon||'⚡'}</div><div><div style="font-size:13px;font-weight:900;color:var(--text);">${p.name}</div><div style="font-size:10px;color:var(--text3);">No result yet - start now</div></div></a>`;});return H+'</div>';}
+function buildSmartDashboardSections(){return buildCloudSyncHealthCard()+buildDuplicateCleanerCard()+buildSmartPlatformCards()+buildUnifiedActivity()+buildWeakAreaEngine()+buildSetupStatus()+buildSmartEmptyStates();}
+
+function tsWeekKey(){const d=new Date();const s=new Date(d);s.setHours(0,0,0,0);s.setDate(s.getDate()-s.getDay());return s.toISOString().slice(0,10);}
+function getAIQuota(){let q={week:tsWeekKey(),count:0};try{q=JSON.parse(localStorage.getItem('ts_ai_quota')||JSON.stringify(q));}catch(e){}if(q.week!==tsWeekKey())q={week:tsWeekKey(),count:0};return q;}
+function saveAIQuota(q){localStorage.setItem('ts_ai_quota',JSON.stringify(q));}
+function renderThunderStudyAI(container){
+  const q=getAIQuota(), left=Math.max(0,5-(q.count||0));
+  container.innerHTML=`<div class="card card-p" style="margin-bottom:16px;background:linear-gradient(135deg,rgba(79,110,247,.07),rgba(6,182,212,.04));border:1.5px solid rgba(79,110,247,.2);"><div class="sec-hdr"><div><div class="sec-title">ThunderStudy AI Coach</div><div style="font-size:12px;color:var(--text3);margin-top:4px;">${left} of 5 messages left this week</div></div><a href="https://thunderstudyai.vercel.app/" target="_blank" class="btn btn-ghost" style="font-size:11px;padding:7px 12px;text-decoration:none;">Open AI</a></div><div id="ts-ai-chat" style="min-height:160px;max-height:320px;overflow-y:auto;background:var(--card2);border-radius:14px;padding:12px;margin-bottom:12px;font-size:13px;color:var(--text2);line-height:1.6;"><div style="color:var(--text3);">Ask for a study plan, weak subject advice, or weekly target. I will include your dashboard data.</div></div><div style="display:flex;gap:8px;"><input id="ts-ai-input" class="ob-input" style="flex:1;margin:0;" maxlength="500" placeholder="Ask AI about your preparation..."><button class="btn btn-prim" onclick="sendThunderStudyAI()" ${left<=0?'disabled':''}>Send</button></div><div id="ts-ai-status" style="font-size:11px;color:var(--text3);margin-top:8px;min-height:14px;"></div></div>`;
+}
+function renderAIPage(){
+  const el=document.getElementById('ai-content');
+  if(el) renderThunderStudyAI(el);
+}
+async function sendThunderStudyAI(){
+  const inp=document.getElementById('ts-ai-input'), chat=document.getElementById('ts-ai-chat'), st=document.getElementById('ts-ai-status');
+  const msg=(inp&&inp.value||'').trim(); if(!msg)return;
+  const q=getAIQuota(); if((q.count||0)>=5){if(st)st.textContent='Weekly AI limit reached. Try again next week.';return;}
+  const summary={weekly:(typeof getCPNormalizedResults==='function'?getCPNormalizedResults():[]).slice(0,30),profile:getProfile(),platforms:Object.fromEntries(Object.keys(PLATFORMS).map(p=>[p,getPlatformStats(p)]))};
+  chat.innerHTML+=`<div style="margin:8px 0;text-align:right;"><span style="display:inline-block;background:var(--acc);color:#fff;border-radius:14px 14px 4px 14px;padding:8px 11px;max-width:85%;">${escH(msg)}</span></div>`;
+  inp.value=''; if(st)st.textContent='Thinking...';
+  try{
+    let res=await fetch('https://thunderstudyai.vercel.app/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,context:summary})});
+    if(!res.ok)res=await fetch('https://thunderstudyai.vercel.app/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,context:summary})});
+    const ct=res.headers.get('content-type')||''; const data=ct.includes('json')?await res.json():{reply:await res.text()};
+    const reply=data.reply||data.message||data.answer||'AI response received.';
+    q.count=(q.count||0)+1;saveAIQuota(q);
+    chat.innerHTML+=`<div style="margin:8px 0;"><span style="display:inline-block;background:var(--card);border:1px solid var(--border);border-radius:14px 14px 14px 4px;padding:8px 11px;max-width:90%;">${escH(reply)}</span></div>`;
+    if(st)st.textContent=(5-q.count)+' messages left this week';
+  }catch(e){if(st)st.textContent='AI API unavailable. Open the AI site from the button above.';chat.innerHTML+=`<div style="margin:8px 0;color:var(--red);font-size:12px;">Could not reach AI API: ${escH(e.message)}</div>`;}
+}
+function getDuplicateResultGroups(){
+  const raw=(typeof _baseGetCPAllResults==='function'?_baseGetCPAllResults():getCPAllResults());
+  const groups={};
+  raw.forEach(r=>{const id=[r.platform||'x',r.subjId||'overall',r.chapterId||r.mockId||r.testId||'test'].join('|');(groups[id]||(groups[id]=[])).push(r);});
+  return Object.values(groups).map(g=>g.sort((a,b)=>new Date(b.date||0)-new Date(a.date||0))).filter(g=>g.length>2);
+}
+function getDuplicateResultCount(){return getDuplicateResultGroups().reduce((s,g)=>s+Math.max(0,g.length-2),0);}
+function cleanDuplicateResults(){
+  const groups=getDuplicateResultGroups();let removed=0,skipped=0;
+  groups.forEach(g=>g.slice(2).forEach(r=>{if(r.key&&localStorage.getItem(r.key)!==null&&!['ts_results','ts_test_results','cuet_results','ssc_results','banking_results','jee_results','neet_results'].some(k=>r.key.startsWith(k+'_'))){localStorage.removeItem(r.key);removed++;}else skipped++;}));
+  localStorage.setItem('ts_dup_clean_last',new Date().toISOString());
+  showToast(`Duplicate cleanup: ${removed} old keys removed${skipped?`, ${skipped} array items skipped`:''}`,'success',3500);
+  setTimeout(()=>location.reload(),700);
+}
+function showDuplicateCleanupPopup(){
+  const n=getDuplicateResultCount(); if(!n)return;
+  const today=new Date().toISOString().slice(0,10); if(localStorage.getItem('ts_dup_popup_seen')===today)return;
+  localStorage.setItem('ts_dup_popup_seen',today);
+  const m=document.createElement('div');m.id='dup-clean-popup';m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10050;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(8px);';
+  m.innerHTML=`<div class="card card-p" style="max-width:420px;width:100%;"><div style="font-size:18px;font-weight:900;margin-bottom:8px;">Clean duplicate results?</div><div style="font-size:13px;color:var(--text3);line-height:1.6;margin-bottom:16px;">I found ${n} old duplicate result keys. Analytics will keep the latest 2 attempts per test. You can remove older direct keys now.</div><div style="display:flex;gap:8px;justify-content:flex-end;"><button class="btn btn-ghost" onclick="document.getElementById('dup-clean-popup').remove()">Later</button><button class="btn btn-prim" onclick="cleanDuplicateResults()">Clean Duplicates</button></div></div>`;
+  document.body.appendChild(m);
+}
+function buildCloudSyncHealthCard(){
+  const local=(typeof getCPNormalizedResults==='function'?getCPNormalizedResults():[]).length;
+  const last=localStorage.getItem('ts_cloud_last_save');
+  const cloud=parseInt(localStorage.getItem('ts_cloud_result_count')||localStorage.getItem('ts_cloud_test_count')||'0')||0;
+  const synced=!!last;
+  const unsynced=Math.max(0,local-cloud);
+  return `<div class="card card-p" style="margin-bottom:18px;border:1.5px solid ${synced?'rgba(16,185,129,.2)':'rgba(245,158,11,.28)'};background:${synced?'rgba(16,185,129,.035)':'rgba(245,158,11,.055)'};"><div class="sec-hdr"><div class="sec-title">Cloud Sync Health</div><button class="btn btn-ghost" style="font-size:11px;padding:6px 10px;" onclick="exportData()">Backup</button></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;"><div><div style="font-size:18px;font-weight:900;font-family:var(--mono);color:var(--text);">${last?new Date(last).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}):'Never'}</div><div style="font-size:10px;color:var(--text3);font-weight:800;text-transform:uppercase;">Last Backup</div></div><div><div style="font-size:18px;font-weight:900;font-family:var(--mono);color:var(--acc);">${local}</div><div style="font-size:10px;color:var(--text3);font-weight:800;text-transform:uppercase;">Local Results</div></div><div><div style="font-size:18px;font-weight:900;font-family:var(--mono);color:var(--green);">${cloud||'--'}</div><div style="font-size:10px;color:var(--text3);font-weight:800;text-transform:uppercase;">Cloud Results</div></div><div><div style="font-size:18px;font-weight:900;font-family:var(--mono);color:${unsynced?'var(--yellow)':'var(--green)'};">${unsynced}</div><div style="font-size:10px;color:var(--text3);font-weight:800;text-transform:uppercase;">Unsynced Keys</div></div></div>${!synced&&local?'<div style="margin-top:12px;font-size:12px;font-weight:800;color:var(--yellow);">Warning: your results appear to be local only. Export a backup or sync cloud before changing device.</div>':''}</div>`;
+}
+function buildDuplicateCleanerCard(){const n=getDuplicateResultCount();return `<div class="card card-p" style="margin-bottom:18px;"><div class="sec-hdr"><div class="sec-title">Duplicate Result Cleaner</div><button class="btn ${n?'btn-prim':'btn-ghost'}" style="font-size:11px;padding:6px 10px;" ${n?`onclick="cleanDuplicateResults()"`:'disabled'}>${n?'Clean':'Clean'}</button></div><div style="font-size:13px;color:var(--text3);line-height:1.6;">${n?`Found ${n} old duplicate result keys. Analytics keeps the latest 2 attempts per test.`:'No duplicate result keys detected.'}</div></div>`;}
 const _origRenderHome = renderHome;
 renderHome = function() {
   _origRenderHome.apply(this, arguments);
@@ -15015,6 +15182,8 @@ renderHome = function() {
     const cpWrap = document.createElement('div');
     cpWrap.id = 'cp-hero-upgrades';
     cpWrap.innerHTML = `
+      ${buildChooseExamGrid()}
+      ${buildSmartDashboardSections()}
       <div style="margin-bottom:4px;"><div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:8px;">Platform Activity</div>
         ${buildPlatformSwitcher()}
         ${buildGoalRings()}
@@ -15022,7 +15191,8 @@ renderHome = function() {
         ${buildCPStatsRow()}
       </div>
     `;
-    heroEl.parentNode.insertBefore(cpWrap, heroEl);
+    if(!document.getElementById('cp-hero-upgrades')) heroEl.parentNode.insertBefore(cpWrap, heroEl);
+    try{showDuplicateCleanupPopup();}catch(e){}
 
     // Inject Quick Access Grid after quick links
     const qlSection = hc.querySelector('.quick-links');
@@ -15030,14 +15200,14 @@ renderHome = function() {
       const qaDiv = document.createElement('div');
       qaDiv.id = 'cp-quick-access';
       qaDiv.innerHTML = buildQuickAccessGrid();
-      qlSection.parentNode.insertAfter ? qlSection.parentNode.insertAfter(qaDiv, qlSection) : qlSection.parentNode.appendChild(qaDiv);
+      if(!document.getElementById('cp-quick-access')) qlSection.parentNode.insertBefore(qaDiv, qlSection.nextSibling);
     }
 
-    // Inject StudyHub Panel and Countdown after heatmap
+    // Inject NCERT Panel and Countdown after heatmap
     const heatmapSection = hc.querySelector('.card.card-p');
     const shDiv = document.createElement('div');
-    shDiv.id = 'cp-studyhub-panel';
-    shDiv.innerHTML = `<div class="sec-hdr"><div class="sec-title"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> StudyHub</div></div>${buildStudyHubPanel()}${buildExamCountdownTimeline()}`;
+    shDiv.id = 'cp-ncert-panel';
+    shDiv.innerHTML = `<div class="sec-hdr"><div class="sec-title"><svg class="ts-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> NCERT</div></div>${buildNCERTPanel()}${buildExamCountdownTimeline()}`;
     if (heatmapSection) {
       heatmapSection.parentNode.insertBefore(shDiv, heatmapSection.nextSibling);
     } else {
@@ -15057,11 +15227,28 @@ setInterval(() => {
 
 
 
+
+function cleanFooterArtifacts(){
+  var root = document.getElementById('ts-footer');
+  if(!root) return;
+  var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  var nodes = [];
+  while(walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(function(n){
+    n.nodeValue = n.nodeValue
+      .replace(/`r`n/g, '')
+      .replace(/r['’]?n/g, '')
+      .replace(/\\r\\n/g, '')
+      .replace(/\\n/g, '');
+  });
+}
+
 // Show footer after page loads
 function showFooter(){
   var f = document.getElementById('ts-footer');
   if(!f) return;
   f.style.display = 'block';
+  cleanFooterArtifacts();
 }
 
 // Contact popup
