@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -258,6 +257,11 @@
     }
     @keyframes slideUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
 
+    /* ── Push panel extras ── */
+    #p-send-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    #p-status { transition: background 0.2s; }
+    .push-target-active { outline: 2px solid var(--accent); outline-offset: 2px; }
+
     /* ── Divider ── */
     .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
 
@@ -291,6 +295,9 @@
       </button>
       <button class="nav-item" onclick="switchPanel('exams', this)">
         <span class="nav-icon">📝</span> Exams
+      </button>
+      <button class="nav-item" onclick="switchPanel('push', this)">
+        <span class="nav-icon">🔔</span> Push Notify
       </button>
     </nav>
 
@@ -410,6 +417,86 @@
           <span class="chip" id="e-count">—</span>
         </div>
         <div id="exams-list"><div class="empty"><span class="empty-icon">📭</span>Loading…</div></div>
+      </div>
+    </div>
+
+
+    <!-- ── PUSH NOTIFICATIONS ── -->
+    <div id="panel-push" class="panel">
+      <div class="page-header">
+        <div class="page-title">Push Notifications</div>
+        <div class="page-desc">Send Firebase push notifications to all students or a specific Student ID.</div>
+      </div>
+
+      <!-- Compose card -->
+      <div class="card">
+        <div class="card-label">Compose Notification</div>
+
+        <div class="field">
+          <label>Title</label>
+          <input type="text" id="p-title" placeholder="e.g. New mock test available!">
+        </div>
+
+        <div class="field">
+          <label>Body</label>
+          <textarea id="p-body" placeholder="Write the notification message…" style="min-height:90px;"></textarea>
+        </div>
+
+        <div class="grid2">
+          <div class="field">
+            <label>Link / URL (optional)</label>
+            <input type="text" id="p-url" placeholder="https://…">
+          </div>
+          <div class="field">
+            <label>Icon URL (optional)</label>
+            <input type="text" id="p-icon" placeholder="https://… (default app icon used if empty)">
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="card-label" style="margin-bottom:12px;">Target</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;" id="p-target-tabs">
+          <button class="btn btn-primary" id="ptab-all"    onclick="setPushTarget('all')">📡 All Students</button>
+          <button class="btn btn-ghost"   id="ptab-single" onclick="setPushTarget('single')">🎯 Single Student</button>
+        </div>
+
+        <div id="p-single-field" style="display:none;" class="field">
+          <label>Student ID</label>
+          <input type="text" id="p-sid" placeholder="e.g. TS04821" style="font-family:monospace;letter-spacing:0.05em;">
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" id="p-send-btn" onclick="sendPush()">
+            🔔 Send Notification
+          </button>
+          <button class="btn btn-ghost" onclick="loadTokenCount()">↻ Refresh token count</button>
+        </div>
+
+        <!-- Status bar -->
+        <div id="p-status" style="display:none;margin-top:14px;padding:11px 14px;border-radius:var(--radius);font-size:13px;line-height:1.6;"></div>
+      </div>
+
+      <!-- Token stats card -->
+      <div class="card">
+        <div class="list-header">
+          <div class="list-title">Registered Devices</div>
+          <span class="chip" id="p-token-count">—</span>
+        </div>
+        <div id="p-token-list">
+          <div class="empty"><span class="empty-icon">📭</span>Loading devices…</div>
+        </div>
+      </div>
+
+      <!-- Send history card -->
+      <div class="card">
+        <div class="list-header">
+          <div class="list-title">Send History</div>
+          <button class="btn btn-ghost" style="font-size:12px;padding:5px 12px;" onclick="clearPushHistory()">Clear</button>
+        </div>
+        <div id="p-history-list">
+          <div class="empty"><span class="empty-icon">📭</span>No notifications sent yet</div>
+        </div>
       </div>
     </div>
 
@@ -610,6 +697,237 @@
   // ── Init ──
   loadNotices();
   loadExams();
+</script>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+  /* ── Firebase init ── */
+  const firebaseConfig = {
+    apiKey:            "AIzaSyAoxORpjq2kIED1hBNAQ2MGJEWlwQ3FCJA",
+    authDomain:        "thunderstudy.firebaseapp.com",
+    projectId:         "thunderstudy",
+    storageBucket:     "thunderstudy.firebasestorage.app",
+    messagingSenderId: "83506167126",
+    appId:             "1:83506167126:web:9b3e7017ba871103672af7",
+    measurementId:     "G-ZFLKZGW9FV"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const fbDb = firebase.firestore();
+
+  /* ── Push target state ── */
+  let _pushTarget = 'all';
+
+  function setPushTarget(t) {
+    _pushTarget = t;
+    document.getElementById('p-single-field').style.display = t === 'single' ? 'block' : 'none';
+    document.getElementById('ptab-all').className    = 'btn ' + (t === 'all'    ? 'btn-primary' : 'btn-ghost');
+    document.getElementById('ptab-single').className = 'btn ' + (t === 'single' ? 'btn-primary' : 'btn-ghost');
+  }
+
+  /* ── Load token count + device list ── */
+  async function loadTokenCount() {
+    const listEl  = document.getElementById('p-token-list');
+    const countEl = document.getElementById('p-token-count');
+    listEl.innerHTML = '<div class="empty"><span class="empty-icon">⏳</span>Loading…</div>';
+    try {
+      const snap = await fbDb.collection('fcm_tokens').get();
+      if (snap.empty) {
+        listEl.innerHTML = '<div class="empty"><span class="empty-icon">📭</span>No devices registered yet</div>';
+        countEl.textContent = '0';
+        return;
+      }
+      countEl.textContent = snap.size;
+      const rows = [];
+      snap.forEach(doc => {
+        const d = doc.data();
+        rows.push({ id: doc.id, ...d });
+      });
+      // Sort by updatedAt desc
+      rows.sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
+      listEl.innerHTML = rows.map(r => {
+        const when = r.updatedAt ? new Date(r.updatedAt).toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }) : '—';
+        const plat = r.platform === 'mobile' ? '📱' : '🖥️';
+        return `<div class="item">
+          <div class="item-body">
+            <div class="item-head">
+              <span class="badge badge-accent">${r.uid || r.id}</span>
+              ${r.name ? `<span class="item-title">${escHtml(r.name)}</span>` : ''}
+              <span class="badge badge-muted">${plat} ${r.platform || 'unknown'}</span>
+            </div>
+            <div class="item-meta">Last seen: ${when}</div>
+          </div>
+          <div class="item-actions">
+            <button class="icon-btn" title="Send test notification to this device" onclick="sendPushToToken('${r.id}', '${escHtml(r.name || r.uid || r.id)}')">🔔</button>
+          </div>
+        </div>`;
+      }).join('');
+    } catch(e) {
+      listEl.innerHTML = `<div class="empty"><span class="empty-icon">⚠️</span>Failed to load: ${e.message}</div>`;
+    }
+  }
+
+  /* ── Send push via Google Apps Script relay ── */
+  async function sendPush() {
+    const title = document.getElementById('p-title').value.trim();
+    const body  = document.getElementById('p-body').value.trim();
+    if (!title || !body) return toast('Title and body are required', true);
+
+    const btn = document.getElementById('p-send-btn');
+    const statusEl = document.getElementById('p-status');
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Sending…';
+    statusEl.style.display = 'block';
+    statusEl.style.background = 'var(--info-dim)';
+    statusEl.style.color = 'var(--info-text)';
+    statusEl.style.border = '1px solid rgba(59,130,246,0.25)';
+    statusEl.textContent = 'Fetching device tokens from Firestore…';
+
+    try {
+      /* 1. Pull tokens from Firestore */
+      let tokens = [];
+      let targetLabel = '';
+
+      if (_pushTarget === 'single') {
+        const sid = document.getElementById('p-sid').value.trim().toUpperCase();
+        if (!sid) { toast('Enter a Student ID', true); btn.disabled = false; btn.textContent = '🔔 Send Notification'; return; }
+        const doc = await fbDb.collection('fcm_tokens').doc(sid).get();
+        if (!doc.exists || !doc.data().token) {
+          showPushStatus('error', `No device token found for Student ID: ${sid}`);
+          btn.disabled = false; btn.textContent = '🔔 Send Notification'; return;
+        }
+        tokens = [{ uid: sid, token: doc.data().token, name: doc.data().name }];
+        targetLabel = `1 device (${sid})`;
+      } else {
+        const snap = await fbDb.collection('fcm_tokens').get();
+        snap.forEach(doc => {
+          const d = doc.data();
+          if (d.token) tokens.push({ uid: doc.id, token: d.token, name: d.name });
+        });
+        targetLabel = `${tokens.length} device${tokens.length !== 1 ? 's' : ''}`;
+      }
+
+      if (!tokens.length) {
+        showPushStatus('error', 'No registered devices found.');
+        btn.disabled = false; btn.textContent = '🔔 Send Notification'; return;
+      }
+
+      statusEl.textContent = `Sending to ${targetLabel}…`;
+
+      /* 2. Send via GAS relay */
+      const payload = {
+        type:    'PUSH_SEND',
+        title,
+        body,
+        url:     document.getElementById('p-url').value.trim() || '',
+        icon:    document.getElementById('p-icon').value.trim() || '',
+        tokens:  tokens.map(t => t.token),
+        uids:    tokens.map(t => t.uid),
+      };
+
+      const res = await apiPost(payload);
+
+      if (res.ok) {
+        const successCount = res.success || tokens.length;
+        const failCount    = res.fail    || 0;
+        showPushStatus('success',
+          `✓ Sent to ${successCount} device${successCount !== 1 ? 's' : ''}.` +
+          (failCount ? ` ${failCount} failed.` : '')
+        );
+        savePushHistory({ title, body, target: targetLabel, sentAt: new Date().toISOString(), success: successCount, fail: failCount });
+        renderPushHistory();
+        /* Clear form */
+        ['p-title','p-body','p-url','p-icon','p-sid'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+      } else {
+        showPushStatus('error', res.error || 'Server returned an error.');
+      }
+    } catch(e) {
+      showPushStatus('error', 'Network error: ' + e.message);
+    }
+
+    btn.disabled = false;
+    btn.textContent = '🔔 Send Notification';
+  }
+
+  /* ── Quick test push to a single device token ── */
+  async function sendPushToToken(uid, name) {
+    const doc = await fbDb.collection('fcm_tokens').doc(uid).get();
+    if (!doc.exists || !doc.data().token) return toast('No token for this device', true);
+    // Pre-fill form and switch to single mode
+    document.getElementById('p-title').value = 'Test Notification';
+    document.getElementById('p-body').value  = `Hello ${name || uid}! This is a test from ThunderStudy Admin.`;
+    document.getElementById('p-sid').value   = uid;
+    setPushTarget('single');
+    toast(`Form pre-filled for ${name || uid} — review and send`);
+  }
+
+  /* ── Status helper ── */
+  function showPushStatus(type, msg) {
+    const el = document.getElementById('p-status');
+    el.style.display = 'block';
+    if (type === 'success') {
+      el.style.background = 'var(--success-dim)';
+      el.style.color = 'var(--success-text)';
+      el.style.border = '1px solid rgba(34,197,94,0.3)';
+    } else {
+      el.style.background = 'var(--danger-dim)';
+      el.style.color = 'var(--danger-text)';
+      el.style.border = '1px solid rgba(239,68,68,0.3)';
+    }
+    el.textContent = msg;
+  }
+
+  /* ── Push history (localStorage) ── */
+  function getPushHistory() {
+    try { return JSON.parse(localStorage.getItem('ts_push_history') || '[]'); } catch(e) { return []; }
+  }
+  function savePushHistory(entry) {
+    const h = getPushHistory();
+    h.unshift(entry);
+    localStorage.setItem('ts_push_history', JSON.stringify(h.slice(0, 50)));
+  }
+  function clearPushHistory() {
+    if (!confirm('Clear send history?')) return;
+    localStorage.removeItem('ts_push_history');
+    renderPushHistory();
+  }
+  function renderPushHistory() {
+    const el = document.getElementById('p-history-list');
+    const h  = getPushHistory();
+    if (!h.length) {
+      el.innerHTML = '<div class="empty"><span class="empty-icon">📭</span>No notifications sent yet</div>';
+      return;
+    }
+    el.innerHTML = h.map(r => {
+      const when = new Date(r.sentAt).toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+      return `<div class="item">
+        <div class="item-body">
+          <div class="item-head">
+            <span class="badge badge-accent">🔔 ${escHtml(r.title)}</span>
+            <span class="badge badge-success">${r.success} sent</span>
+            ${r.fail ? `<span class="badge badge-danger">${r.fail} failed</span>` : ''}
+          </div>
+          <div class="item-meta">${escHtml(r.body)}</div>
+          <div class="item-meta" style="margin-top:3px;color:var(--muted);">→ ${r.target} &nbsp;·&nbsp; ${when}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function escHtml(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ── Hook into switchPanel to auto-load tokens ── */
+  const _origSwitch = switchPanel;
+  window.switchPanel = function(name, el) {
+    _origSwitch(name, el);
+    if (name === 'push') {
+      loadTokenCount();
+      renderPushHistory();
+    }
+  };
 </script>
 </body>
 </html>
