@@ -767,7 +767,97 @@
     }
   }
 
-  /* ── Send push via Google Apps Script relay ── */
+  /* ── Service Account credentials for FCM v1 ── */
+  const SA = {
+    project_id:   "thunderstudy",
+    client_email: "firebase-adminsdk-fbsvc@thunderstudy.iam.gserviceaccount.com",
+    private_key:  "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDsGTp/WTN+UDcx\ngDuuOyMpO/n/PFJ67Efx2saFI0PqdKQ2WrwiO2gjxyUhCtgkZlJD9HSNRh8VxRVe\n6ToQa6yBFMvROlG/RvrGu3W7dTRBCrTbH+49ONivEBZY4Hz/TZ8CH6+XxaSOqLC2\nBEbI/NBMHjRxbXPzwAXZUWTMPtg+ICBoYlpAX+JfR0n6ngQ0lzeTQljQok63yNfS\noC+UC0drALR3wLQd72PelJoN5zHWr4wYCcNQQ4L7sc04W9PL2EME++w6VMuLBC6A\nmNpmpprAv123nfqUsxcv7UGp3InQjOZUUJD2Bg2U1znvn5wvu7i1JUoEBHtQwXtn\npYBIcU9JAgMBAAECggEAH73BORIaKP8KJJFhCgAGWUqocLxAjykeqlvSI7Ua3OBN\n8XF1E0RvBZxbmAZ4CjtoD53Dtk3j66PW8dnOMMX2Z6uO6UlQvd6s5Anw0+vNGM93\n2BvXW4todO9nPw9TOWmgmS2psvBjOrtgIosO+dd5/jnIrX/caRFQV/1S3V4M6XEF\nzkuQpoBbm4v+6c3JlBoxlWa+umGOeNlkhFBrcsQ6fb4PUsirrY5J0mf6hMfNe7u0\nPObV8BCjlpbajzDLdvsAx78SZCwPHRMMEJgV4OEA8Am1ThqCZ91zRF9f+SpAJijR\nZ9sOmJdK1q6PaWWxEqgV9bO6UfB8AXjZ9lLj3CFdrwKBgQD8yFPiSqMgLrkXDibt\nf0j2SFZunng8tX2KUe+3KdS2QnIrDLjq5zQvZWAuwPVbnKstbE/Si6OTsVvQjZ+7\nypN1tmPtaj7RUHgN3PxUFzyVFVXRnBAwwIA8YwCHSBvV1UgtBiBT609ddpSfJKGp\nO2vt4+dtGIGkphYiklIp59mwpwKBgQDvGomRLsR6rZTh/Jq1eTsqTqo6IfZxkbgW\nziM9gAw8YtSJ1FOQGqt5pKwVvXw6fXLX15owGfoRqmiMhIRWWC2vlgZ2vtBjDkb2\naH/MsoPVUhP5i2DB63xWDX2lIbarfsSkXbvobJRVEeA9mE/dtHVaMjPwo4IphMfd\n1Tzh062OjwKBgCIzbH4KgSWijLJc3NF3TkTcJq2SzUvRdmnXiiprA3ehZ9cBQqet\nnnbnLWtF+ixp9xMPO4GOGRSrg3OlJb5/uxHLGpwNqvAhBg1CH/W0qyK0n0bb6aje\n8rq43mJvVCzLTZeh44/XH4bSu2sIxsKh4oluM2qkTS4ctpP43hsDXoWzAoGBAI/x\na+wJOaOZKE48Im8pwqKfpP9GPvT0At1H0BNQKQ2ZedZYCs5wH9cleavE3SrhJugm\nFd7rZI6KBlLB3GGWyDoymUWXbiCUEch59KYouhEMTpYmgGN9/uZXTNLCzxPDR2Kk\nQ2GTLGFiV5r9POd9okBghMBTzyJrm19C5loVcyClAoGBAMwLClGtE0txDClPmZ+1\nTcQWUfWrNRsJ7Jw2AW9QXPuY/he9di/s9g2m1ql1rllz7dTTGGQqWHory4zr0z6c\neXpy/nqJKRQT2dMuwXiyWWvDMWTfDstJoDsgr9JYApbZXpMP0xVTZ+tKn826LcsN\nNn02wbMMiMnTuhS7o8HfkR6q\n-----END PRIVATE KEY-----\n"
+  };
+
+  /* ── Get OAuth2 access token via service account JWT (browser-side) ── */
+  let _fcmTokenCache = null;
+  async function getFcmAccessToken() {
+    const now = Math.floor(Date.now() / 1000);
+    if (_fcmTokenCache && _fcmTokenCache.exp > now + 60) return _fcmTokenCache.token;
+
+    // Build JWT header + claim
+    const header  = { alg: 'RS256', typ: 'JWT' };
+    const claim   = {
+      iss:   SA.client_email,
+      scope: 'https://www.googleapis.com/auth/firebase.messaging',
+      aud:   'https://oauth2.googleapis.com/token',
+      iat:   now,
+      exp:   now + 3600
+    };
+
+    const b64u = s => btoa(unescape(encodeURIComponent(JSON.stringify(s))))
+                       .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+
+    const unsigned = b64u(header) + '.' + b64u(claim);
+
+    // Import the private key
+    const pemBody = SA.private_key.replace(/-----[^-]+-----/g,'').replace(/\s+/g,'');
+    const keyDer  = Uint8Array.from(atob(pemBody), c => c.charCodeAt(0));
+    const cryptoKey = await crypto.subtle.importKey(
+      'pkcs8', keyDer.buffer,
+      { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+      false, ['sign']
+    );
+
+    // Sign
+    const sigBuf = await crypto.subtle.sign(
+      'RSASSA-PKCS1-v1_5', cryptoKey,
+      new TextEncoder().encode(unsigned)
+    );
+    const sig = btoa(String.fromCharCode(...new Uint8Array(sigBuf)))
+                  .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+
+    const jwt = unsigned + '.' + sig;
+
+    // Exchange for OAuth token
+    const resp = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=${jwt}`
+    });
+    const data = await resp.json();
+    if (!data.access_token) throw new Error('OAuth token error: ' + JSON.stringify(data));
+
+    _fcmTokenCache = { token: data.access_token, exp: now + (data.expires_in || 3600) };
+    return _fcmTokenCache.token;
+  }
+
+  /* ── Send one FCM v1 message ── */
+  async function fcmSendOne(accessToken, fcmToken, title, body, url, icon) {
+    const msg = {
+      message: {
+        token: fcmToken,
+        notification: { title, body },
+        webpush: {
+          notification: {
+            title, body,
+            ...(icon ? { icon } : {}),
+            ...(url  ? { click_action: url } : {})
+          },
+          ...(url ? { fcm_options: { link: url } } : {})
+        }
+      }
+    };
+    const r = await fetch(
+      `https://fcm.googleapis.com/v1/projects/${SA.project_id}/messages:send`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + accessToken
+        },
+        body: JSON.stringify(msg)
+      }
+    );
+    return r.ok;
+  }
+
+  /* ── Send push directly via FCM v1 API ── */
   async function sendPush() {
     const title = document.getElementById('p-title').value.trim();
     const body  = document.getElementById('p-body').value.trim();
@@ -813,37 +903,35 @@
         btn.disabled = false; btn.textContent = '🔔 Send Notification'; return;
       }
 
+      statusEl.textContent = `Getting auth token…`;
+
+      /* 2. Get OAuth2 access token */
+      const accessToken = await getFcmAccessToken();
+
       statusEl.textContent = `Sending to ${targetLabel}…`;
 
-      /* 2. Send via GAS relay */
-      const payload = {
-        type:    'PUSH_SEND',
-        title,
-        body,
-        url:     document.getElementById('p-url').value.trim() || '',
-        icon:    document.getElementById('p-icon').value.trim() || '',
-        tokens:  tokens.map(t => t.token),
-        uids:    tokens.map(t => t.uid),
-      };
+      /* 3. Send to each FCM token via FCM v1 API */
+      const url  = document.getElementById('p-url').value.trim()  || '';
+      const icon = document.getElementById('p-icon').value.trim() || '';
 
-      const res = await apiPost(payload);
+      const results = await Promise.allSettled(
+        tokens.map(t => fcmSendOne(accessToken, t.token, title, body, url, icon))
+      );
 
-      if (res.ok) {
-        const successCount = res.success || tokens.length;
-        const failCount    = res.fail    || 0;
-        showPushStatus('success',
-          `✓ Sent to ${successCount} device${successCount !== 1 ? 's' : ''}.` +
-          (failCount ? ` ${failCount} failed.` : '')
-        );
-        savePushHistory({ title, body, target: targetLabel, sentAt: new Date().toISOString(), success: successCount, fail: failCount });
-        renderPushHistory();
-        /* Clear form */
-        ['p-title','p-body','p-url','p-icon','p-sid'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
-      } else {
-        showPushStatus('error', res.error || 'Server returned an error.');
-      }
+      const successCount = results.filter(r => r.status === 'fulfilled' && r.value).length;
+      const failCount    = tokens.length - successCount;
+
+      showPushStatus('success',
+        `✓ Sent to ${successCount} device${successCount !== 1 ? 's' : ''}.` +
+        (failCount ? ` ${failCount} failed.` : '')
+      );
+      savePushHistory({ title, body, target: targetLabel, sentAt: new Date().toISOString(), success: successCount, fail: failCount });
+      renderPushHistory();
+      /* Clear form */
+      ['p-title','p-body','p-url','p-icon','p-sid'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+
     } catch(e) {
-      showPushStatus('error', 'Network error: ' + e.message);
+      showPushStatus('error', 'Error: ' + e.message);
     }
 
     btn.disabled = false;
