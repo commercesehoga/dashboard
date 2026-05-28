@@ -1,0 +1,20 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFF5CC"/><stop offset="100%" stop-color="#D4AF37"/>
+    </linearGradient>
+    <linearGradient id="goldInner" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/><stop offset="100%" stop-color="#FFE082"/>
+    </linearGradient>
+    <filter id="goldGlow">
+      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#FFD700" flood-opacity="0.7"/>
+    </filter>
+  </defs>
+  <path d="M30 120 L60 70 L100 110 L140 70 L170 120 L150 160 L50 160 Z" fill="url(#goldGrad)" filter="url(#goldGlow)"/>
+  <path d="M50 120 L70 90 L100 115 L130 90 L150 120 L135 145 L65 145 Z" fill="url(#goldInner)" opacity="0.95"/>
+  <circle cx="60" cy="75" r="5" fill="#FFD700"/>
+  <circle cx="100" cy="105" r="5" fill="#FFD700"/>
+  <circle cx="140" cy="75" r="5" fill="#FFD700"/>
+  <rect x="60" y="145" width="80" height="6" rx="3" fill="#C9A227"/>
+  <text x="100" y="190" text-anchor="middle" font-size="16" font-family="Arial,sans-serif" fill="#7D6608" font-weight="bold">GOLD</text>
+</svg>
