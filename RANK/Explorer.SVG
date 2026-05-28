@@ -1,0 +1,21 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="explorerGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E0F7FA"/><stop offset="100%" stop-color="#00ACC1"/>
+    </linearGradient>
+    <linearGradient id="explorerInner" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/><stop offset="100%" stop-color="#B2EBF2"/>
+    </linearGradient>
+    <filter id="explorerShadow">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <polygon points="40,30 140,20 170,90 130,180 50,160 30,90" fill="url(#explorerGrad)" filter="url(#explorerShadow)"/>
+  <polygon points="60,50 130,45 150,95 120,160 60,145 50,95" fill="url(#explorerInner)" opacity="0.95"/>
+  <path d="M70 130 Q90 90 120 100 Q135 105 125 80" stroke="#00ACC1" stroke-width="3" fill="none" stroke-dasharray="5,5"/>
+  <circle cx="125" cy="80" r="6" fill="#007C91"/>
+  <circle cx="125" cy="80" r="2" fill="#ffffff"/>
+  <circle cx="75" cy="130" r="3" fill="#4DD0E1"/>
+  <circle cx="95" cy="105" r="3" fill="#4DD0E1"/>
+  <text x="100" y="195" text-anchor="middle" font-size="16" font-family="Arial,sans-serif" fill="#006064" font-weight="bold">EXPLORER</text>
+</svg>
