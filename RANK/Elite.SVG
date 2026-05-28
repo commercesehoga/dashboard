@@ -1,0 +1,22 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="eliteGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E0F2FF"/><stop offset="100%" stop-color="#1E90FF"/>
+    </linearGradient>
+    <linearGradient id="eliteInner" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/><stop offset="100%" stop-color="#A7D8FF"/>
+    </linearGradient>
+    <filter id="eliteGlow">
+      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#4DA3FF" flood-opacity="0.7"/>
+    </filter>
+  </defs>
+  <polygon points="100,60 120,100 100,140 80,100" fill="url(#eliteGrad)" filter="url(#eliteGlow)"/>
+  <path d="M80 100 C50 85, 40 120, 70 135 C50 120, 60 90, 80 100 Z" fill="url(#eliteInner)"/>
+  <path d="M120 100 C150 85, 160 120, 130 135 C150 120, 140 90, 120 100 Z" fill="url(#eliteInner)"/>
+  <line x1="90" y1="95" x2="75" y2="120" stroke="#B3E5FC" stroke-width="2"/>
+  <line x1="110" y1="95" x2="125" y2="120" stroke="#B3E5FC" stroke-width="2"/>
+  <circle cx="100" cy="50" r="6" fill="#4DA3FF">
+    <animate attributeName="r" values="5;8;5" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <text x="100" y="190" text-anchor="middle" font-size="16" font-family="Arial,sans-serif" fill="#0B3D91" font-weight="bold">ELITE</text>
+</svg>
